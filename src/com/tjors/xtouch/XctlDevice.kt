@@ -9,6 +9,7 @@ private const val PORT = 10111
 private val INIT_EVENT = byteArrayOf(0xF0.toByte(), 0x00, 0x20, 0x32, 0x58, 0x54, 0x00, 0xF7.toByte())
 private val PING_EVENT = byteArrayOf(0xF0.toByte(), 0x00, 0x00, 0x66, 0x14, 0x00, 0XF7.toByte())
 
+private const val DEBUG = false
 
 class XctlDevice(private val listener: IXctlListener, private val proxyFor: InetAddress?) : AutoCloseable {
     private var xTouchAddress: InetAddress? = null
@@ -29,26 +30,48 @@ class XctlDevice(private val listener: IXctlListener, private val proxyFor: Inet
     }
 
     private fun processPacket(packet: DatagramPacket) {
-        //printPacket(packet)
+        if (DEBUG) printPacket(packet)
         when (packet.data[packet.offset]) {
             0x90.toByte() ->
-                when (packet.data[packet.offset + 1]) {
-                    in 0x00..0x07 ->
-                        if (packet.data[packet.offset + 2] == 0X7F.toByte()) {
-                            listener.channelRec(packet.data[packet.offset + 1] - 0x00 + 1)
-                        }
-                    in 0x08..0x0F ->
-                        if (packet.data[packet.offset + 2] == 0X7F.toByte()) {
-                            listener.channelSolo(packet.data[packet.offset + 1] - 0x08 + 1)
-                        }
-                    in 0x10..0x17 ->
-                        if (packet.data[packet.offset + 2] == 0X7F.toByte()) {
-                            listener.channelMute(packet.data[packet.offset + 1] - 0x10 + 1)
-                        }
-                    in 0x18..0x1F ->
-                        if (packet.data[packet.offset + 2] == 0X7F.toByte()) {
-                            listener.channelSelect(packet.data[packet.offset + 1] - 0x18 + 1)
-                        }
+                if (packet.data[packet.offset + 2] == 0x7F.toByte()) {
+                    when (val note = packet.data[packet.offset + 1]) {
+                        in 0x00..0x07 ->
+                            listener.channelRec(note - 0x00 + 1)
+                        in 0x08..0x0F ->
+                            listener.channelSolo(note - 0x08 + 1)
+                        in 0x10..0x17 ->
+                            listener.channelMute(note - 0x10 + 1)
+                        in 0x18..0x1F ->
+                            listener.channelSelect(note - 0x18 + 1)
+                        0x28.toByte() ->
+                            listener.track()
+                        0x29.toByte() ->
+                            listener.send()
+                        0x2A.toByte() ->
+                            listener.pan()
+                        0x2B.toByte() ->
+                            listener.plugin()
+                        0x2C.toByte() ->
+                            listener.eq()
+                        0x2D.toByte() ->
+                            listener.inst()
+                        0x2E.toByte() ->
+                            listener.previousBank()
+                        0x2F.toByte() ->
+                            listener.nextBank()
+                        0x30.toByte() ->
+                            listener.previousChannel()
+                        0x31.toByte() ->
+                            listener.nextChannel()
+                        0x32.toByte() ->
+                            listener.flip()
+                        0x33.toByte() ->
+                            listener.globalView()
+                        in 0x46..0x49 ->
+                            listener.fxSelect(note - 0x46 + 1)
+                        in 0x4A..0x4F ->
+                            listener.busSelect(note - 0x4A + 1)
+                    }
                 }
         }
     }
