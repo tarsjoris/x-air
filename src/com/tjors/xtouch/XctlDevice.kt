@@ -31,55 +31,53 @@ class XctlDevice(private val listener: IXctlListener, private val proxyFor: Inet
 
     private fun processPacket(packet: DatagramPacket) {
         if (DEBUG) printPacket(packet)
-        when (packet.data[packet.offset]) {
-            0x90.toByte() ->
-                if (packet.data[packet.offset + 2] == 0x7F.toByte()) {
-                    when (val note = packet.data[packet.offset + 1]) {
-                        in 0x00..0x07 ->
-                            listener.channelRec(note - 0x00 + 1)
-                        in 0x08..0x0F ->
-                            listener.channelSolo(note - 0x08 + 1)
-                        in 0x10..0x17 ->
-                            listener.channelMute(note - 0x10 + 1)
-                        in 0x18..0x1F ->
-                            listener.channelSelect(note - 0x18 + 1)
-                        0x28.toByte() ->
-                            listener.track()
-                        0x29.toByte() ->
-                            listener.send()
-                        0x2A.toByte() ->
-                            listener.pan()
-                        0x2B.toByte() ->
-                            listener.plugin()
-                        0x2C.toByte() ->
-                            listener.eq()
-                        0x2D.toByte() ->
-                            listener.inst()
-                        0x2E.toByte() ->
-                            listener.previousBank()
-                        0x2F.toByte() ->
-                            listener.nextBank()
-                        0x30.toByte() ->
-                            listener.previousChannel()
-                        0x31.toByte() ->
-                            listener.nextChannel()
-                        0x32.toByte() ->
-                            listener.flip()
-                        0x33.toByte() ->
-                            listener.globalView()
-                        in 0x46..0x49 ->
-                            listener.fxSelect(note - 0x46 + 1)
-                        in 0x4A..0x4F ->
-                            listener.busSelect(note - 0x4A + 1)
-                    }
-                }
+        if (packet.length > 0) {
+            when (packet.data[packet.offset]) {
+                0x90.toByte() -> processButton(packet)
+                0xB0.toByte() -> processRotary(packet)
+            }
+        }
+    }
+
+    private fun processButton(packet: DatagramPacket) {
+        if (packet.length == 3 && packet.data[packet.offset + 2] == 0x7F.toByte()) {
+            when (val note = packet.data[packet.offset + 1]) {
+                in 0x00..0x07 -> listener.channelRecPressed(note - 0x00 + 1)
+                in 0x08..0x0F -> listener.channelSoloPressed(note - 0x08 + 1)
+                in 0x10..0x17 -> listener.channelMutePressed(note - 0x10 + 1)
+                in 0x18..0x1F -> listener.channelSelectPressed(note - 0x18 + 1)
+                in 0x20..0x27 -> listener.knobPressed(note - 0x20 + 1)
+                0x28.toByte() -> listener.encoderTrackPressed()
+                0x29.toByte() -> listener.encoderSendPressed()
+                0x2A.toByte() -> listener.encoderPanPressed()
+                0x2B.toByte() -> listener.encoderPluginPressed()
+                0x2C.toByte() -> listener.encoderEqPressed()
+                0x2D.toByte() -> listener.encoderInstPressed()
+                0x2E.toByte() -> listener.previousBankPressed()
+                0x2F.toByte() -> listener.nextBankPressed()
+                0x30.toByte() -> listener.previousChannelPressed()
+                0x31.toByte() -> listener.nextChannelPressed()
+                0x32.toByte() -> listener.flipPressed()
+                0x33.toByte() -> listener.globalViewPressed()
+                in 0x46..0x49 -> listener.fxSelectPressed(note - 0x46 + 1)
+                in 0x4A..0x4F -> listener.busSelectPressed(note - 0x4A + 1)
+            }
+        }
+    }
+
+    private fun processRotary(packet: DatagramPacket) {
+        if (packet.length == 3) {
+            val right = packet.data[packet.offset + 2] == 0x01.toByte()
+            when (val note = packet.data[packet.offset + 1]) {
+                in 0x10..0x17 -> listener.knobRotated(note - 0x10 + 1, right)
+            }
         }
     }
 
     private fun printPacket(packet: DatagramPacket) {
         for (i in packet.offset until packet.offset + packet.length) {
             val entry = packet.data[i];
-            val entryInt = entry.toUByte()
+            val entryInt = entry.toInt()
             val entryHex = String.format("%02X", entry)
             print("$entryInt($entryHex) ")
         }

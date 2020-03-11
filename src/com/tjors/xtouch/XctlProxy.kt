@@ -3,17 +3,17 @@ package com.tjors.xtouch
 import java.net.Inet4Address
 
 private class DebugListener: IXctlListener {
-    override fun channelRec(channel: Int) {
+    override fun channelRecPressed(channel: Int) {
         println("Channel $channel rec")
     }
-    override fun channelSolo(channel: Int) {
+    override fun channelSoloPressed(channel: Int) {
         println("Channel $channel solo")
     }
-    override fun channelSelect(channel: Int) {
+    override fun channelSelectPressed(channel: Int) {
         println("Channel $channel select")
     }
 
-    override fun channelMute(channel: Int) {
+    override fun channelMutePressed(channel: Int) {
         println("Channel $channel mute")
     }
 }

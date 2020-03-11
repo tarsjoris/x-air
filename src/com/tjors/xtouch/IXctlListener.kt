@@ -1,22 +1,24 @@
 package com.tjors.xtouch
 
 interface IXctlListener {
-    fun channelRec(channel: Int) { }
-    fun channelSolo(channel: Int) { }
-    fun channelMute(channel: Int) { }
-    fun channelSelect(channel: Int) { }
-    fun track() { }
-    fun send() { }
-    fun pan() { }
-    fun plugin() { }
-    fun eq() { }
-    fun inst() { }
-    fun previousBank() { }
-    fun nextBank() { }
-    fun previousChannel() { }
-    fun nextChannel() { }
-    fun flip() { }
-    fun globalView() { }
-    fun fxSelect(fx: Int) { }
-    fun busSelect(bus: Int) { }
+    fun channelRecPressed(channel: Int) { }
+    fun channelSoloPressed(channel: Int) { }
+    fun channelMutePressed(channel: Int) { }
+    fun channelSelectPressed(channel: Int) { }
+    fun knobPressed(knob: Int) { }
+    fun encoderTrackPressed() { }
+    fun encoderSendPressed() { }
+    fun encoderPanPressed() { }
+    fun encoderPluginPressed() { }
+    fun encoderEqPressed() { }
+    fun encoderInstPressed() { }
+    fun previousBankPressed() { }
+    fun nextBankPressed() { }
+    fun previousChannelPressed() { }
+    fun nextChannelPressed() { }
+    fun flipPressed() { }
+    fun globalViewPressed() { }
+    fun fxSelectPressed(fx: Int) { }
+    fun busSelectPressed(bus: Int) { }
+    fun knobRotated(knob: Int, right: Boolean) { }
 }
