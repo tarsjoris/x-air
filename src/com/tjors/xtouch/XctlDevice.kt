@@ -67,7 +67,7 @@ class XctlDevice(private val listener: IXctlListener, private val proxyFor: Inet
 
     private fun processRotary(packet: DatagramPacket) {
         if (packet.length == 3) {
-            val right = packet.data[packet.offset + 2] == 0x01.toByte()
+            val right = packet.data[packet.offset + 2] in 0x01..0x40
             when (val note = packet.data[packet.offset + 1]) {
                 in 0x10..0x17 -> listener.knobRotated(note - 0x10 + 1, right)
             }
