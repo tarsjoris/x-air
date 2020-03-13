@@ -33,13 +33,13 @@ class XctlDevice(private val listener: IXctlListener, private val proxyFor: Inet
         if (DEBUG) printPacket(packet)
         if (packet.length > 0) {
             when (packet.data[packet.offset]) {
-                0x90.toByte() -> processButton(packet)
-                0xB0.toByte() -> processRotary(packet)
+                0x90.toByte() -> processButtonPress(packet)
+                0xB0.toByte() -> processKnobRotation(packet)
             }
         }
     }
 
-    private fun processButton(packet: DatagramPacket) {
+    private fun processButtonPress(packet: DatagramPacket) {
         if (packet.length == 3 && packet.data[packet.offset + 2] == 0x7F.toByte()) {
             when (val note = packet.data[packet.offset + 1]) {
                 in 0x00..0x07 -> listener.channelRecPressed(note - 0x00 + 1)
@@ -59,13 +59,24 @@ class XctlDevice(private val listener: IXctlListener, private val proxyFor: Inet
                 0x31.toByte() -> listener.nextChannelPressed()
                 0x32.toByte() -> listener.flipPressed()
                 0x33.toByte() -> listener.globalViewPressed()
-                in 0x46..0x49 -> listener.fxSelectPressed(note - 0x46 + 1)
-                in 0x4A..0x4F -> listener.busSelectPressed(note - 0x4A + 1)
+                0x34.toByte() -> listener.displayPressed()
+                0x35.toByte() -> listener.smptePressed()
+                in 0x36..0x3C -> listener.functionPressed(note - 0x36 + 1)
+                0x3E.toByte() -> listener.midiTracksPressed()
+                0x3F.toByte() -> listener.inputsPressed()
+                0x40.toByte() -> listener.audioTracksPressed()
+                0x41.toByte() -> listener.audioInstPressed()
+                0x42.toByte() -> listener.auxPressed()
+                0x43.toByte() -> listener.busesPressed()
+                0x44.toByte() -> listener.outputsPressed()
+                0x45.toByte() -> listener.userPressed()
+                in 0x46..0x49 -> listener.modifyPressed(note - 0x46 + 1)
+                in 0x4A..0x4F -> listener.automationPressed(note - 0x4A + 1)
             }
         }
     }
 
-    private fun processRotary(packet: DatagramPacket) {
+    private fun processKnobRotation(packet: DatagramPacket) {
         if (packet.length == 3) {
             val right = packet.data[packet.offset + 2] in 0x01..0x40
             when (val note = packet.data[packet.offset + 1]) {

@@ -2,6 +2,7 @@ package com.tjors.xtouch
 
 import java.awt.Robot
 import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -84,12 +85,12 @@ private const val OUTPUT_BUS5 = OUTPUT_BUS4 + 1
 private const val OUTPUT_BUS6 = OUTPUT_BUS5 + 1
 
 private enum class EEncoder(val perChannel: Boolean) {
-    TRACK(false),
+    GAIN(false),
     PAN(false),
     EQ(true),
-    SEND(true),
-    PLUGIN(true),
-    INST(true)
+    BUS(true),
+    FX(true),
+    DYNAMIC(true)
 }
 
 private enum class ETab {
@@ -105,7 +106,7 @@ private enum class ETab {
     METER
 }
 
-private val INST_TABS = arrayOf(ETab.GATE, ETab.COMP, ETab.CHANNEL)
+private val DYANMIC_TABS = arrayOf(ETab.GATE, ETab.COMP, ETab.CHANNEL)
 
 private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlListener {
     private val offsetX = x1
@@ -121,58 +122,28 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
     private var currentInstTab = 0
     private var currentChannel = 1
     private var currentBank = 1
+    private var currentEffectSettings: Int? = null
 
-    override fun channelSelectPressed(channel: Int) {
-        currentChannel = when (currentBank) {
-            1 -> channel
-            2 -> channel + 8
-            3 -> when (channel) {
-                1 -> CHANNEL_AUX
-                5 -> CHANNEL_RTN1
-                6 -> CHANNEL_RTN2
-                7 -> CHANNEL_RTN3
-                8 -> CHANNEL_RTN4
-                else -> currentChannel
-            }
-            4 -> when (channel) {
-                1 -> CHANNEL_BUS1
-                2 -> CHANNEL_BUS2
-                3 -> CHANNEL_BUS3
-                4 -> CHANNEL_BUS4
-                5 -> CHANNEL_BUS5
-                6 -> CHANNEL_BUS6
-                8 -> CHANNEL_MAIN
-                else -> currentChannel
-            }
-            5 -> when (channel) {
-                1 -> CHANNEL_FX1
-                2 -> CHANNEL_FX2
-                3 -> CHANNEL_FX3
-                4 -> CHANNEL_FX4
-                else -> currentChannel
-            }
-            else -> currentChannel
-        }
-        selectCurrentChannel()
-    }
+    override fun channelSelectPressed(channel: Int) =
+        selectChannel(channel)
 
     override fun encoderTrackPressed() =
-        selectEncoder(EEncoder.TRACK)
+        selectEncoder(EEncoder.GAIN)
 
     override fun encoderSendPressed() =
-        selectEncoder(EEncoder.SEND)
+        selectEncoder(EEncoder.BUS)
 
     override fun encoderPanPressed() =
         selectEncoder(EEncoder.PAN)
 
     override fun encoderPluginPressed() = // fx
-        selectEncoder(EEncoder.PLUGIN)
+        selectEncoder(EEncoder.FX)
 
     override fun encoderEqPressed() =
         selectEncoder(EEncoder.EQ)
 
     override fun encoderInstPressed() =
-        selectEncoder(EEncoder.INST)
+        selectEncoder(EEncoder.DYNAMIC)
 
     override fun previousBankPressed() {
         if (currentBank > 1) {
@@ -219,31 +190,23 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
         globalViewPressed()
 
     override fun globalViewPressed() {
-        currentEncoder = null
-        selectOutput(OUTPUT_MAINLR)
-        selectTab(ETab.MIXER)
+        resetEffectSettings()
+        resetEncoder()
+        resetOutput()
         selectCurrentChannel()
     }
 
-    override fun fxSelectPressed(fx: Int) {
-        if (currentOutput - OUTPUT_FX1 + 1 == fx) {
-            selectOutput(OUTPUT_MAINLR)
-            selectCurrentEncoder()
-        } else {
-            selectOutput(OUTPUT_FX1 + fx - 1)
-            selectTab(ETab.MIXER)
+    override fun functionPressed(function: Int) {
+        if (function in 1..4) {
+            selectEffectSettings(function)
         }
     }
 
-    override fun busSelectPressed(bus: Int) {
-        if (currentOutput - OUTPUT_BUS1 + 1 == bus) {
-            selectOutput(OUTPUT_MAINLR)
-            selectCurrentEncoder()
-        } else {
-            selectOutput(OUTPUT_BUS1 + bus - 1)
-            selectTab(ETab.MIXER)
-        }
-    }
+    override fun modifyPressed(modify: Int) =
+        selectFx(modify)
+
+    override fun automationPressed(automation: Int) =
+        selectBus(automation)
 
     override fun knobRotated(knob: Int, right: Boolean) {
         when (knob) {
@@ -256,14 +219,14 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
                     }
                 }
             2 ->
-                if (currentEncoder == EEncoder.INST) {
+                if (currentEncoder == EEncoder.DYNAMIC) {
                     if (right) {
-                        if (currentInstTab + 1 < INST_TABS.size) {
-                            selectTab(INST_TABS[++currentInstTab])
+                        if (currentInstTab + 1 < DYANMIC_TABS.size) {
+                            selectTab(DYANMIC_TABS[++currentInstTab])
                         }
                     } else {
                         if (currentInstTab > 0) {
-                            selectTab(INST_TABS[--currentInstTab])
+                            selectTab(DYANMIC_TABS[--currentInstTab])
                         }
                     }
                 }
@@ -275,28 +238,52 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
         selectCurrentOutput()
     }
 
+    private fun resetOutput() =
+        selectOutput(OUTPUT_MAINLR)
+
     private fun selectCurrentOutput() {
         when (currentOutput) {
             OUTPUT_MAINLR ->
                 when (currentChannel) {
                     in CHANNEL_BUS1..CHANNEL_BUS6 ->
-                        selectBus(currentChannel - CHANNEL_BUS1 + 1)
+                        clickBus(currentChannel - CHANNEL_BUS1 + 1)
                     in CHANNEL_FX1..CHANNEL_FX4 ->
-                        selectFx(currentChannel - CHANNEL_FX1 + 1)
+                        clickFx(currentChannel - CHANNEL_FX1 + 1)
                     else ->
                         click(MAIN_LR_X, MAIN_LR_Y)
                 }
             in OUTPUT_FX1..OUTPUT_FX4 ->
-                selectFx(currentOutput - OUTPUT_FX1 + 1)
+                clickFx(currentOutput - OUTPUT_FX1 + 1)
             in OUTPUT_BUS1..OUTPUT_BUS6 ->
-                selectBus(currentOutput - OUTPUT_BUS1 + 1)
+                clickBus(currentOutput - OUTPUT_BUS1 + 1)
         }
     }
 
-    private fun selectFx(fx: Int) =
-        click(FX_X, FX1_Y + (fx - 1) * FX_OFFSET_Y)
+    private fun selectFx(fx: Int) {
+        resetEffectSettings()
+        if (currentOutput - OUTPUT_FX1 + 1 == fx) {
+            resetOutput()
+        } else {
+            selectOutput(OUTPUT_FX1 + fx - 1)
+        }
+        selectCurrentEncoder()
+    }
 
     private fun selectBus(bus: Int) {
+        resetEffectSettings()
+        if (currentOutput - OUTPUT_BUS1 + 1 == bus) {
+            resetOutput()
+            selectCurrentEncoder()
+        } else {
+            selectOutput(OUTPUT_BUS1 + bus - 1)
+            selectTab(ETab.MIXER)
+        }
+    }
+
+    private fun clickFx(fx: Int) =
+        click(FX_X, FX1_Y + (fx - 1) * FX_OFFSET_Y)
+
+    private fun clickBus(bus: Int) {
         when (bus) {
             1 -> click(BUS_X1, BUS_Y1)
             2 -> click(BUS_X2, BUS_Y1)
@@ -309,23 +296,53 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
 
     private fun selectEncoder(encoder: EEncoder) {
         // encoder selection is remembered when toggling a bus, so only toggle when main output is selected
-        if (currentOutput == 0 && currentEncoder == encoder) {
+        if (currentOutput == OUTPUT_MAINLR && currentEncoder == encoder) {
             // toggle off
-            currentEncoder = null
+            resetEncoder()
         } else {
-            selectOutput(OUTPUT_MAINLR)
+            resetEffectSettings()
+            resetOutput()
+
             currentEncoder = encoder
+            selectCurrentEncoder()
         }
+    }
+
+    private fun resetEncoder() {
+        currentEncoder = null
         selectCurrentEncoder()
+    }
+
+    private fun selectEffectSettings(effect: Int) {
+        if (currentEffectSettings == effect) {
+            resetEffectSettings()
+        } else {
+            if (currentEffectSettings == null) {
+                resetOutput()
+                resetEncoder()
+            } else {
+                keyPress(KeyEvent.VK_ESCAPE)
+            }
+
+            currentEffectSettings = effect
+            keyPress(KeyEvent.VK_F1 + effect - 1)
+        }
+    }
+
+    private fun resetEffectSettings() {
+        if (currentEffectSettings != null) {
+            currentEffectSettings = null
+            keyPress(KeyEvent.VK_ESCAPE)
+        }
     }
 
     private fun selectCurrentEncoder() {
         selectTab(
             when (currentEncoder) {
-                EEncoder.SEND -> ETab.SENDS
-                EEncoder.PLUGIN -> ETab.SENDS
+                EEncoder.BUS -> ETab.SENDS
+                EEncoder.FX -> ETab.SENDS
                 EEncoder.EQ -> ETab.EQ
-                EEncoder.INST -> INST_TABS[currentInstTab]
+                EEncoder.DYNAMIC -> DYANMIC_TABS[currentInstTab]
                 else -> ETab.MIXER
             }
         )
@@ -345,6 +362,40 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
             ETab.FX -> click(TAB_FX_X, TAB_Y)
             ETab.METER -> click(TAB_METER_X, TAB_Y)
         }
+    }
+
+    private fun selectChannel(channel: Int) {
+        currentChannel = when (currentBank) {
+            1 -> channel
+            2 -> channel + 8
+            3 -> when (channel) {
+                1 -> CHANNEL_AUX
+                5 -> CHANNEL_RTN1
+                6 -> CHANNEL_RTN2
+                7 -> CHANNEL_RTN3
+                8 -> CHANNEL_RTN4
+                else -> currentChannel
+            }
+            4 -> when (channel) {
+                1 -> CHANNEL_BUS1
+                2 -> CHANNEL_BUS2
+                3 -> CHANNEL_BUS3
+                4 -> CHANNEL_BUS4
+                5 -> CHANNEL_BUS5
+                6 -> CHANNEL_BUS6
+                8 -> CHANNEL_MAIN
+                else -> currentChannel
+            }
+            5 -> when (channel) {
+                1 -> CHANNEL_FX1
+                2 -> CHANNEL_FX2
+                3 -> CHANNEL_FX3
+                4 -> CHANNEL_FX4
+                else -> currentChannel
+            }
+            else -> currentChannel
+        }
+        selectCurrentChannel()
     }
 
     private fun selectCurrentChannel() {
@@ -372,6 +423,11 @@ private class XAirEditController(x1: Int, y1: Int, x2: Int, y2: Int) : IXctlList
         robot.mouseMove(offsetX + (x.toFloat() * xFactor).toInt(), offsetY + (y.toFloat() * yFactor).toInt())
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK)
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
+    }
+
+    private fun keyPress(key: Int) {
+        robot.keyPress(key)
+        robot.keyRelease(key)
     }
 }
 
