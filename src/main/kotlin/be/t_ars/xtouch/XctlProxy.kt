@@ -1,4 +1,4 @@
-package com.tjors.xtouch
+package be.t_ars.xtouch
 
 import java.net.Inet4Address
 

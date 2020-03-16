@@ -1,4 +1,4 @@
-package com.tjors.xtouch
+package be.t_ars.xtouch
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -41,7 +41,10 @@ class XctlConnection(private val proxyForXR18: InetAddress?) {
 		while (running.get()) {
 			socket.receive(packet)
 			synchronized(this) {
-				if (xTouchAddress == null && isXTouchHeartbeat(packet)) {
+				if (xTouchAddress == null && isXTouchHeartbeat(
+						packet
+					)
+				) {
 					xTouchAddress = packet.address
 				}
 				when (packet.address) {
@@ -198,7 +201,10 @@ class XctlConnection(private val proxyForXR18: InetAddress?) {
 
 	private fun sendHeartbeat() {
 		xTouchAddress?.also { address ->
-			socket.send(DatagramPacket(XR18_HEARTBEAT_PAYLOAD, 0, XR18_HEARTBEAT_PAYLOAD.size, address, PORT))
+			socket.send(DatagramPacket(
+				XR18_HEARTBEAT_PAYLOAD, 0, XR18_HEARTBEAT_PAYLOAD.size, address,
+				PORT
+			))
 		}
 	}
 
@@ -209,10 +215,16 @@ class XctlConnection(private val proxyForXR18: InetAddress?) {
 		private val XR18_HEARTBEAT_PAYLOAD = byteArrayOf(0xF0.toByte(), 0x00, 0x00, 0x66, 0x14, 0x00, 0XF7.toByte())
 
 		private fun isXTouchHeartbeat(packet: DatagramPacket) =
-			matchesData(packet, XTOUCH_HEARTBEAT_PAYLOAD)
+			matchesData(
+				packet,
+				XTOUCH_HEARTBEAT_PAYLOAD
+			)
 
 		private fun isXR18Heartbeat(packet: DatagramPacket) =
-			matchesData(packet, XR18_HEARTBEAT_PAYLOAD)
+			matchesData(
+				packet,
+				XR18_HEARTBEAT_PAYLOAD
+			)
 
 		private fun matchesData(packet: DatagramPacket, data: ByteArray): Boolean {
 			if (packet.length != data.size) {

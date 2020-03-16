@@ -1,57 +1,50 @@
-package com.tjors.xtouch
+package be.t_ars.xtouch
 
 import java.awt.Robot
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.*
 
-class XAirEditInteractor() {
-	private val offsetX: Int
-	private val offsetY: Int
-	private val xFactor: Float
-	private val yFactor: Float
+class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) : IXAirEditInteractor {
+	private var offsetX: Int = 0
+	private var offsetY: Int = 23
+	private var xFactor: Float = 1F
+	private var yFactor: Float = 1F
 
 	private val robot = Robot()
 
 	init {
-		val props = Properties()
-		INTERACTOR_PROPERTIES_FILE
-			.takeIf(File::exists)
-			?.also { file ->
-				BufferedInputStream(FileInputStream(file)).use(props::load)
-			}
+		val props = settingsManager.loadProperties("interctor")
 		val left = props.getProperty(PROP_LEFT, "0").toInt()
 		val top = props.getProperty(PROP_TOP, "23").toInt()
 		val right = props.getProperty(PROP_RIGHT, "1558").toInt()
 		val bottom = props.getProperty(PROP_BOTTOM, "985").toInt()
+		calibrationChanged(left, top, right, bottom)
+	}
 
+	private fun calibrationChanged(left: Int, top: Int, right: Int, bottom: Int) {
 		offsetX = left - LEFT
 		offsetY = top - TOP
 		xFactor = (right - left).toFloat() / (RIGHT - LEFT).toFloat()
 		yFactor = (bottom - top).toFloat() / (BOTTOM - TOP).toFloat()
 	}
 
-	fun clickChannel(channel: Int) =
+	override fun clickChannel(channel: Int) =
 		click(CHANNEL1_X + (channel - 1) * CHANNEL_OFFSET_X, CHANNEL_Y)
 
-	fun clickAux() =
+	override fun clickAux() =
 		click(CHANNEL1_X + CHANNEL_COUNT * CHANNEL_OFFSET_X, CHANNEL_Y)
 
-	fun clickRtn(rtn: Int) =
+	override fun clickRtn(rtn: Int) =
 		click(CHANNEL1_X + (rtn + CHANNEL_COUNT) * CHANNEL_OFFSET_X, CHANNEL_Y)
 
-	fun clickMainFader() =
+	override fun clickMainFader() =
 		click(MAIN_FADER_X, MAIN_FADER_Y)
 
-	fun clickMainLR() =
+	override fun clickMainLR() =
 		click(MAIN_LR_X, MAIN_LR_Y)
 
-	fun clickBus(bus: Int) {
+	override fun clickBus(bus: Int) {
 		when (bus) {
 			1 -> click(BUS_X1, BUS_Y1)
 			2 -> click(BUS_X2, BUS_Y1)
@@ -62,43 +55,30 @@ class XAirEditInteractor() {
 		}
 	}
 
-	fun clickFx(fx: Int) =
+	override fun clickFx(fx: Int) =
 		click(FX_X, FX1_Y + (fx - 1) * FX_OFFSET_Y)
 
-	fun clickTabMixer() =
-		click(TAB_MIXER_X, TAB_Y)
+	override fun clickTab(tab: IXAirEditInteractor.ETab) =
+		click(
+			when (tab) {
+				IXAirEditInteractor.ETab.MIXER -> TAB_MIXER_X
+				IXAirEditInteractor.ETab.CHANNEL -> TAB_CHANNEL_X
+				IXAirEditInteractor.ETab.INPUT -> TAB_INPUT_X
+				IXAirEditInteractor.ETab.GATE -> TAB_GATE_X
+				IXAirEditInteractor.ETab.EQ -> TAB_EQ_X
+				IXAirEditInteractor.ETab.COMP -> TAB_COMP_X
+				IXAirEditInteractor.ETab.SENDS -> TAB_SENDS_X
+				IXAirEditInteractor.ETab.MAIN -> TAB_MAIN_X
+				IXAirEditInteractor.ETab.FX -> TAB_FX_X
+				IXAirEditInteractor.ETab.METER -> TAB_METER_X
+			},
+			TAB_Y
+		)
 
-	fun clickTabChannel() =
-		click(TAB_CHANNEL_X, TAB_Y)
-
-	fun clickTabInput() =
-		click(TAB_INPUT_X, TAB_Y)
-
-	fun clickTabGate() =
-		click(TAB_GATE_X, TAB_Y)
-
-	fun clickTabEq() =
-		click(TAB_EQ_X, TAB_Y)
-
-	fun clickTabComp() =
-		click(TAB_COMP_X, TAB_Y)
-
-	fun clickTabSends() =
-		click(TAB_SENDS_X, TAB_Y)
-
-	fun clickTabMain() =
-		click(TAB_MAIN_X, TAB_Y)
-
-	fun clickTabFx() =
-		click(TAB_FX_X, TAB_Y)
-
-	fun clickTabMeter() =
-		click(TAB_METER_X, TAB_Y)
-
-	fun openEffectSettings(effect: Int) =
+	override fun openEffectSettings(effect: Int) =
 		keyPress(KeyEvent.VK_F1 + effect - 1)
 
-	fun closeDialog() =
+	override fun closeDialog() =
 		keyPress(KeyEvent.VK_ESCAPE)
 
 	private fun click(x: Int, y: Int) {
@@ -112,8 +92,17 @@ class XAirEditInteractor() {
 		robot.keyRelease(key)
 	}
 
+	fun setCalibration(left: Int, top: Int, right: Int, bottom: Int) {
+		val properties = Properties()
+		properties.setProperty(PROP_LEFT, left.toString())
+		properties.setProperty(PROP_TOP, top.toString())
+		properties.setProperty(PROP_RIGHT, right.toString())
+		properties.setProperty(PROP_BOTTOM, bottom.toString())
+		settingsManager.saveProperties("interactor", properties)
+		calibrationChanged(left, top, right, bottom)
+	}
+
 	companion object {
-		private val INTERACTOR_PROPERTIES_FILE = File("interactor.properties")
 		private const val PROP_LEFT = "xair-edit.left"
 		private const val PROP_TOP = "xair-edit.top"
 		private const val PROP_RIGHT = "xair-edit.right"
@@ -157,16 +146,5 @@ class XAirEditInteractor() {
 		private const val MAIN_FADER_Y = 488
 
 		private const val CHANNEL_COUNT = 16
-
-		fun setCalibration(left: Int, top: Int, right: Int, bottom: Int) {
-			val props = Properties()
-			props.setProperty(PROP_LEFT, left.toString())
-			props.setProperty(PROP_TOP, top.toString())
-			props.setProperty(PROP_RIGHT, right.toString())
-			props.setProperty(PROP_BOTTOM, bottom.toString())
-			BufferedOutputStream(FileOutputStream(INTERACTOR_PROPERTIES_FILE)).use {
-				props.store(it, "XAir Edit properties")
-			}
-		}
 	}
 }

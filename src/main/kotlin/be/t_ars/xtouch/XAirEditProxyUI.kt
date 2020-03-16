@@ -1,4 +1,4 @@
-package com.tjors.xtouch
+package be.t_ars.xtouch
 
 import java.awt.Color
 import java.awt.GridBagConstraints
@@ -8,31 +8,25 @@ import java.awt.MouseInfo
 import java.awt.Robot
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.*
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.SwingConstants
+import kotlin.system.exitProcess
 
-class XAirEditProxyUI(private val connection: XctlConnection) : JFrame() {
+class XAirEditProxyUI(
+	private val settingsManager: ISettingsManager,
+	private val windowClosingListener: () -> Unit,
+	private val calibrationUpdater: (Int, Int, Int, Int) -> Unit
+) :
+	JFrame() {
 	private inner class WListener : WindowAdapter() {
 		override fun windowClosing(e: WindowEvent?) {
-			connection.stop()
 			saveProperties()
+			windowClosingListener.invoke()
+			exitProcess(0)
 		}
-	}
-
-	private inner class XctlListener : IXctlListener {
-		override fun connected() =
-			setConnected(true)
-
-		override fun disconnected() =
-			setConnected(false)
 	}
 
 	private enum class ECalibrateState {
@@ -67,7 +61,7 @@ class XAirEditProxyUI(private val connection: XctlConnection) : JFrame() {
 		})
 
 		calibrateButton.text = "Calibrate"
-		calibrateButton.addActionListener { _ ->
+		calibrateButton.addActionListener {
 			when (calibrateState) {
 				ECalibrateState.NONE -> {
 					calibrateButton.text = "Top right"
@@ -96,12 +90,10 @@ class XAirEditProxyUI(private val connection: XctlConnection) : JFrame() {
 
 		addWindowListener(WListener())
 
-		connection.addListener(XctlListener())
-
 		loadProperties()
 	}
 
-	private fun setConnected(connected: Boolean) {
+	fun setConnected(connected: Boolean) {
 		statusLabel.text = if (connected) "CONNECTED" else "DISCONNECTED"
 		statusLabel.background = if (connected) Color.GREEN else Color.RED
 	}
@@ -144,21 +136,16 @@ class XAirEditProxyUI(private val connection: XctlConnection) : JFrame() {
 		while (robot.getPixelColor(left, bottom + 1) == color) {
 			++bottom
 		}
-		XAirEditInteractor.setCalibration(left, top, right, bottom)
+		calibrationUpdater.invoke(left, top, right, bottom)
 	}
 
 	private fun loadProperties() {
-		UI_PROPERTIES_FILE
-			.takeIf(File::exists)
-			?.also { file ->
-				val props = Properties()
-				BufferedInputStream(FileInputStream(file)).use(props::load)
-				val x = props.getProperty(PROP_WINDOW_X, "200").toInt()
-				val y = props.getProperty(PROP_WINDOW_Y, "200").toInt()
-				val w = props.getProperty(PROP_WINDOW_W, "150").toInt()
-				val h = props.getProperty(PROP_WINDOW_H, "150").toInt()
-				setBounds(x, y, w, h)
-			}
+		val props = settingsManager.loadProperties("ui")
+		val x = props.getProperty(PROP_WINDOW_X, "200").toInt()
+		val y = props.getProperty(PROP_WINDOW_Y, "200").toInt()
+		val w = props.getProperty(PROP_WINDOW_W, "150").toInt()
+		val h = props.getProperty(PROP_WINDOW_H, "150").toInt()
+		setBounds(x, y, w, h)
 	}
 
 	private fun saveProperties() {
@@ -167,13 +154,10 @@ class XAirEditProxyUI(private val connection: XctlConnection) : JFrame() {
 		props.setProperty(PROP_WINDOW_Y, location.y.toString())
 		props.setProperty(PROP_WINDOW_W, size.width.toString())
 		props.setProperty(PROP_WINDOW_H, size.height.toString())
-		BufferedOutputStream(FileOutputStream(UI_PROPERTIES_FILE)).use {
-			props.store(it, "XAir Edit Proxy UI settings")
-		}
+		settingsManager.saveProperties("ui", props)
 	}
 
 	companion object {
-		private val UI_PROPERTIES_FILE = File("ui.properties")
 		private const val PROP_WINDOW_X = "window.x"
 		private const val PROP_WINDOW_Y = "window.y"
 		private const val PROP_WINDOW_W = "window.w"
