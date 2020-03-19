@@ -1,11 +1,13 @@
-package be.t_ars.xtouch
+package be.t_ars.xtouch.xairedit
 
+import be.t_ars.xtouch.settings.ISettingsManager
 import java.awt.Robot
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.util.*
 
-class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) : IXAirEditInteractor {
+class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
+	IXAirEditInteractor {
 	private var offsetX: Int = 0
 	private var offsetY: Int = 23
 	private var xFactor: Float = 1F
@@ -14,7 +16,7 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) : IX
 	private val robot = Robot()
 
 	init {
-		val props = settingsManager.loadProperties("interctor")
+		val props = settingsManager.loadProperties("interactor")
 		val left = props.getProperty(PROP_LEFT, "0").toInt()
 		val top = props.getProperty(PROP_TOP, "23").toInt()
 		val right = props.getProperty(PROP_RIGHT, "1558").toInt()

@@ -1,5 +1,7 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.xairedit.IXAirEditInteractor
+
 class XAirEditInteractorMock : IXAirEditInteractor {
 	var currenTab = IXAirEditInteractor.ETab.MIXER
 	var currentChannel: Int = 1

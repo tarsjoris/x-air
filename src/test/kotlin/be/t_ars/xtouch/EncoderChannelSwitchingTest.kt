@@ -1,12 +1,14 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.xairedit.IXAirEditInteractor
+import be.t_ars.xtouch.xctl.IXTouchListener
 import org.junit.jupiter.api.Test
 
 class EncoderChannelSwitchingTest {
 	private fun performTest(
 		expectedChannel: Int,
 		expectedOutput: Int,
-		whenPart: (IXctlListener) -> Unit
+		whenPart: (IXTouchListener) -> Unit
 	) {
 		performTest(expectedChannel, expectedOutput, IXAirEditInteractor.ETab.EQ, whenPart)
 	}

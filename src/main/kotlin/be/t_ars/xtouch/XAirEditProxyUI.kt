@@ -1,5 +1,6 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.settings.ISettingsManager
 import java.awt.Color
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
@@ -19,8 +20,7 @@ class XAirEditProxyUI(
 	private val settingsManager: ISettingsManager,
 	private val windowClosingListener: () -> Unit,
 	private val calibrationUpdater: (Int, Int, Int, Int) -> Unit
-) :
-	JFrame() {
+) : JFrame() {
 	private inner class WListener : WindowAdapter() {
 		override fun windowClosing(e: WindowEvent?) {
 			saveProperties()
@@ -45,6 +45,9 @@ class XAirEditProxyUI(
 
 	init {
 		isAlwaysOnTop = true
+
+		//val resource = this.javaClass.getResource("/icons/app-icon.png")
+		//iconImage = Toolkit.getDefaultToolkit().createImage(resource)
 
 		layout = GridBagLayout()
 
@@ -95,7 +98,7 @@ class XAirEditProxyUI(
 
 	fun setConnected(connected: Boolean) {
 		statusLabel.text = if (connected) "CONNECTED" else "DISCONNECTED"
-		statusLabel.background = if (connected) Color.GREEN else Color.RED
+		statusLabel.background = if (connected) OK_COLOR else NOK_COLOR
 	}
 
 	private fun searchTopRight() {
@@ -162,5 +165,8 @@ class XAirEditProxyUI(
 		private const val PROP_WINDOW_Y = "window.y"
 		private const val PROP_WINDOW_W = "window.w"
 		private const val PROP_WINDOW_H = "window.h"
+
+		private val OK_COLOR = Color(53, 231, 45)
+		private val NOK_COLOR = Color(231, 45, 46)
 	}
 }

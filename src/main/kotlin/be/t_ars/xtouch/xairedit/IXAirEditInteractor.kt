@@ -1,4 +1,4 @@
-package be.t_ars.xtouch
+package be.t_ars.xtouch.xairedit
 
 interface IXAirEditInteractor {
 	enum class ETab {

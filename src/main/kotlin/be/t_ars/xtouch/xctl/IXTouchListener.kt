@@ -1,8 +1,6 @@
-package be.t_ars.xtouch
+package be.t_ars.xtouch.xctl
 
-interface IXctlListener {
-	fun connected() {}
-	fun disconnected() {}
+interface IXTouchListener {
 	fun channelRecPressed(channel: Int) {}
 	fun channelSoloPressed(channel: Int) {}
 	fun channelMutePressed(channel: Int) {}
@@ -34,4 +32,6 @@ interface IXctlListener {
 	fun modifyPressed(modify: Int) {}
 	fun automationPressed(automation: Int) {}
 	fun knobRotated(knob: Int, right: Boolean) {}
+	fun faderMoved(channel: Int, position: Float) { }
+	fun mainFaderMoved(position: Float) { }
 }

@@ -1,5 +1,6 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.xairedit.IXAirEditInteractor
 import org.junit.jupiter.api.Test
 
 class GlobalTest {

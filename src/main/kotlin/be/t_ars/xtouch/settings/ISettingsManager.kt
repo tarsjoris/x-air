@@ -1,4 +1,4 @@
-package be.t_ars.xtouch
+package be.t_ars.xtouch.settings
 
 import java.util.*
 

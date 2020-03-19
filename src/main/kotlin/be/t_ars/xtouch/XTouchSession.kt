@@ -1,6 +1,8 @@
 package be.t_ars.xtouch
 
-class XTouchSession : IXctlListener {
+import be.t_ars.xtouch.xctl.IXTouchListener
+
+class XTouchSession : IXTouchListener {
 	enum class EEncoder(val perChannel: Boolean) {
 		GAIN(false),
 		PAN(false),
