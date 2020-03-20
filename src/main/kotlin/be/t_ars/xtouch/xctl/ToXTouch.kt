@@ -120,14 +120,16 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOut
 	}
 
 	override fun setFaderPosition(channel: Int, position: Float) {
-		if (channel in 1..8 && position >= 0 && position <= 1) {
-//			in 0xE0.toByte()..0xE8.toByte() -> processFaderMove(packet)
-//			val channel = packet.data[packet.offset] - 0xE0.toByte() + 1
-//			val position = (packet.data[packet.offset + 2] * 128 + packet.data[packet.offset + 1])
-//				.toFloat()
-//				.div(16380)
+		if (channel in 1..8 && position in 0.0..1.0) {
 			val value = (position * 16380F).toInt()
 			sendPayload(byteArrayOf((0xE0 + channel - 1).toByte(), value.rem(128).toByte(), value.div(128).toByte()))
+		}
+	}
+
+	override fun setMainFaderPosition(position: Float) {
+		if (position in 0.0..1.0) {
+			val value = (position * 16380F).toInt()
+			sendPayload(byteArrayOf(0xE8.toByte(), value.rem(128).toByte(), value.div(128).toByte()))
 		}
 	}
 

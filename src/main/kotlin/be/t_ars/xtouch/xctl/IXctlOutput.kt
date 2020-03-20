@@ -9,5 +9,6 @@ interface IXctlOutput {
 	fun setMeter(channel: Int, value: Int)
 	fun setMeters(values: IntArray)
 	fun setFaderPosition(channel: Int, position: Float)
+	fun setMainFaderPosition(position: Float)
 	fun setDigits(number: Int)
 }
