@@ -5,7 +5,9 @@ interface IXctlOutput {
 	fun setLEDRingWithHalves(channel: Int, index: Int?)
 	fun setLEDRingContinuous(channel: Int, index: Int?)
 	fun setLEDRingLeftRight(channel: Int, index: Int?)
+	fun setLEDRingRaw(channel: Int, left: Byte, right: Byte)
 	fun setMeter(channel: Int, value: Int)
 	fun setMeters(values: IntArray)
+	fun setFaderPosition(channel: Int, position: Float)
 	fun setDigits(number: Int)
 }

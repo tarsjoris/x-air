@@ -19,6 +19,10 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 			in 7..8 -> output.setLEDRingLeftRight(channel, (position * 12).toInt() - 6)
 		}
 	}
+
+	override fun mainFaderMoved(position: Float) {
+		output.setFaderPosition(1, position)
+	}
 }
 
 fun main() {
