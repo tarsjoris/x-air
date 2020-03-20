@@ -90,28 +90,116 @@ private class FromXTouch {
 		listeners.forEach(eventSender)
 }
 
-private class ToXTouch(private val sendPayload: (ByteArray) -> Unit) {
-	fun setLEDRing(channel: Int, index: Int?) {
-		if (channel in 1..8 && (index == null || index in -6..6)) {
-			val channelLeft = (0x30 + channel - 1).toByte()
-			val channelRight = (0x38 + channel - 1).toByte()
-			sendPayload(
-				when (index) {
-					null -> byteArrayOf(0xB0.toByte(), channelLeft, 0x00.toByte(), channelRight, 0x00.toByte())
-					in -6..0 -> byteArrayOf(
-						0xB0.toByte(),
-						channelLeft,
-						LED_RING[index + 6],
-						channelRight,
-						0x00.toByte()
-					)
-					else -> byteArrayOf(0xB0.toByte(), channelLeft, 0x00.toByte(), channelRight, LED_RING[index - 1])
-				}
-			)
+private class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOutput {
+	override fun setLEDRing(channel: Int, index: Int?) {
+		if (index == null || index in 0..12) {
+			when (index) {
+				0 -> setLEDRingRaw(channel, 0x01.toByte(), 0x00.toByte())
+				1 -> setLEDRingRaw(channel, 0x02.toByte(), 0x00.toByte())
+				2 -> setLEDRingRaw(channel, 0x04.toByte(), 0x00.toByte())
+				3 -> setLEDRingRaw(channel, 0x08.toByte(), 0x00.toByte())
+				4 -> setLEDRingRaw(channel, 0x10.toByte(), 0x00.toByte())
+				5 -> setLEDRingRaw(channel, 0x20.toByte(), 0x00.toByte())
+				6 -> setLEDRingRaw(channel, 0x40.toByte(), 0x00.toByte())
+				7 -> setLEDRingRaw(channel, 0x00.toByte(), 0x01.toByte())
+				8 -> setLEDRingRaw(channel, 0x00.toByte(), 0x02.toByte())
+				9 -> setLEDRingRaw(channel, 0x00.toByte(), 0x04.toByte())
+				10 -> setLEDRingRaw(channel, 0x00.toByte(), 0x08.toByte())
+				11 -> setLEDRingRaw(channel, 0x00.toByte(), 0x10.toByte())
+				12 -> setLEDRingRaw(channel, 0x00.toByte(), 0x20.toByte())
+				else -> setLEDRingRaw(channel, 0x00.toByte(), 0x00.toByte())
+			}
 		}
 	}
 
-	fun setMeters(values: IntArray) {
+	override fun setLEDRingWithHalves(channel: Int, index: Int?) {
+		if (index == null || index in 0..24) {
+			when (index) {
+				0 -> setLEDRingRaw(channel, 0x01.toByte(), 0x00.toByte())
+				1 -> setLEDRingRaw(channel, 0x03.toByte(), 0x00.toByte())
+				2 -> setLEDRingRaw(channel, 0x02.toByte(), 0x00.toByte())
+				3 -> setLEDRingRaw(channel, 0x06.toByte(), 0x00.toByte())
+				4 -> setLEDRingRaw(channel, 0x04.toByte(), 0x00.toByte())
+				5 -> setLEDRingRaw(channel, 0x0C.toByte(), 0x00.toByte())
+				6 -> setLEDRingRaw(channel, 0x08.toByte(), 0x00.toByte())
+				7 -> setLEDRingRaw(channel, 0x18.toByte(), 0x00.toByte())
+				8 -> setLEDRingRaw(channel, 0x10.toByte(), 0x00.toByte())
+				9 -> setLEDRingRaw(channel, 0x30.toByte(), 0x00.toByte())
+				10 -> setLEDRingRaw(channel, 0x20.toByte(), 0x00.toByte())
+				11 -> setLEDRingRaw(channel, 0x60.toByte(), 0x00.toByte())
+				12 -> setLEDRingRaw(channel, 0x40.toByte(), 0x00.toByte())
+				13 -> setLEDRingRaw(channel, 0x40.toByte(), 0x01.toByte())
+				14 -> setLEDRingRaw(channel, 0x00.toByte(), 0x01.toByte())
+				15 -> setLEDRingRaw(channel, 0x00.toByte(), 0x03.toByte())
+				16 -> setLEDRingRaw(channel, 0x00.toByte(), 0x02.toByte())
+				17 -> setLEDRingRaw(channel, 0x00.toByte(), 0x06.toByte())
+				18 -> setLEDRingRaw(channel, 0x00.toByte(), 0x04.toByte())
+				19 -> setLEDRingRaw(channel, 0x00.toByte(), 0x0C.toByte())
+				20 -> setLEDRingRaw(channel, 0x00.toByte(), 0x08.toByte())
+				21 -> setLEDRingRaw(channel, 0x00.toByte(), 0x18.toByte())
+				22 -> setLEDRingRaw(channel, 0x00.toByte(), 0x10.toByte())
+				23 -> setLEDRingRaw(channel, 0x00.toByte(), 0x30.toByte())
+				24 -> setLEDRingRaw(channel, 0x00.toByte(), 0x20.toByte())
+				else -> setLEDRingRaw(channel, 0x00.toByte(), 0x00.toByte())
+			}
+		}
+	}
+
+	override fun setLEDRingContinuous(channel: Int, index: Int?) {
+		if (index == null || index in 0..12) {
+			when (index) {
+				0 -> setLEDRingRaw(channel, 0x01.toByte(), 0x00.toByte())
+				1 -> setLEDRingRaw(channel, 0x03.toByte(), 0x00.toByte())
+				2 -> setLEDRingRaw(channel, 0x07.toByte(), 0x00.toByte())
+				3 -> setLEDRingRaw(channel, 0x0F.toByte(), 0x00.toByte())
+				4 -> setLEDRingRaw(channel, 0x1F.toByte(), 0x00.toByte())
+				5 -> setLEDRingRaw(channel, 0x3F.toByte(), 0x00.toByte())
+				6 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x00.toByte())
+				7 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x01.toByte())
+				8 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x03.toByte())
+				9 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x07.toByte())
+				10 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x0F.toByte())
+				11 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x1F.toByte())
+				12 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x3F.toByte())
+				else -> setLEDRingRaw(channel, 0x00.toByte(), 0x00.toByte())
+			}
+		}
+	}
+
+	override fun setLEDRingLeftRight(channel: Int, index: Int?) {
+		if (index == null || index in -6..6) {
+			when (index) {
+				-6 -> setLEDRingRaw(channel, 0x7F.toByte(), 0x00.toByte())
+				-5 -> setLEDRingRaw(channel, 0x7E.toByte(), 0x00.toByte())
+				-4 -> setLEDRingRaw(channel, 0x7C.toByte(), 0x00.toByte())
+				-3 -> setLEDRingRaw(channel, 0x78.toByte(), 0x00.toByte())
+				-2 -> setLEDRingRaw(channel, 0x70.toByte(), 0x00.toByte())
+				-1 -> setLEDRingRaw(channel, 0x60.toByte(), 0x00.toByte())
+				0 -> setLEDRingRaw(channel, 0x40.toByte(), 0x00.toByte())
+				1 -> setLEDRingRaw(channel, 0x40.toByte(), 0x01.toByte())
+				2 -> setLEDRingRaw(channel, 0x40.toByte(), 0x03.toByte())
+				3 -> setLEDRingRaw(channel, 0x40.toByte(), 0x07.toByte())
+				4 -> setLEDRingRaw(channel, 0x40.toByte(), 0x0F.toByte())
+				5 -> setLEDRingRaw(channel, 0x40.toByte(), 0x1F.toByte())
+				6 -> setLEDRingRaw(channel, 0x40.toByte(), 0x3F.toByte())
+				else -> setLEDRingRaw(channel, 0x00.toByte(), 0x00.toByte())
+			}
+		}
+	}
+
+	fun setLEDRingRaw(channel: Int, left: Byte, right: Byte) {
+		if (channel in 1..8) {
+			val channelLeft = (0x30 + channel - 1).toByte()
+			val channelRight = (0x38 + channel - 1).toByte()
+			sendPayload(byteArrayOf(0xB0.toByte(), channelLeft, left, channelRight, right))
+		}
+	}
+
+	override fun setMeter(channel: Int, value: Int) {
+		sendPayload(byteArrayOf(0xD0.toByte(), ((channel - 1) * 16 + value).toByte()))
+	}
+
+	override fun setMeters(values: IntArray) {
 		if (values.size == 8) {
 			sendPayload(
 				byteArrayOf(0xD0.toByte()) + ByteArray(8) { i ->
@@ -121,7 +209,7 @@ private class ToXTouch(private val sendPayload: (ByteArray) -> Unit) {
 		}
 	}
 
-	fun setDigits(number: Int) =
+	override fun setDigits(number: Int) =
 		sendPayload(
 			byteArrayOf(0xB0.toByte()) +
 					if (number > 9) {
@@ -133,16 +221,6 @@ private class ToXTouch(private val sendPayload: (ByteArray) -> Unit) {
 		)
 
 	companion object {
-		private val LED_RING = byteArrayOf(
-			0x01.toByte(),
-			0x02.toByte(),
-			0x04.toByte(),
-			0x08.toByte(),
-			0x10.toByte(),
-			0x20.toByte(),
-			0x40.toByte()
-		)
-
 		private val DIGIT_LINES = byteArrayOf(0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40)
 		private val DIGITS = byteArrayOf(
 			(DIGIT_LINES[0] + DIGIT_LINES[1] + DIGIT_LINES[2] + DIGIT_LINES[3] + DIGIT_LINES[4] + DIGIT_LINES[5]).toByte(), // 0
@@ -159,7 +237,7 @@ private class ToXTouch(private val sendPayload: (ByteArray) -> Unit) {
 	}
 }
 
-class XctlConnection(private val proxyForXR18: InetAddress?) {
+class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnection {
 	private class RunnableTimerTask(private val task: () -> Unit) : TimerTask() {
 		override fun run() {
 			task.invoke()
@@ -181,13 +259,18 @@ class XctlConnection(private val proxyForXR18: InetAddress?) {
 
 	constructor() : this(null)
 
-	fun addConnectionListener(listener: IXctlConnectionListener) =
+	override fun addConnectionListener(listener: IXctlConnectionListener) {
 		listeners.add(listener)
+	}
 
-	fun addXTouchListener(listener: IXTouchListener) =
+	override fun addXTouchListener(listener: IXTouchListener) {
 		fromXTouch.addListener(listener)
+	}
 
-	fun run() {
+	override fun getOutput(): IXctlOutput =
+		toXTouch
+
+	override fun run() {
 		timer.schedule(RunnableTimerTask(this::checkConnection), 0, 2_000)
 		if (proxyForXR18 == null) {
 			timer.schedule(RunnableTimerTask(this::sendHeartbeat), 0, 6_000)
@@ -231,7 +314,7 @@ class XctlConnection(private val proxyForXR18: InetAddress?) {
 		timer.cancel()
 	}
 
-	fun stop() {
+	override fun stop() {
 		running.set(false)
 	}
 

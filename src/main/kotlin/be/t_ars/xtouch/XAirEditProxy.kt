@@ -3,8 +3,9 @@ package be.t_ars.xtouch
 import be.t_ars.xtouch.settings.SettingsManagerImpl
 import be.t_ars.xtouch.xairedit.XAirEditController
 import be.t_ars.xtouch.xairedit.XAirEditInteractorImpl
+import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
-import be.t_ars.xtouch.xctl.XctlConnection
+import be.t_ars.xtouch.xctl.XctlConnectionImpl
 import java.awt.Color
 import java.net.Inet4Address
 import javax.swing.UIManager
@@ -37,7 +38,7 @@ fun main() {
 	val session = XTouchSession()
 	session.addListener(controller)
 
-	val connection = XctlConnection(Inet4Address.getByName(ipAddress))
+	val connection: IXctlConnection = XctlConnectionImpl(Inet4Address.getByName(ipAddress))
 	connection.addXTouchListener(session)
 
 	val ui = XAirEditProxyUI(
