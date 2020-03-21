@@ -31,7 +31,8 @@ interface IXTouchListener {
 	fun userPressed() {}
 	fun modifyPressed(modify: Int) {}
 	fun automationPressed(automation: Int) {}
+	fun utiliyPressed(utility: Int) {}
 	fun knobRotated(knob: Int, right: Boolean) {}
-	fun faderMoved(channel: Int, position: Float) { }
-	fun mainFaderMoved(position: Float) { }
+	fun faderMoved(channel: Int, position: Float) {}
+	fun mainFaderMoved(position: Float) {}
 }

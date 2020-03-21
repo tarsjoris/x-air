@@ -1,6 +1,87 @@
 package be.t_ars.xtouch.xctl
 
 internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOutput {
+	override fun setChannelButtonLED(
+		channel: Int,
+		channelButton: IXctlOutput.EChannelButton,
+		mode: IXctlOutput.ELEDMode
+	) {
+		sendPayload(
+			byteArrayOf(
+				0x90.toByte(),
+				(when (channelButton) {
+					IXctlOutput.EChannelButton.REC -> 0x00
+					IXctlOutput.EChannelButton.SOLO -> 0x08
+					IXctlOutput.EChannelButton.MUTE -> 0x10
+					IXctlOutput.EChannelButton.SELECT -> 0x18
+				} + channel - 1).toByte(),
+				when (mode) {
+					IXctlOutput.ELEDMode.OFF -> 0x00.toByte()
+					IXctlOutput.ELEDMode.FLASH -> 0x01.toByte()
+					IXctlOutput.ELEDMode.ON -> 0x7F.toByte()
+				}
+			)
+		)
+	}
+
+	override fun setButtonLED(button: IXctlOutput.EButton, mode: IXctlOutput.ELEDMode) {
+		sendPayload(
+			byteArrayOf(
+				0x90.toByte(),
+				when (button) {
+					IXctlOutput.EButton.TRACK -> 0x28.toByte()
+					IXctlOutput.EButton.SEND -> 0x29.toByte()
+					IXctlOutput.EButton.PAN -> 0x2A.toByte()
+					IXctlOutput.EButton.PLUGIN -> 0x2B.toByte()
+					IXctlOutput.EButton.EQ -> 0x2C.toByte()
+					IXctlOutput.EButton.INST -> 0x2D.toByte()
+					IXctlOutput.EButton.PREV_BANK -> 0x2E.toByte()
+					IXctlOutput.EButton.NEXT_BANK -> 0x2F.toByte()
+					IXctlOutput.EButton.PREV_CHANNEL -> 0x30.toByte()
+					IXctlOutput.EButton.NEXT_CHANNEL -> 0x31.toByte()
+					IXctlOutput.EButton.FLIP -> 0x32.toByte()
+					IXctlOutput.EButton.GLOBAL_VIEW -> 0x33.toByte()
+					IXctlOutput.EButton.F1 -> 0x36.toByte()
+					IXctlOutput.EButton.F2 -> 0x37.toByte()
+					IXctlOutput.EButton.F3 -> 0x38.toByte()
+					IXctlOutput.EButton.F4 -> 0x39.toByte()
+					IXctlOutput.EButton.F5 -> 0x3A.toByte()
+					IXctlOutput.EButton.F6 -> 0x3B.toByte()
+					IXctlOutput.EButton.F7 -> 0x3C.toByte()
+					IXctlOutput.EButton.F8 -> 0x3D.toByte()
+					IXctlOutput.EButton.MIDI_TRACKS -> 0x3E.toByte()
+					IXctlOutput.EButton.INPUTS -> 0x3F.toByte()
+					IXctlOutput.EButton.AUDIO_TRACKS -> 0x40.toByte()
+					IXctlOutput.EButton.AUDIO_INST -> 0x41.toByte()
+					IXctlOutput.EButton.AUX -> 0x42.toByte()
+					IXctlOutput.EButton.BUSES -> 0x43.toByte()
+					IXctlOutput.EButton.OUTPUTS -> 0x44.toByte()
+					IXctlOutput.EButton.USER -> 0x45.toByte()
+					IXctlOutput.EButton.MODIFY_SHIFT -> 0x46.toByte()
+					IXctlOutput.EButton.MODIFY_OPTION -> 0x47.toByte()
+					IXctlOutput.EButton.MODIFY_CONTROL -> 0x48.toByte()
+					IXctlOutput.EButton.MODIFY_ALT -> 0x49.toByte()
+					IXctlOutput.EButton.AUTOMATION_READ -> 0x4A.toByte()
+					IXctlOutput.EButton.AUTOMATION_WRITE -> 0x4B.toByte()
+					IXctlOutput.EButton.AUTOMATION_TRIM -> 0x4C.toByte()
+					IXctlOutput.EButton.AUTOMATION_TOUCH -> 0x4D.toByte()
+					IXctlOutput.EButton.AUTOMATION_LATCH -> 0x4E.toByte()
+					IXctlOutput.EButton.AUTOMATION_GROUP -> 0x4F.toByte()
+					IXctlOutput.EButton.UTILITY_SAVE -> 0x50.toByte()
+					IXctlOutput.EButton.UTILITY_UNDO -> 0x51.toByte()
+					IXctlOutput.EButton.UTILITY_CANCEL -> 0x52.toByte()
+					IXctlOutput.EButton.UTILITY_ENTER -> 0x53.toByte()
+					IXctlOutput.EButton.SOLO -> 0x73.toByte()
+				},
+				when (mode) {
+					IXctlOutput.ELEDMode.OFF -> 0x00.toByte()
+					IXctlOutput.ELEDMode.FLASH -> 0x01.toByte()
+					IXctlOutput.ELEDMode.ON -> 0x7F.toByte()
+				}
+			)
+		)
+	}
+
 	override fun setLEDRing(channel: Int, index: Int?) {
 		if (index == null || index in 0..12) {
 			when (index) {
@@ -105,6 +186,17 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOut
 		}
 	}
 
+	override fun setDigits(number: Int) =
+		sendPayload(
+			byteArrayOf(
+				0xB0.toByte(),
+				0x60.toByte(),
+				if (number > 9) DIGITS[number.div(10).rem(10)] else 0x00.toByte(),
+				0x61.toByte(),
+				DIGITS[number.rem(10)]
+			)
+		)
+
 	override fun setMeter(channel: Int, value: Int) {
 		sendPayload(byteArrayOf(0xD0.toByte(), ((channel - 1) * 16 + value).toByte()))
 	}
@@ -132,17 +224,6 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOut
 			sendPayload(byteArrayOf(0xE8.toByte(), value.rem(128).toByte(), value.div(128).toByte()))
 		}
 	}
-
-	override fun setDigits(number: Int) =
-		sendPayload(
-			byteArrayOf(
-				0xB0.toByte(),
-				0x60.toByte(),
-				if (number > 9) DIGITS[number.div(10).rem(10)] else 0x00.toByte(),
-				0x61.toByte(),
-				DIGITS[number.rem(10)]
-			)
-		)
 
 	companion object {
 		private val DIGIT_LINES = byteArrayOf(0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40)

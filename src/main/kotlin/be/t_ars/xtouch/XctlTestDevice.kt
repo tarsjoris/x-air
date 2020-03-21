@@ -31,51 +31,60 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 
 	override fun flipPressed() {
 		GlobalScope.launch {
-			for (i in 0..359) {
-				for (channel in 0..8) {
-					val angleDegrees = i.toFloat() - (channel.toFloat() / 9F) * 360F
-					if (angleDegrees > 0) {
-						val angle = angleDegrees / 360F * 2 * PI
-						val position = (1F - cos(angle).toFloat()) / 2F
-						if (channel < 8) {
-							output.setFaderPosition(channel + 1, position)
-						} else {
-							output.setMainFaderPosition(position)
-						}
+			animateFadersSine { it > 0 }
+			for (j in 1..2) {
+				animateFadersSine()
+			}
+			animateFadersSine { it <= 0 }
+		}
+	}
+
+	private suspend fun animateFadersSine(predicate: (Float) -> Boolean = { true }) {
+		for (i in 1..360) {
+			for (channel in 0..8) {
+				val angleDegrees = i.toFloat() - (channel.toFloat() / 9F) * 360F
+				if (predicate.invoke(angleDegrees)) {
+					val angle = angleDegrees / 360F * 2 * PI
+					val position = (1F - cos(angle).toFloat()) / 2F
+					if (channel < 8) {
+						output.setFaderPosition(channel + 1, position)
+					} else {
+						output.setMainFaderPosition(position)
 					}
 				}
-				delay(10)
 			}
-			for (j in 1..1) {
-				for (i in 0..359) {
-					for (channel in 0..8) {
-						val angleDegrees = i.toFloat() - (channel.toFloat() / 9F) * 360F
-						val angle = angleDegrees / 360F * 2 * PI
-						val position = (1F - cos(angle).toFloat()) / 2F
-						if (channel < 8) {
-							output.setFaderPosition(channel + 1, position)
-						} else {
-							output.setMainFaderPosition(position)
-						}
-					}
-					delay(10)
-				}
+			delay(10)
+		}
+	}
+
+	override fun globalViewPressed() {
+		GlobalScope.launch {
+			setChannelButtonsLEDS(IXctlOutput.ELEDMode.ON)
+			delay(1000)
+			setChannelButtonsLEDS(IXctlOutput.ELEDMode.FLASH)
+			delay(2000)
+			setChannelButtonsLEDS(IXctlOutput.ELEDMode.OFF)
+			setButtonLEDS(IXctlOutput.ELEDMode.ON)
+			delay(1000)
+			setButtonLEDS(IXctlOutput.ELEDMode.FLASH)
+			delay(2000)
+			setButtonLEDS(IXctlOutput.ELEDMode.OFF)
+		}
+	}
+
+	private suspend fun setChannelButtonsLEDS(mode: IXctlOutput.ELEDMode) {
+		for (channel in 1..8) {
+			for (button in IXctlOutput.EChannelButton.values()) {
+				output.setChannelButtonLED(channel, button, mode)
+				delay(20)
 			}
-			for (i in 0..360) {
-				for (channel in 0..8) {
-					val angleDegrees = i.toFloat() - (channel.toFloat() / 9F) * 360F
-					if (angleDegrees <=  0) {
-						val angle = angleDegrees / 360F * 2 * PI
-						val position = (1F - cos(angle).toFloat()) / 2F
-						if (channel < 8) {
-							output.setFaderPosition(channel + 1, position)
-						} else {
-							output.setMainFaderPosition(position)
-						}
-					}
-				}
-				delay(10)
-			}
+		}
+	}
+
+	private suspend fun setButtonLEDS(mode: IXctlOutput.ELEDMode) {
+		for (button in IXctlOutput.EButton.values()) {
+			output.setButtonLED(button, mode)
+			delay(20)
 		}
 	}
 }

@@ -54,6 +54,9 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 			synchronized(this) {
 				if (xTouchAddress == null && isXTouchHeartbeat(packet)) {
 					xTouchAddress = packet.address
+					if (proxyForXR18 == null) {
+						sendHeartbeat()
+					}
 				}
 				when (packet.address) {
 					xTouchAddress -> {

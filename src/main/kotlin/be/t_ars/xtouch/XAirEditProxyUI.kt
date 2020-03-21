@@ -7,6 +7,7 @@ import java.awt.GridBagLayout
 import java.awt.Insets
 import java.awt.MouseInfo
 import java.awt.Robot
+import java.awt.Toolkit
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.util.*
@@ -46,8 +47,8 @@ class XAirEditProxyUI(
 	init {
 		isAlwaysOnTop = true
 
-		//val resource = this.javaClass.getResource("/icons/app-icon.png")
-		//iconImage = Toolkit.getDefaultToolkit().createImage(resource)
+		val icon = this.javaClass.classLoader.getResource("app-icon.png")
+		iconImage = Toolkit.getDefaultToolkit().createImage(icon)
 
 		layout = GridBagLayout()
 
@@ -60,7 +61,7 @@ class XAirEditProxyUI(
 			gridy = 0
 			weightx = 1.toDouble()
 			weighty = 1.toDouble()
-			insets = Insets(10, 10, 10, 10)
+			insets = Insets(INSET, INSET, INSET, INSET)
 		})
 
 		calibrateButton.text = "Calibrate"
@@ -88,7 +89,7 @@ class XAirEditProxyUI(
 			gridy = 1
 			weightx = 1.toDouble()
 			weighty = 1.toDouble()
-			insets = Insets(10, 10, 10, 10)
+			insets = Insets(INSET, INSET, INSET, INSET)
 		})
 
 		addWindowListener(WListener())
@@ -146,8 +147,8 @@ class XAirEditProxyUI(
 		val props = settingsManager.loadProperties("ui")
 		val x = props.getProperty(PROP_WINDOW_X, "200").toInt()
 		val y = props.getProperty(PROP_WINDOW_Y, "200").toInt()
-		val w = props.getProperty(PROP_WINDOW_W, "150").toInt()
-		val h = props.getProperty(PROP_WINDOW_H, "150").toInt()
+		val w = props.getProperty(PROP_WINDOW_W, "140").toInt()
+		val h = props.getProperty(PROP_WINDOW_H, "155").toInt()
 		setBounds(x, y, w, h)
 	}
 
@@ -165,6 +166,8 @@ class XAirEditProxyUI(
 		private const val PROP_WINDOW_Y = "window.y"
 		private const val PROP_WINDOW_W = "window.w"
 		private const val PROP_WINDOW_H = "window.h"
+
+		private const val INSET = 10
 
 		private val OK_COLOR = Color(53, 231, 45)
 		private val NOK_COLOR = Color(231, 45, 46)

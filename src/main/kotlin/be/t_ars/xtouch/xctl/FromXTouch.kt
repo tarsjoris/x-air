@@ -40,7 +40,7 @@ internal class FromXTouch {
 				0x33.toByte() -> broadcast(IXTouchListener::globalViewPressed)
 				0x34.toByte() -> broadcast(IXTouchListener::displayPressed)
 				0x35.toByte() -> broadcast(IXTouchListener::smptePressed)
-				in 0x36.toByte()..0x3C.toByte() -> broadcast { it.functionPressed(note - 0x36 + 1) }
+				in 0x36.toByte()..0x3D.toByte() -> broadcast { it.functionPressed(note - 0x36 + 1) }
 				0x3E.toByte() -> broadcast(IXTouchListener::midiTracksPressed)
 				0x3F.toByte() -> broadcast(IXTouchListener::inputsPressed)
 				0x40.toByte() -> broadcast(IXTouchListener::audioTracksPressed)
@@ -51,6 +51,7 @@ internal class FromXTouch {
 				0x45.toByte() -> broadcast(IXTouchListener::userPressed)
 				in 0x46.toByte()..0x49.toByte() -> broadcast { it.modifyPressed(note - 0x46 + 1) }
 				in 0x4A.toByte()..0x4F.toByte() -> broadcast { it.automationPressed(note - 0x4A + 1) }
+				in 0x50.toByte()..0x53.toByte() -> broadcast { it.utiliyPressed(note - 0x50 + 1) }
 			}
 		}
 	}
