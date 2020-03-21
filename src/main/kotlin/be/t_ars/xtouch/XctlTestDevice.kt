@@ -87,6 +87,13 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 			delay(20)
 		}
 	}
+
+	override fun knobPressed(knob: Int) {
+		when (knob) {
+			1 -> output.setScribbleTrip(1, IXctlOutput.EScribbleColor.BLUE, false, "Kotlin", " Rules")
+			2 -> output.setScribbleTrip(2, IXctlOutput.EScribbleColor.RED, true, "Button", "   2")
+		}
+	}
 }
 
 fun main() {

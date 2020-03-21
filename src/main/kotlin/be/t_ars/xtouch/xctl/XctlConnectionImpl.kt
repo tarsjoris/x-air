@@ -94,7 +94,7 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 
 	private fun sendToXTouch(payload: ByteArray) {
 		val packet = DatagramPacket(payload, 0, payload.size, xTouchAddress, PORT)
-		//printPacket("me ", packet)
+		if (DEBUG) printPacket("To XTouch ", packet)
 		socket.send(packet)
 	}
 

@@ -225,6 +225,45 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOut
 		}
 	}
 
+	override fun setScribbleTrip(
+		channel: Int,
+		color: IXctlOutput.EScribbleColor,
+		secondLineInverted: Boolean,
+		line1: String,
+		line2: String
+	) {
+		sendPayload(
+			byteArrayOf(
+				0xF0.toByte(), 0x00.toByte(), 0x00.toByte(), 0x66.toByte(), 0x58.toByte(),
+				(0x20 + channel - 1).toByte(),
+				(when (color) {
+					IXctlOutput.EScribbleColor.RED -> 0x01
+					IXctlOutput.EScribbleColor.GREEN -> 0x02
+					IXctlOutput.EScribbleColor.YELLOW -> 0x03
+					IXctlOutput.EScribbleColor.BLUE -> 0x04
+					IXctlOutput.EScribbleColor.PINK -> 0x05
+					IXctlOutput.EScribbleColor.CYAN -> 0x06
+					IXctlOutput.EScribbleColor.WHITE -> 0x07
+				} + if (secondLineInverted) 0x40 else 0x00).toByte()
+			) +
+					ByteArray(7) { index ->
+						if (index < line1.length) {
+							line1[index].toByte()
+						} else {
+							0x20.toByte()
+						}
+					} +
+					ByteArray(7) { index ->
+						if (index < line2.length) {
+							line2[index].toByte()
+						} else {
+							0x20.toByte()
+						}
+					} +
+					byteArrayOf(0xF7.toByte())
+		)
+	}
+
 	companion object {
 		private val DIGIT_LINES = byteArrayOf(0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40)
 		private val DIGITS = byteArrayOf(

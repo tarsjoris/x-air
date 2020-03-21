@@ -55,6 +55,10 @@ interface IXctlOutput {
 		OFF, FLASH, ON
 	}
 
+	enum class EScribbleColor {
+		RED, GREEN, YELLOW, BLUE, PINK, CYAN, WHITE
+	}
+
 	fun setChannelButtonLED(channel: Int, channelButton: EChannelButton, mode: ELEDMode)
 	fun setButtonLED(button: EButton, mode: ELEDMode)
 	fun setLEDRing(channel: Int, index: Int?)
@@ -67,4 +71,5 @@ interface IXctlOutput {
 	fun setMeters(values: IntArray)
 	fun setFaderPosition(channel: Int, position: Float)
 	fun setMainFaderPosition(position: Float)
+	fun setScribbleTrip(channel: Int, color: EScribbleColor, secondLineInverted: Boolean, line1: String, line2: String)
 }
