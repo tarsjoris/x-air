@@ -8,43 +8,43 @@ class XAirEditInteractorMock : IXAirEditInteractor {
 	var currentOutput = OUTPUT_MAINLR
 	var currentEffectsSettingsDialog: Int? = null
 
-	override fun clickChannel(channel: Int) {
+	override suspend fun clickChannel(channel: Int) {
 		currentChannel = channel
 	}
 
-	override fun clickAux() {
+	override suspend fun clickAux() {
 		currentChannel = CHANNEL_AUX
 	}
 
-	override fun clickRtn(rtn: Int) {
+	override suspend fun clickRtn(rtn: Int) {
 		currentChannel = CHANNEL_RTN1 + rtn - 1
 	}
 
-	override fun clickMainFader() {
+	override suspend fun clickMainFader() {
 		currentChannel = CHANNEL_MAIN
 	}
 
-	override fun clickMainLR() {
+	override suspend fun clickMainLR() {
 		currentOutput = OUTPUT_MAINLR
 	}
 
-	override fun clickBus(bus: Int) {
+	override suspend fun clickBus(bus: Int) {
 		currentOutput = OUTPUT_BUS1 + bus - 1
 	}
 
-	override fun clickFx(fx: Int) {
+	override suspend fun clickFx(fx: Int) {
 		currentOutput = OUTPUT_FX1 + fx - 1
 	}
 
-	override fun clickTab(tab: IXAirEditInteractor.ETab) {
+	override suspend fun clickTab(tab: IXAirEditInteractor.ETab) {
 		currenTab = tab
 	}
 
-	override fun openEffectSettings(effect: Int) {
+	override suspend fun openEffectSettings(effect: Int) {
 		currentEffectsSettingsDialog = effect
 	}
 
-	override fun closeDialog() {
+	override suspend fun closeDialog() {
 		currentEffectsSettingsDialog = null
 	}
 

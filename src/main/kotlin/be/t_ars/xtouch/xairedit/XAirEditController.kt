@@ -5,7 +5,7 @@ import be.t_ars.xtouch.XTouchSession
 
 class XAirEditController(private val interactor: IXAirEditInteractor) :
 	IXTouchSessionListener {
-	override fun selectionChanged(
+	override suspend fun selectionChanged(
 		output: Int,
 		channel: Int,
 		encoder: XTouchSession.EEncoder?,
@@ -13,10 +13,10 @@ class XAirEditController(private val interactor: IXAirEditInteractor) :
 	) =
 		selectChannel(output, channel, encoder, dynamicEncoder)
 
-	override fun effectsSettingsChanged(effectsSettings: Int?) =
+	override suspend fun effectsSettingsChanged(effectsSettings: Int?) =
 		selectEffectSettings(effectsSettings)
 
-	private fun selectChannel(
+	private suspend fun selectChannel(
 		output: Int,
 		channel: Int,
 		encoder: XTouchSession.EEncoder?,
@@ -55,7 +55,7 @@ class XAirEditController(private val interactor: IXAirEditInteractor) :
 		}
 	}
 
-	private fun selectEncoder(encoder: XTouchSession.EEncoder?, dynamicEncoder: XTouchSession.EDynamicEncoder) =
+	private suspend fun selectEncoder(encoder: XTouchSession.EEncoder?, dynamicEncoder: XTouchSession.EDynamicEncoder) =
 		interactor.clickTab(
 			when (encoder) {
 				XTouchSession.EEncoder.BUS -> IXAirEditInteractor.ETab.SENDS
@@ -71,7 +71,7 @@ class XAirEditController(private val interactor: IXAirEditInteractor) :
 			}
 		)
 
-	private fun selectEffectSettings(effectsSettings: Int?) {
+	private suspend fun selectEffectSettings(effectsSettings: Int?) {
 		if (effectsSettings == null) {
 			interactor.closeDialog()
 		} else {

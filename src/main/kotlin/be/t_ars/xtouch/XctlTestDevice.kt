@@ -4,19 +4,17 @@ import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlOutput
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
 
 private class Listener(val output: IXctlOutput) : IXTouchListener {
-	override fun channelSelectPressed(channel: Int) {
+	override suspend fun channelSelectPressed(channel: Int) {
 		output.setDigits(channel)
 		output.setMeter(channel, 8)
 	}
 
-	override fun faderMoved(channel: Int, position: Float) {
+	override suspend fun faderMoved(channel: Int, position: Float) {
 		when (channel) {
 			in 1..2 -> output.setLEDRing(channel, (position * 12).toInt())
 			in 3..4 -> output.setLEDRingWithHalves(channel, (position * 24).toInt())
@@ -25,18 +23,16 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 		}
 	}
 
-	override fun mainFaderMoved(position: Float) {
+	override suspend fun mainFaderMoved(position: Float) {
 		output.setFaderPosition(1, position)
 	}
 
-	override fun flipPressed() {
-		GlobalScope.launch {
-			animateFadersSine { it > 0 }
-			for (j in 1..2) {
-				animateFadersSine()
-			}
-			animateFadersSine { it <= 0 }
+	override suspend fun flipPressed() {
+		animateFadersSine { it > 0 }
+		for (j in 1..2) {
+			animateFadersSine()
 		}
+		animateFadersSine { it <= 0 }
 	}
 
 	private suspend fun animateFadersSine(predicate: (Float) -> Boolean = { true }) {
@@ -57,19 +53,17 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 		}
 	}
 
-	override fun globalViewPressed() {
-		GlobalScope.launch {
-			setChannelButtonsLEDS(IXctlOutput.ELEDMode.ON)
-			delay(1000)
-			setChannelButtonsLEDS(IXctlOutput.ELEDMode.FLASH)
-			delay(2000)
-			setChannelButtonsLEDS(IXctlOutput.ELEDMode.OFF)
-			setButtonLEDS(IXctlOutput.ELEDMode.ON)
-			delay(1000)
-			setButtonLEDS(IXctlOutput.ELEDMode.FLASH)
-			delay(2000)
-			setButtonLEDS(IXctlOutput.ELEDMode.OFF)
-		}
+	override suspend fun globalViewPressed() {
+		setChannelButtonsLEDS(IXctlOutput.ELEDMode.ON)
+		delay(1000)
+		setChannelButtonsLEDS(IXctlOutput.ELEDMode.FLASH)
+		delay(2000)
+		setChannelButtonsLEDS(IXctlOutput.ELEDMode.OFF)
+		setButtonLEDS(IXctlOutput.ELEDMode.ON)
+		delay(1000)
+		setButtonLEDS(IXctlOutput.ELEDMode.FLASH)
+		delay(2000)
+		setButtonLEDS(IXctlOutput.ELEDMode.OFF)
 	}
 
 	private suspend fun setChannelButtonsLEDS(mode: IXctlOutput.ELEDMode) {
@@ -88,7 +82,7 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 		}
 	}
 
-	override fun knobPressed(knob: Int) {
+	override suspend fun knobPressed(knob: Int) {
 		when (knob) {
 			1 -> output.setScribbleTrip(1, IXctlOutput.EScribbleColor.BLUE, false, "Kotlin", " Rules")
 			2 -> output.setScribbleTrip(2, IXctlOutput.EScribbleColor.RED, true, "Button", "   2")

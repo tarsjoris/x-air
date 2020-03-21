@@ -14,14 +14,14 @@ interface IXAirEditInteractor {
 		METER
 	}
 
-	fun clickChannel(channel: Int)
-	fun clickAux()
-	fun clickRtn(rtn: Int)
-	fun clickMainFader()
-	fun clickMainLR()
-	fun clickBus(bus: Int)
-	fun clickFx(fx: Int)
-	fun clickTab(tab: ETab)
-	fun openEffectSettings(effect: Int)
-	fun closeDialog()
+	suspend fun clickChannel(channel: Int)
+	suspend fun clickAux()
+	suspend fun clickRtn(rtn: Int)
+	suspend fun clickMainFader()
+	suspend fun clickMainLR()
+	suspend fun clickBus(bus: Int)
+	suspend fun clickFx(fx: Int)
+	suspend fun clickTab(tab: ETab)
+	suspend fun openEffectSettings(effect: Int)
+	suspend fun closeDialog()
 }

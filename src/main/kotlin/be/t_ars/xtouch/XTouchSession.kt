@@ -29,71 +29,71 @@ class XTouchSession : IXTouchListener {
 	fun addListener(listener: IXTouchSessionListener) =
 		listeners.add(listener)
 
-	override fun channelSelectPressed(channel: Int) {
+	override suspend fun channelSelectPressed(channel: Int) {
 		if (channel in 1..8) {
 			selectChannel(channel)
 		}
 	}
 
-	override fun encoderTrackPressed() =
+	override suspend fun encoderTrackPressed() =
 		selectEncoder(EEncoder.GAIN)
 
-	override fun encoderSendPressed() =
+	override suspend fun encoderSendPressed() =
 		selectEncoder(EEncoder.BUS)
 
-	override fun encoderPanPressed() =
+	override suspend fun encoderPanPressed() =
 		selectEncoder(EEncoder.PAN)
 
-	override fun encoderPluginPressed() = // fx
+	override suspend fun encoderPluginPressed() = // fx
 		selectEncoder(EEncoder.FX)
 
-	override fun encoderEqPressed() =
+	override suspend fun encoderEqPressed() =
 		selectEncoder(EEncoder.EQ)
 
-	override fun encoderInstPressed() =
+	override suspend fun encoderInstPressed() =
 		selectEncoder(EEncoder.DYNAMIC)
 
-	override fun previousBankPressed() =
+	override suspend fun previousBankPressed() =
 		switchBanks(false)
 
-	override fun nextBankPressed() =
+	override suspend fun nextBankPressed() =
 		switchBanks(true)
 
-	override fun previousChannelPressed() =
+	override suspend fun previousChannelPressed() =
 		switchChannel(false)
 
-	override fun nextChannelPressed() =
+	override suspend fun nextChannelPressed() =
 		switchChannel(true)
 
-	override fun flipPressed() =
+	override suspend fun flipPressed() =
 		globalViewPressed()
 
-	override fun globalViewPressed() {
+	override suspend fun globalViewPressed() {
 		resetEffectSettings()
 		resetEncoder()
 		resetOutput()
 		broadcastSelectionChanged()
 	}
 
-	override fun functionPressed(function: Int) {
+	override suspend fun functionPressed(function: Int) {
 		if (function in 1..4) {
 			selectEffectSettings(function)
 		}
 	}
 
-	override fun modifyPressed(modify: Int) {
+	override suspend fun modifyPressed(modify: Int) {
 		if (modify in 1..4) {
 			selectFx(modify)
 		}
 	}
 
-	override fun automationPressed(automation: Int) {
+	override suspend fun automationPressed(automation: Int) {
 		if (automation in 1..6) {
 			selectBus(automation)
 		}
 	}
 
-	override fun knobRotated(knob: Int, right: Boolean) {
+	override suspend fun knobRotated(knob: Int, right: Boolean) {
 		when (knob) {
 			1 ->
 				if (currentEncoder?.perChannel == true) {
@@ -106,7 +106,7 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun selectChannel(channel: Int) =
+	private suspend fun selectChannel(channel: Int) =
 		setChannel(
 			when (currentBank) {
 				1 -> channel
@@ -140,7 +140,7 @@ class XTouchSession : IXTouchListener {
 			}
 		)
 
-	private fun selectEncoder(encoder: EEncoder) {
+	private suspend fun selectEncoder(encoder: EEncoder) {
 		// encoder selection is remembered when toggling a bus, so only toggle when main output is selected
 		if (currentOutput == OUTPUT_MAINLR && currentEncoder == encoder) {
 			// toggle off
@@ -153,15 +153,15 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun resetEncoder() =
+	private suspend fun resetEncoder() =
 		setEncoder(null)
 
-	private fun setEncoder(encoder: EEncoder?) {
+	private suspend fun setEncoder(encoder: EEncoder?) {
 		currentEncoder = encoder
 		broadcastSelectionChanged()
 	}
 
-	private fun switchBanks(forward: Boolean) {
+	private suspend fun switchBanks(forward: Boolean) {
 		val newBank = currentBank + if (forward) 1 else -1
 		if (newBank in 1..BANK_COUNT) {
 			if (currentOutput == OUTPUT_MAINLR) {
@@ -177,29 +177,31 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun switchChannelForBankSwitchInEncoder(newBank: Int) {
+	private suspend fun switchChannelForBankSwitchInEncoder(newBank: Int) {
 		if (currentEncoder?.perChannel == true) {
-			BANK_CHANNELS[currentBank - 1]
+			val newChannel = BANK_CHANNELS[currentBank - 1]
 				.indexOf(currentChannel)
 				.takeIf { it in 0..7 }
 				?.let { BANK_CHANNELS[newBank - 1][it] }
-				?.also(this::setChannel)
+			if (newChannel != null) {
+				setChannel(newChannel)
+			}
 		}
 	}
 
-	private fun switchChannel(forward: Boolean) {
+	private suspend fun switchChannel(forward: Boolean) {
 		val newChannel = currentChannel + if (forward) 1 else -1
 		if (newChannel in 1..CHANNEL_MAIN) {
 			setChannel(newChannel)
 		}
 	}
 
-	private fun setChannel(channel: Int) {
+	private suspend fun setChannel(channel: Int) {
 		currentChannel = channel
 		broadcastSelectionChanged()
 	}
 
-	private fun selectEffectSettings(effectsSettings: Int) {
+	private suspend fun selectEffectSettings(effectsSettings: Int) {
 		if (currentEffectSettings == effectsSettings) {
 			resetEffectSettings()
 		} else {
@@ -214,18 +216,18 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun resetEffectSettings() {
+	private suspend fun resetEffectSettings() {
 		if (currentEffectSettings != null) {
 			setEffectsSettings(null)
 		}
 	}
 
-	private fun setEffectsSettings(effectsSettings: Int?) {
+	private suspend fun setEffectsSettings(effectsSettings: Int?) {
 		currentEffectSettings = effectsSettings
 		broadcast { it.effectsSettingsChanged(currentEffectSettings) }
 	}
 
-	private fun selectFx(fx: Int) {
+	private suspend fun selectFx(fx: Int) {
 		if (currentBank > 3) {
 			currentBank = 1
 		}
@@ -237,7 +239,7 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun selectBus(bus: Int) {
+	private suspend fun selectBus(bus: Int) {
 		if (currentBank > 3) {
 			currentBank = 1
 		}
@@ -249,7 +251,7 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun switchDynamicsTab(right: Boolean) {
+	private suspend fun switchDynamicsTab(right: Boolean) {
 		val newDynamicEncoder = currentDynamicEncoder + if (right) 1 else -1
 		if (newDynamicEncoder in DYNAMIC_ENCODERS.indices) {
 			currentDynamicEncoder = newDynamicEncoder
@@ -257,12 +259,12 @@ class XTouchSession : IXTouchListener {
 		}
 	}
 
-	private fun selectOutput(output: Int) {
+	private suspend fun selectOutput(output: Int) {
 		currentOutput = output
 		broadcastSelectionChanged()
 	}
 
-	private fun broadcastSelectionChanged() =
+	private suspend fun broadcastSelectionChanged() =
 		broadcast {
 			it.selectionChanged(
 				currentOutput,
@@ -272,11 +274,14 @@ class XTouchSession : IXTouchListener {
 			)
 		}
 
-	private fun resetOutput() =
+	private suspend fun resetOutput() =
 		selectOutput(OUTPUT_MAINLR)
 
-	private fun broadcast(eventSender: (IXTouchSessionListener) -> Unit) =
-		listeners.forEach(eventSender)
+	private suspend fun broadcast(eventSender: suspend (IXTouchSessionListener) -> Unit) {
+		for (l in listeners) {
+			eventSender.invoke(l)
+		}
+	}
 
 	companion object {
 		private const val CHANNEL_COUNT = 16

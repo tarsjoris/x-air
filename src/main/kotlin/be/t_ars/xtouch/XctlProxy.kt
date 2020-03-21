@@ -6,19 +6,19 @@ import be.t_ars.xtouch.xctl.XctlConnectionImpl
 import java.net.Inet4Address
 
 private class DebugListener : IXTouchListener {
-	override fun channelRecPressed(channel: Int) {
+	override suspend fun channelRecPressed(channel: Int) {
 		println("Channel $channel rec")
 	}
 
-	override fun channelSoloPressed(channel: Int) {
+	override suspend fun channelSoloPressed(channel: Int) {
 		println("Channel $channel solo")
 	}
 
-	override fun channelSelectPressed(channel: Int) {
+	override suspend fun channelSelectPressed(channel: Int) {
 		println("Channel $channel select")
 	}
 
-	override fun channelMutePressed(channel: Int) {
+	override suspend fun channelMutePressed(channel: Int) {
 		println("Channel $channel mute")
 	}
 }

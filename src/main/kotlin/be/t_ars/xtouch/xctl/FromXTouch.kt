@@ -1,5 +1,7 @@
 package be.t_ars.xtouch.xctl
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.net.DatagramPacket
 
 internal class FromXTouch {
@@ -81,6 +83,11 @@ internal class FromXTouch {
 		}
 	}
 
-	private fun broadcast(eventSender: (IXTouchListener) -> Unit) =
-		listeners.forEach(eventSender)
+	private fun broadcast(eventSender: suspend (IXTouchListener) -> Unit) {
+		GlobalScope.launch {
+			for (l in listeners) {
+				eventSender.invoke(l)
+			}
+		}
+	}
 }

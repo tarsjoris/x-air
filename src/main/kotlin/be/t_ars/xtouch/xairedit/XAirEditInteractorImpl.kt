@@ -1,6 +1,7 @@
 package be.t_ars.xtouch.xairedit
 
 import be.t_ars.xtouch.settings.ISettingsManager
+import kotlinx.coroutines.delay
 import java.awt.Robot
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
@@ -14,6 +15,9 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 	private var yFactor: Float = 1F
 
 	private val robot = Robot()
+	private var currentOutput: Int? = null
+	private var currentChannel: Int? = null
+	private var currentTab: IXAirEditInteractor.ETab? = null
 
 	init {
 		val props = settingsManager.loadProperties("interactor")
@@ -31,62 +35,91 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 		yFactor = (bottom - top).toFloat() / (BOTTOM - TOP).toFloat()
 	}
 
-	override fun clickChannel(channel: Int) =
-		click(CHANNEL1_X + (channel - 1) * CHANNEL_OFFSET_X, CHANNEL_Y)
+	override suspend fun clickChannel(channel: Int) =
+		selectChannelInternal(channel)
 
-	override fun clickAux() =
-		click(CHANNEL1_X + CHANNEL_COUNT * CHANNEL_OFFSET_X, CHANNEL_Y)
+	override suspend fun clickAux() =
+		selectChannelInternal(CHANNEL_COUNT + 1)
 
-	override fun clickRtn(rtn: Int) =
-		click(CHANNEL1_X + (rtn + CHANNEL_COUNT) * CHANNEL_OFFSET_X, CHANNEL_Y)
+	override suspend fun clickRtn(rtn: Int) =
+		selectChannelInternal(CHANNEL_COUNT + 1 + rtn)
 
-	override fun clickMainFader() =
-		click(MAIN_FADER_X, MAIN_FADER_Y)
-
-	override fun clickMainLR() =
-		click(MAIN_LR_X, MAIN_LR_Y)
-
-	override fun clickBus(bus: Int) {
-		when (bus) {
-			1 -> click(BUS_X1, BUS_Y1)
-			2 -> click(BUS_X2, BUS_Y1)
-			3 -> click(BUS_X1, BUS_Y2)
-			4 -> click(BUS_X2, BUS_Y2)
-			5 -> click(BUS_X1, BUS_Y3)
-			6 -> click(BUS_X2, BUS_Y3)
+	private suspend fun selectChannelInternal(channel: Int) {
+		if (currentChannel != channel) {
+			currentChannel = channel
+			click(CHANNEL1_X + (channel - 1) * CHANNEL_OFFSET_X, CHANNEL_Y)
 		}
 	}
 
-	override fun clickFx(fx: Int) =
-		click(FX_X, FX1_Y + (fx - 1) * FX_OFFSET_Y)
+	override suspend fun clickMainFader() {
+		if (currentChannel != 0) {
+			currentChannel = 0
+			click(MAIN_FADER_X, MAIN_FADER_Y)
+		}
+	}
 
-	override fun clickTab(tab: IXAirEditInteractor.ETab) =
-		click(
-			when (tab) {
-				IXAirEditInteractor.ETab.MIXER -> TAB_MIXER_X
-				IXAirEditInteractor.ETab.CHANNEL -> TAB_CHANNEL_X
-				IXAirEditInteractor.ETab.INPUT -> TAB_INPUT_X
-				IXAirEditInteractor.ETab.GATE -> TAB_GATE_X
-				IXAirEditInteractor.ETab.EQ -> TAB_EQ_X
-				IXAirEditInteractor.ETab.COMP -> TAB_COMP_X
-				IXAirEditInteractor.ETab.SENDS -> TAB_SENDS_X
-				IXAirEditInteractor.ETab.MAIN -> TAB_MAIN_X
-				IXAirEditInteractor.ETab.FX -> TAB_FX_X
-				IXAirEditInteractor.ETab.METER -> TAB_METER_X
-			},
-			TAB_Y
-		)
+	override suspend fun clickMainLR() {
+		if (currentOutput != 0) {
+			currentOutput = 0
+			click(MAIN_LR_X, MAIN_LR_Y)
+		}
+	}
 
-	override fun openEffectSettings(effect: Int) =
+	override suspend fun clickBus(bus: Int) {
+		if (currentOutput != bus) {
+			currentOutput = bus
+			when (bus) {
+				1 -> click(BUS_X1, BUS_Y1)
+				2 -> click(BUS_X2, BUS_Y1)
+				3 -> click(BUS_X1, BUS_Y2)
+				4 -> click(BUS_X2, BUS_Y2)
+				5 -> click(BUS_X1, BUS_Y3)
+				6 -> click(BUS_X2, BUS_Y3)
+			}
+		}
+	}
+
+	override suspend fun clickFx(fx: Int) {
+		if (currentOutput != 6 + fx) {
+			currentOutput = 6 + fx
+			click(FX_X, FX1_Y + (fx - 1) * FX_OFFSET_Y)
+		}
+	}
+
+	override suspend fun clickTab(tab: IXAirEditInteractor.ETab) {
+		if (currentTab != tab) {
+			currentTab = tab
+			click(
+				when (tab) {
+					IXAirEditInteractor.ETab.MIXER -> TAB_MIXER_X
+					IXAirEditInteractor.ETab.CHANNEL -> TAB_CHANNEL_X
+					IXAirEditInteractor.ETab.INPUT -> TAB_INPUT_X
+					IXAirEditInteractor.ETab.GATE -> TAB_GATE_X
+					IXAirEditInteractor.ETab.EQ -> TAB_EQ_X
+					IXAirEditInteractor.ETab.COMP -> TAB_COMP_X
+					IXAirEditInteractor.ETab.SENDS -> TAB_SENDS_X
+					IXAirEditInteractor.ETab.MAIN -> TAB_MAIN_X
+					IXAirEditInteractor.ETab.FX -> TAB_FX_X
+					IXAirEditInteractor.ETab.METER -> TAB_METER_X
+				},
+				TAB_Y
+			)
+		}
+	}
+
+	override suspend fun openEffectSettings(effect: Int) =
 		keyPress(KeyEvent.VK_F1 + effect - 1)
 
-	override fun closeDialog() =
+	override suspend fun closeDialog() =
 		keyPress(KeyEvent.VK_ESCAPE)
 
-	private fun click(x: Int, y: Int) {
+	private suspend fun click(x: Int, y: Int) {
 		robot.mouseMove(offsetX + (x.toFloat() * xFactor).toInt(), offsetY + (y.toFloat() * yFactor).toInt())
+		delay(10)
 		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK)
+		delay(10)
 		robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
+		delay(10)
 	}
 
 	private fun keyPress(key: Int) {

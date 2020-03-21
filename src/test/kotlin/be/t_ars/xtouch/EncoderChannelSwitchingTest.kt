@@ -8,7 +8,7 @@ class EncoderChannelSwitchingTest {
 	private fun performTest(
 		expectedChannel: Int,
 		expectedOutput: Int,
-		whenPart: (IXTouchListener) -> Unit
+		whenPart: suspend (IXTouchListener) -> Unit
 	) {
 		performTest(expectedChannel, expectedOutput, IXAirEditInteractor.ETab.EQ, whenPart)
 	}
