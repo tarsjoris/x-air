@@ -1,4 +1,4 @@
-package be.t_ars.xtouch
+package be.t_ars.xtouch.demo
 
 import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.IXctlConnection

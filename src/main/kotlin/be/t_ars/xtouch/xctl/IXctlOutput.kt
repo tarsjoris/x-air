@@ -6,12 +6,12 @@ interface IXctlOutput {
 	}
 
 	enum class EButton {
-		TRACK,
-		SEND,
-		PAN,
-		PLUGIN,
-		EQ,
-		INST,
+		ENCODER_TRACK,
+		ENCODER_SEND,
+		ENCODER_PAN,
+		ENCODER_PLUGIN,
+		ENCODER_EQ,
+		ENCODER_INST,
 		PREV_BANK,
 		NEXT_BANK,
 		PREV_CHANNEL,

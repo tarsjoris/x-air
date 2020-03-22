@@ -29,12 +29,12 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IXctlOut
 			byteArrayOf(
 				0x90.toByte(),
 				when (button) {
-					IXctlOutput.EButton.TRACK -> 0x28.toByte()
-					IXctlOutput.EButton.SEND -> 0x29.toByte()
-					IXctlOutput.EButton.PAN -> 0x2A.toByte()
-					IXctlOutput.EButton.PLUGIN -> 0x2B.toByte()
-					IXctlOutput.EButton.EQ -> 0x2C.toByte()
-					IXctlOutput.EButton.INST -> 0x2D.toByte()
+					IXctlOutput.EButton.ENCODER_TRACK -> 0x28.toByte()
+					IXctlOutput.EButton.ENCODER_SEND -> 0x29.toByte()
+					IXctlOutput.EButton.ENCODER_PAN -> 0x2A.toByte()
+					IXctlOutput.EButton.ENCODER_PLUGIN -> 0x2B.toByte()
+					IXctlOutput.EButton.ENCODER_EQ -> 0x2C.toByte()
+					IXctlOutput.EButton.ENCODER_INST -> 0x2D.toByte()
 					IXctlOutput.EButton.PREV_BANK -> 0x2E.toByte()
 					IXctlOutput.EButton.NEXT_BANK -> 0x2F.toByte()
 					IXctlOutput.EButton.PREV_CHANNEL -> 0x30.toByte()
