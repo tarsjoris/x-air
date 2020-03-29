@@ -8,7 +8,7 @@ import be.t_ars.xtouch.xctl.XctlConnectionImpl
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-private class Listener(private val output: IXctlOutput) : IXctlConnectionListener, IXTouchListener {
+private class WhackAMoleListener(private val output: IXctlOutput) : IXctlConnectionListener, IXTouchListener {
 	private val random = Random(System.currentTimeMillis())
 	private val channelButtons = IXctlOutput.EChannelButton.values()
 	private val buttons = IXctlOutput.EButton.values()
@@ -337,7 +337,7 @@ private class Listener(private val output: IXctlOutput) : IXctlConnectionListene
 
 fun main() {
 	val connection: IXctlConnection = XctlConnectionImpl()
-	val listener = Listener(connection.getOutput())
+	val listener = WhackAMoleListener(connection.getOutput())
 	connection.addConnectionListener(listener)
 	connection.addXTouchListener(listener)
 	connection.run()
