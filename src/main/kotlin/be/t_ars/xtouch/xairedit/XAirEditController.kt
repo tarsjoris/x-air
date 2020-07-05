@@ -65,7 +65,7 @@ class XAirEditController(private val interactor: IXAirEditInteractor) :
 					when (dynamicEncoder) {
 						XTouchSession.EDynamicEncoder.GATE -> IXAirEditInteractor.ETab.GATE
 						XTouchSession.EDynamicEncoder.COMPRESSOR -> IXAirEditInteractor.ETab.COMP
-						XTouchSession.EDynamicEncoder.AUTOMIX -> IXAirEditInteractor.ETab.CHANNEL
+						XTouchSession.EDynamicEncoder.AUTOMIX -> IXAirEditInteractor.ETab.MAIN
 					}
 				else -> IXAirEditInteractor.ETab.MIXER
 			}

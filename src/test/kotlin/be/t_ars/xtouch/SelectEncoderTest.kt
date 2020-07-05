@@ -158,7 +158,7 @@ class SelectEncoderTest {
 		performTest(
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR,
-			IXAirEditInteractor.ETab.CHANNEL
+			IXAirEditInteractor.ETab.MAIN
 		) {
 			it.encoderInstPressed()
 			it.knobRotated(2, true)
@@ -171,7 +171,7 @@ class SelectEncoderTest {
 		performTest(
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR,
-			IXAirEditInteractor.ETab.CHANNEL
+			IXAirEditInteractor.ETab.MAIN
 		) {
 			it.encoderInstPressed()
 			it.knobRotated(2, true)
