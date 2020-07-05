@@ -103,17 +103,12 @@ class XAirEditProxyUI(
 	}
 
 	private fun searchTopRight() {
-		val color = Color(47, 47, 47)
 		val robot = Robot()
 		MouseInfo.getPointerInfo().location.also {
 			right = it.x
 			top = it.y
 		}
-		if (robot.getPixelColor(right, top) != color) {
-			calibrateButton.text = "Error"
-			calibrateState = ECalibrateState.NONE
-			return
-		}
+		val color = robot.getPixelColor(right, top)
 		while (robot.getPixelColor(right + 1, top) == color) {
 			++right
 		}
@@ -123,17 +118,12 @@ class XAirEditProxyUI(
 	}
 
 	private fun searchBottomLeft() {
-		val color = Color(33, 33, 33)
 		val robot = Robot()
 		MouseInfo.getPointerInfo().location.also {
 			left = it.x
 			bottom = it.y
 		}
-		if (robot.getPixelColor(left, bottom) != color) {
-			calibrateButton.text = "Error"
-			calibrateState = ECalibrateState.NONE
-			return
-		}
+		val color = robot.getPixelColor(left, bottom)
 		while (robot.getPixelColor(left - 1, bottom) == color) {
 			--left
 		}
