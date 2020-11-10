@@ -1,7 +1,7 @@
 package be.t_ars.xtouch.xairedit
 
-import be.t_ars.xtouch.IXTouchSessionListener
-import be.t_ars.xtouch.XTouchSession
+import be.t_ars.xtouch.session.IXTouchSessionListener
+import be.t_ars.xtouch.session.XTouchSession
 
 class XAirEditController(private val interactor: IXAirEditInteractor) :
 	IXTouchSessionListener {

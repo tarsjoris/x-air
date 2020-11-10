@@ -1,14 +1,15 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.session.XTouchSession
 import be.t_ars.xtouch.settings.SettingsManagerImpl
+import be.t_ars.xtouch.ui.XAirEditProxyUI
 import be.t_ars.xtouch.xairedit.XAirEditController
 import be.t_ars.xtouch.xairedit.XAirEditInteractorImpl
 import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
-import java.awt.Color
 import java.net.Inet4Address
-import javax.swing.UIManager
+import javax.swing.JFrame
 import kotlin.system.exitProcess
 
 private class ConnectionListener(private val connectedListener: (Boolean) -> Unit) :
@@ -21,11 +22,7 @@ private class ConnectionListener(private val connectedListener: (Boolean) -> Uni
 }
 
 fun main() {
-	UIManager.put("control", Color(33, 33, 33));
-	UIManager.put("nimbusBase", Color(47, 47, 47));
-	UIManager.getInstalledLookAndFeels()
-		.firstOrNull { it.name == "Nimbus" }
-		?.let { UIManager.setLookAndFeel(it.className) }
+	JFrame.setDefaultLookAndFeelDecorated(true)
 
 	val settingsManager = SettingsManagerImpl()
 	val properties = settingsManager.loadProperties("xr18")

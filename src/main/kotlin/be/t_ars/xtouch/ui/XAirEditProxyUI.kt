@@ -1,12 +1,10 @@
-package be.t_ars.xtouch
+package be.t_ars.xtouch.ui
 
 import be.t_ars.xtouch.settings.ISettingsManager
 import java.awt.Color
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
-import java.awt.MouseInfo
-import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -20,7 +18,7 @@ import kotlin.system.exitProcess
 class XAirEditProxyUI(
 	private val settingsManager: ISettingsManager,
 	private val windowClosingListener: () -> Unit,
-	private val calibrationUpdater: (Int, Int, Int, Int) -> Unit
+	calibrationUpdater: (Int, Int, Int, Int) -> Unit
 ) : JFrame() {
 	private inner class WListener : WindowAdapter() {
 		override fun windowClosing(e: WindowEvent?) {
@@ -30,19 +28,8 @@ class XAirEditProxyUI(
 		}
 	}
 
-	private enum class ECalibrateState {
-		NONE,
-		TOP_RIGHT,
-		BOTTOM_LEFT
-	}
-
 	private val statusLabel = JLabel("", SwingConstants.CENTER)
 	private val calibrateButton = JButton()
-	private var calibrateState = ECalibrateState.NONE
-	private var left = 0
-	private var right = 0
-	private var top = 0
-	private var bottom = 0
 
 	init {
 		isAlwaysOnTop = true
@@ -66,22 +53,8 @@ class XAirEditProxyUI(
 
 		calibrateButton.text = "Calibrate"
 		calibrateButton.addActionListener {
-			when (calibrateState) {
-				ECalibrateState.NONE -> {
-					calibrateButton.text = "Top right"
-					calibrateState = ECalibrateState.TOP_RIGHT
-				}
-				ECalibrateState.TOP_RIGHT -> {
-					calibrateButton.text = "Bottom left"
-					calibrateState = ECalibrateState.BOTTOM_LEFT
-					searchTopRight()
-				}
-				ECalibrateState.BOTTOM_LEFT -> {
-					calibrateButton.text = "Calibrate"
-					calibrateState = ECalibrateState.NONE
-					searchBottomLeft()
-				}
-			}
+			val callibrateFrame = CallibrateFrame(calibrationUpdater)
+			callibrateFrame.start()
 		}
 		add(calibrateButton, GridBagConstraints().apply {
 			fill = GridBagConstraints.BOTH
@@ -100,37 +73,6 @@ class XAirEditProxyUI(
 	fun setConnected(connected: Boolean) {
 		statusLabel.text = if (connected) "CONNECTED" else "DISCONNECTED"
 		statusLabel.background = if (connected) OK_COLOR else NOK_COLOR
-	}
-
-	private fun searchTopRight() {
-		val robot = Robot()
-		MouseInfo.getPointerInfo().location.also {
-			right = it.x
-			top = it.y
-		}
-		val color = robot.getPixelColor(right, top)
-		while (robot.getPixelColor(right + 1, top) == color) {
-			++right
-		}
-		while (robot.getPixelColor(right, top - 1) == color) {
-			--top
-		}
-	}
-
-	private fun searchBottomLeft() {
-		val robot = Robot()
-		MouseInfo.getPointerInfo().location.also {
-			left = it.x
-			bottom = it.y
-		}
-		val color = robot.getPixelColor(left, bottom)
-		while (robot.getPixelColor(left - 1, bottom) == color) {
-			--left
-		}
-		while (robot.getPixelColor(left, bottom + 1) == color) {
-			++bottom
-		}
-		calibrationUpdater.invoke(left, top, right, bottom)
 	}
 
 	private fun loadProperties() {

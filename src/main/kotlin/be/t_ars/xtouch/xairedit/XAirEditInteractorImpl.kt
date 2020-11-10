@@ -6,6 +6,7 @@ import java.awt.Robot
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import java.util.*
+import kotlin.math.roundToInt
 
 class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 	IXAirEditInteractor {
@@ -29,10 +30,10 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 	}
 
 	private fun calibrationChanged(left: Int, top: Int, right: Int, bottom: Int) {
-		offsetX = left - LEFT
-		offsetY = top - TOP
-		xFactor = (right - left).toFloat() / (RIGHT - LEFT).toFloat()
-		yFactor = (bottom - top).toFloat() / (BOTTOM - TOP).toFloat()
+		offsetX = left
+		offsetY = top
+		xFactor = (right - left).toFloat() / RIGHT.toFloat()
+		yFactor = (bottom - top).toFloat() / BOTTOM.toFloat()
 	}
 
 	override suspend fun clickChannel(channel: Int) =
@@ -114,7 +115,7 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 		keyPress(KeyEvent.VK_ESCAPE)
 
 	private suspend fun click(x: Int, y: Int) {
-		robot.mouseMove(offsetX + (x.toFloat() * xFactor).toInt(), offsetY + (y.toFloat() * yFactor).toInt())
+		robot.mouseMove(offsetX + (x.toFloat() * xFactor).roundToInt(), offsetY + (y.toFloat() * yFactor).roundToInt())
 		delay(10)
 		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK)
 		delay(10)
@@ -143,42 +144,43 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 		private const val PROP_RIGHT = "xair-edit.right"
 		private const val PROP_BOTTOM = "xair-edit.bottom"
 
-		private const val LEFT = 2
-		private const val TOP = 0
-		private const val RIGHT = 1559
-		private const val BOTTOM = 960
+		const val RIGHT = 1559
+		const val BOTTOM = 960
 
-		private const val TAB_MIXER_X = 56
-		private const val TAB_CHANNEL_X = 192
-		private const val TAB_INPUT_X = 321
-		private const val TAB_GATE_X = 430
-		private const val TAB_EQ_X = 531
-		private const val TAB_COMP_X = 647
-		private const val TAB_SENDS_X = 761
-		private const val TAB_MAIN_X = 876
-		private const val TAB_FX_X = 975
-		private const val TAB_METER_X = 1087
-		private const val TAB_Y = 26
+		const val TAB_MIXER_X = 56
+		const val TAB_CHANNEL_X = 192
+		const val TAB_INPUT_X = 321
+		const val TAB_GATE_X = 430
+		const val TAB_EQ_X = 531
+		const val TAB_COMP_X = 647
+		const val TAB_SENDS_X = 761
+		const val TAB_MAIN_X = 876
+		const val TAB_FX_X = 975
+		const val TAB_METER_X = 1087
+		const val TAB_Y = 26
 
-		private const val CHANNEL1_X = 33
-		private const val CHANNEL_OFFSET_X = 63
-		private const val CHANNEL_Y = 488
+		const val CHANNEL1_X = 33
+		const val CHANNEL_OFFSET_X = 63
+		const val CHANNEL_Y = 488
 
-		private const val BUS_X1 = 1372
-		private const val BUS_X2 = 1459
-		private const val BUS_Y1 = 625
-		private const val BUS_Y2 = 668
-		private const val BUS_Y3 = 707
+		const val BUS_X1 = 1372
+		const val BUS_X2 = 1459
+		const val BUS_Y1 = 625
+		const val BUS_Y2 = 668
+		const val BUS_Y3 = 707
 
-		private const val FX_X = 1372
-		private const val FX1_Y = 748
-		private const val FX_OFFSET_Y = 40
+		const val FX_X = 1372
+		const val FX1_Y = 748
+		const val FX_OFFSET_Y = 40
 
-		private const val MAIN_LR_X = 1415
-		private const val MAIN_LR_Y = 585
+		const val MAIN_LR_X = 1415
+		const val MAIN_LR_Y = 585
 
-		private const val MAIN_FADER_X = 1526
-		private const val MAIN_FADER_Y = 488
+		const val MAIN_FADER_X = 1526
+		const val MAIN_FADER_Y = 488
+
+		const val MAIN_MUTE_X = 1529
+		const val MAIN_MUTE_Y = 920
 
 		private const val CHANNEL_COUNT = 16
 	}

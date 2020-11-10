@@ -1,5 +1,6 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.session.XTouchSession
 import be.t_ars.xtouch.xairedit.IXAirEditInteractor
 import be.t_ars.xtouch.xairedit.XAirEditController
 import be.t_ars.xtouch.xctl.IXTouchListener
