@@ -29,6 +29,7 @@ class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Un
 
 	init {
 		isAlwaysOnTop = true
+		isUndecorated = true
 		background = Color(255, 255, 255, 100)
 
 		val panel = JPanel()
