@@ -1,8 +1,7 @@
 package be.t_ars.xtouch
 
-import be.t_ars.xtouch.addon.XTouchAddons
+import be.t_ars.xtouch.addon.XTouchAddon
 import be.t_ars.xtouch.osc.XR18API
-import be.t_ars.xtouch.session.IXTouchSessionListener
 import be.t_ars.xtouch.session.XTouchSession
 import be.t_ars.xtouch.settings.SettingsManagerImpl
 import be.t_ars.xtouch.ui.XAirEditProxyUI
@@ -10,7 +9,6 @@ import be.t_ars.xtouch.xairedit.XAirEditController
 import be.t_ars.xtouch.xairedit.XAirEditInteractorImpl
 import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
-import be.t_ars.xtouch.xctl.IXctlOutput
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
 import java.net.Inet4Address
 import javax.swing.JFrame
@@ -51,7 +49,7 @@ fun main() {
 	connection.addConnectionListener(ConnectionListener(ui::setConnected))
 
 	val xr18API = XR18API(xr18InetAddress)
-	val xTouchAddons = XTouchAddons(xr18API, connection.getOutput())
+	val xTouchAddons = XTouchAddon(xr18API, connection.getOutput())
 	connection.addXTouchListener(xTouchAddons)
 	ui.isVisible = true
 
