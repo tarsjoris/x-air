@@ -38,3 +38,6 @@ You still have the possibility to fine-tune the callibration.
 1. Confirm the settings.
 The X-Touch should now connect to this proxy-tool.
 This will be indicated by a green message *Connected*.
+
+To enable extra functions, add the line `addon.enable=true` to the file `~/xtouch/xr18.properties`.
+The buttons next to *Global view* function as mute buttons for the main outputs.

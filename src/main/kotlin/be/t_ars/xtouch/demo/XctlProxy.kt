@@ -1,7 +1,6 @@
 package be.t_ars.xtouch.demo
 
 import be.t_ars.xtouch.xctl.IXTouchListener
-import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
 import java.net.Inet4Address
 
@@ -25,7 +24,7 @@ private class DebugListener : IXTouchListener {
 
 fun main() {
 	val xairAddress = Inet4Address.getByName("192.168.0.238")
-	val connection: IXctlConnection = XctlConnectionImpl(xairAddress)
+	val connection = XctlConnectionImpl(xairAddress)
 	connection.addXTouchListener(DebugListener())
 	connection.run()
 }

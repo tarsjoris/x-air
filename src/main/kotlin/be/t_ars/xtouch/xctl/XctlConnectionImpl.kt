@@ -1,5 +1,6 @@
 package be.t_ars.xtouch.xctl
 
+import be.t_ars.xtouch.util.Listeners
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -15,7 +16,7 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 		}
 	}
 
-	private val listeners = mutableListOf<IXctlConnectionListener>()
+	private val listeners = Listeners<IXctlConnectionListener>()
 	private val fromXTouch = FromXTouch()
 	private val toXTouch = ToXTouch(this::sendToXTouch)
 
@@ -41,7 +42,7 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 	override fun getOutput(): IXctlOutput =
 		toXTouch
 
-	override fun run() {
+	fun run() {
 		timer.schedule(RunnableTimerTask(this::checkConnection), 0, 2_000)
 		if (proxyForXR18 == null) {
 			timer.schedule(RunnableTimerTask(this::sendHeartbeat), 0, 6_000)
@@ -50,63 +51,70 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 		val buffer = ByteArray(256)
 		val packet = DatagramPacket(buffer, buffer.size)
 		while (running.get()) {
-			socket.receive(packet)
-			synchronized(this) {
-				if (xTouchAddress == null && isXTouchHeartbeat(packet)) {
-					xTouchAddress = packet.address
-					if (proxyForXR18 == null) {
-						sendHeartbeat()
+			try {
+				socket.receive(packet)
+				synchronized(this) {
+					if (xTouchAddress == null && isXTouchHeartbeat(packet)) {
+						xTouchAddress = packet.address
+						if (proxyForXR18 == null) {
+							sendHeartbeat()
+						}
+					}
+					when (packet.address) {
+						xTouchAddress -> {
+							if (isXTouchHeartbeat(packet)) {
+								xTouchHeartbeatReceived()
+							} else {
+								printPacket("XTouch", packet)
+							}
+							fromXTouch.processPacket(packet)
+							if (proxyForXR18 != null) {
+								packet.address = proxyForXR18
+								socket.send(packet)
+							}
+						}
+						proxyForXR18 -> {
+							if (isXR18Heartbeat(packet)) {
+								xr18HeartbeatReceived()
+							} else {
+								printPacket("XR18", packet)
+							}
+							if (xTouchAddress != null) {
+								packet.address = xTouchAddress
+								socket.send(packet)
+							}
+						}
 					}
 				}
-				when (packet.address) {
-					xTouchAddress -> {
-						if (isXTouchHeartbeat(packet)) {
-							xTouchHeartbeatReceived()
-						} else {
-							if (DEBUG) printPacket("XTouch", packet)
-						}
-						fromXTouch.processPacket(packet)
-						if (proxyForXR18 != null) {
-							packet.address = proxyForXR18
-							socket.send(packet)
-						}
-					}
-					proxyForXR18 -> {
-						if (isXR18Heartbeat(packet)) {
-							xr18HeartbeatReceived()
-						} else {
-							if (DEBUG) printPacket("XR18", packet)
-						}
-						if (xTouchAddress != null) {
-							packet.address = xTouchAddress
-							socket.send(packet)
-						}
-					}
-				}
+			} catch (e: Exception) {
+				println("Exception while processing message: ${e.message}")
+				e.printStackTrace()
 			}
 		}
 		timer.cancel()
 	}
 
-	override fun stop() {
+	fun stop() {
 		running.set(false)
 	}
 
 	private fun sendToXTouch(payload: ByteArray) {
 		val packet = DatagramPacket(payload, 0, payload.size, xTouchAddress, PORT)
-		if (DEBUG) printPacket("To XTouch ", packet)
+		printPacket("To XTouch ", packet)
 		socket.send(packet)
 	}
 
 	private fun printPacket(from: String, packet: DatagramPacket) {
-		print("From $from ")
-		for (i in packet.offset until packet.offset + packet.length) {
-			val entry = packet.data[i]
-			val entryInt = entry.toInt()
-			val entryHex = String.format("%02X", entry)
-			print("$entryInt($entryHex) ")
+		if (DEBUG) {
+			print("From $from ")
+			for (i in packet.offset until packet.offset + packet.length) {
+				val entry = packet.data[i]
+				val entryInt = entry.toInt()
+				val entryHex = String.format("%02X", entry)
+				print("$entryInt($entryHex) ")
+			}
+			println()
 		}
-		println()
 	}
 
 	private fun xTouchHeartbeatReceived() {
@@ -134,7 +142,7 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 	private fun broadcastIfConnected() {
 		synchronized(this) {
 			if (xTouchConnected && (proxyForXR18 == null || xr18Connected)) {
-				broadcast(IXctlConnectionListener::connected)
+				listeners.broadcast(IXctlConnectionListener::connected)
 			}
 		}
 	}
@@ -157,13 +165,10 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 	private fun broadcastIfWillDisconnect() {
 		synchronized(this) {
 			if (xTouchConnected && (proxyForXR18 == null || xr18Connected)) {
-				broadcast(IXctlConnectionListener::disconnected)
+				listeners.broadcast(IXctlConnectionListener::disconnected)
 			}
 		}
 	}
-
-	private fun broadcast(eventSender: (IXctlConnectionListener) -> Unit) =
-		listeners.forEach(eventSender)
 
 	private fun sendHeartbeat() {
 		xTouchAddress?.also { address ->
@@ -177,7 +182,8 @@ class XctlConnectionImpl(private val proxyForXR18: InetAddress?) : IXctlConnecti
 		private const val PORT = 10111
 		private val XTOUCH_HEARTBEAT_PAYLOAD =
 			byteArrayOf(0xF0.toByte(), 0x00, 0x20, 0x32, 0x58, 0x54, 0x00, 0xF7.toByte())
-		private val XR18_HEARTBEAT_PAYLOAD = byteArrayOf(0xF0.toByte(), 0x00, 0x00, 0x66, 0x14, 0x00, 0XF7.toByte())
+		private val XR18_HEARTBEAT_PAYLOAD =
+			byteArrayOf(0xF0.toByte(), 0x00, 0x00, 0x66, 0x14, 0x00, 0XF7.toByte())
 
 		private fun isXTouchHeartbeat(packet: DatagramPacket) =
 			matchesData(

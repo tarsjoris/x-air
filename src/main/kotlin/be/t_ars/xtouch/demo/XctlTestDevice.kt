@@ -1,7 +1,6 @@
 package be.t_ars.xtouch.demo
 
 import be.t_ars.xtouch.xctl.IXTouchListener
-import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlOutput
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
 import kotlinx.coroutines.delay
@@ -91,7 +90,7 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 }
 
 fun main() {
-	val connection: IXctlConnection = XctlConnectionImpl()
+	val connection = XctlConnectionImpl()
 	connection.addXTouchListener(Listener(connection.getOutput()))
 	connection.run()
 }

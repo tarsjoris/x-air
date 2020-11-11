@@ -1,7 +1,6 @@
 package be.t_ars.xtouch.games
 
 import be.t_ars.xtouch.xctl.IXTouchListener
-import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.IXctlOutput
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
@@ -9,7 +8,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 private val playerChannels = arrayOf(1, 8)
 private val channelButtonTypes = arrayOf(
@@ -150,7 +148,6 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 	private fun setBall(on: Boolean) =
 		setBallMode(if (on) IXctlOutput.ELEDMode.ON else IXctlOutput.ELEDMode.OFF)
 
-
 	private fun blinkBall() =
 		setBallMode(IXctlOutput.ELEDMode.FLASH)
 
@@ -159,7 +156,7 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 }
 
 fun main() {
-	val connection: IXctlConnection = XctlConnectionImpl()
+	val connection = XctlConnectionImpl()
 	val listener = PongListener(connection.getOutput())
 	connection.addConnectionListener(listener)
 	connection.addXTouchListener(listener)

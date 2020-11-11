@@ -1,7 +1,6 @@
 package be.t_ars.xtouch.games
 
 import be.t_ars.xtouch.xctl.IXTouchListener
-import be.t_ars.xtouch.xctl.IXctlConnection
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.IXctlOutput
 import be.t_ars.xtouch.xctl.XctlConnectionImpl
@@ -336,7 +335,7 @@ private class WhackAMoleListener(private val output: IXctlOutput) : IXctlConnect
 }
 
 fun main() {
-	val connection: IXctlConnection = XctlConnectionImpl()
+	val connection = XctlConnectionImpl()
 	val listener = WhackAMoleListener(connection.getOutput())
 	connection.addConnectionListener(listener)
 	connection.addXTouchListener(listener)

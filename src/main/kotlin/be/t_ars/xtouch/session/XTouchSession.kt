@@ -1,5 +1,6 @@
 package be.t_ars.xtouch.session
 
+import be.t_ars.xtouch.util.Listeners
 import be.t_ars.xtouch.xctl.IXTouchListener
 
 class XTouchSession : IXTouchListener {
@@ -24,7 +25,7 @@ class XTouchSession : IXTouchListener {
 	private var currentChannel = 1
 	private var currentBank = 1
 	private var currentEffectSettings: Int? = null
-	private val listeners = mutableListOf<IXTouchSessionListener>()
+	private val listeners = Listeners<IXTouchSessionListener>()
 
 	fun addListener(listener: IXTouchSessionListener) =
 		listeners.add(listener)
@@ -224,7 +225,7 @@ class XTouchSession : IXTouchListener {
 
 	private suspend fun setEffectsSettings(effectsSettings: Int?) {
 		currentEffectSettings = effectsSettings
-		broadcast { it.effectsSettingsChanged(currentEffectSettings) }
+		listeners.broadcastSuspend { it.effectsSettingsChanged(currentEffectSettings) }
 	}
 
 	private suspend fun selectFx(fx: Int) {
@@ -265,7 +266,7 @@ class XTouchSession : IXTouchListener {
 	}
 
 	private suspend fun broadcastSelectionChanged() =
-		broadcast {
+		listeners.broadcastSuspend {
 			it.selectionChanged(
 				currentOutput,
 				currentChannel,
@@ -276,12 +277,6 @@ class XTouchSession : IXTouchListener {
 
 	private suspend fun resetOutput() =
 		selectOutput(OUTPUT_MAINLR)
-
-	private suspend fun broadcast(eventSender: suspend (IXTouchSessionListener) -> Unit) {
-		for (l in listeners) {
-			eventSender.invoke(l)
-		}
-	}
 
 	companion object {
 		private const val CHANNEL_COUNT = 16

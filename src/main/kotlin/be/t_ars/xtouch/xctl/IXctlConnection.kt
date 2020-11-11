@@ -4,6 +4,4 @@ interface IXctlConnection {
 	fun addConnectionListener(listener: IXctlConnectionListener)
 	fun addXTouchListener(listener: IXTouchListener)
 	fun getOutput(): IXctlOutput
-	fun run()
-	fun stop()
 }
