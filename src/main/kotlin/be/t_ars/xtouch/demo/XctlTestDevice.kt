@@ -1,32 +1,44 @@
 package be.t_ars.xtouch.demo
 
+import be.t_ars.xtouch.xctl.EButton
+import be.t_ars.xtouch.xctl.EChannelButton
+import be.t_ars.xtouch.xctl.ELEDMode
+import be.t_ars.xtouch.xctl.EScribbleColor
+import be.t_ars.xtouch.xctl.FADER_POSIION_RANGE
+import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchListener
-import be.t_ars.xtouch.xctl.IXctlOutput
-import be.t_ars.xtouch.xctl.XctlConnectionImpl
+import be.t_ars.xtouch.xctl.XctlConnectionStub
+import be.t_ars.xtouch.xctl.toFaderPercentage
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.roundToInt
 
-private class Listener(val output: IXctlOutput) : IXTouchListener {
-	override suspend fun channelSelectPressed(channel: Int) {
+private class Listener(val output: IConnectionToXTouch) : IXTouchListener {
+	override fun channelSelectPressedDown(channel: Int) {
 		output.setDigits(channel)
 		output.setMeter(channel, 8)
 	}
 
-	override suspend fun faderMoved(channel: Int, position: Float) {
+	override fun faderMoved(channel: Int, position: Int) {
 		when (channel) {
-			in 1..2 -> output.setLEDRing(channel, (position * 12).toInt())
-			in 3..4 -> output.setLEDRingWithHalves(channel, (position * 24).toInt())
-			in 5..6 -> output.setLEDRingContinuous(channel, (position * 12).toInt())
-			in 7..8 -> output.setLEDRingLeftRight(channel, (position * 12).toInt() - 6)
+			in 1..2 -> output.setLEDRingSingle(channel, (toFaderPercentage(position) * 12).toInt())
+			in 3..4 -> output.setLEDRingWithHalves(channel, (toFaderPercentage(position) * 24).toInt())
+			in 5..6 -> output.setLEDRingContinuous(channel, (toFaderPercentage(position) * 12).toInt())
+			in 7..8 -> output.setLEDRingLeftRight(
+				channel,
+				(toFaderPercentage(position) * 12).toInt() - 6
+			)
 		}
 	}
 
-	override suspend fun mainFaderMoved(position: Float) {
-		output.setFaderPosition(1, position)
+	override fun mainFaderMoved(position: Int) {
+		output.setChannelFaderPosition(1, position)
 	}
 
-	override suspend fun flipPressed() {
+	override fun flipPressedDown() {
 		animateFadersSine { it > 0 }
 		for (j in 1..2) {
 			animateFadersSine()
@@ -34,63 +46,68 @@ private class Listener(val output: IXctlOutput) : IXTouchListener {
 		animateFadersSine { it <= 0 }
 	}
 
-	private suspend fun animateFadersSine(predicate: (Float) -> Boolean = { true }) {
-		for (i in 1..360) {
-			for (channel in 0..8) {
-				val angleDegrees = i.toFloat() - (channel.toFloat() / 9F) * 360F
-				if (predicate.invoke(angleDegrees)) {
-					val angle = angleDegrees / 360F * 2 * PI
-					val position = (1F - cos(angle).toFloat()) / 2F
-					if (channel < 8) {
-						output.setFaderPosition(channel + 1, position)
-					} else {
-						output.setMainFaderPosition(position)
+	private fun animateFadersSine(predicate: (Float) -> Boolean = { true }) {
+		GlobalScope.launch {
+			for (i in 1..360) {
+				for (channel in 0..8) {
+					val angleDegrees = i.toFloat() - (channel.toFloat() / 9F) * 360F
+					if (predicate.invoke(angleDegrees)) {
+						val angle = angleDegrees / 360F * 2 * PI
+						val fraction = (1F - cos(angle).toFloat()) / 2F
+						val position = fraction.times(FADER_POSIION_RANGE.last).roundToInt()
+						if (channel < 8) {
+							output.setChannelFaderPosition(channel + 1, position)
+						} else {
+							output.setMainFaderPosition(position)
+						}
 					}
 				}
+				delay(10)
 			}
-			delay(10)
 		}
 	}
 
-	override suspend fun globalViewPressed() {
-		setChannelButtonsLEDS(IXctlOutput.ELEDMode.ON)
-		delay(1000)
-		setChannelButtonsLEDS(IXctlOutput.ELEDMode.FLASH)
-		delay(2000)
-		setChannelButtonsLEDS(IXctlOutput.ELEDMode.OFF)
-		setButtonLEDS(IXctlOutput.ELEDMode.ON)
-		delay(1000)
-		setButtonLEDS(IXctlOutput.ELEDMode.FLASH)
-		delay(2000)
-		setButtonLEDS(IXctlOutput.ELEDMode.OFF)
+	override fun globalViewPressedDown() {
+		GlobalScope.launch {
+			setChannelButtonsLEDS(ELEDMode.ON)
+			delay(1000)
+			setChannelButtonsLEDS(ELEDMode.FLASH)
+			delay(2000)
+			setChannelButtonsLEDS(ELEDMode.OFF)
+			setButtonLEDS(ELEDMode.ON)
+			delay(1000)
+			setButtonLEDS(ELEDMode.FLASH)
+			delay(2000)
+			setButtonLEDS(ELEDMode.OFF)
+		}
 	}
 
-	private suspend fun setChannelButtonsLEDS(mode: IXctlOutput.ELEDMode) {
+	private suspend fun setChannelButtonsLEDS(mode: ELEDMode) {
 		for (channel in 1..8) {
-			for (button in IXctlOutput.EChannelButton.values()) {
+			for (button in EChannelButton.values()) {
 				output.setChannelButtonLED(channel, button, mode)
 				delay(20)
 			}
 		}
 	}
 
-	private suspend fun setButtonLEDS(mode: IXctlOutput.ELEDMode) {
-		for (button in IXctlOutput.EButton.values()) {
+	private suspend fun setButtonLEDS(mode: ELEDMode) {
+		for (button in EButton.values()) {
 			output.setButtonLED(button, mode)
 			delay(20)
 		}
 	}
 
-	override suspend fun knobPressed(knob: Int) {
+	override fun knobPressedDown(knob: Int) {
 		when (knob) {
-			1 -> output.setScribbleTrip(1, IXctlOutput.EScribbleColor.BLUE, false, "Kotlin", " Rules")
-			2 -> output.setScribbleTrip(2, IXctlOutput.EScribbleColor.RED, true, "Button", "   2")
+			1 -> output.setScribbleTrip(1, EScribbleColor.BLUE, false, "Kotlin", " Rules")
+			2 -> output.setScribbleTrip(2, EScribbleColor.RED, true, "Button", "   2")
 		}
 	}
 }
 
 fun main() {
-	val connection = XctlConnectionImpl()
-	connection.addXTouchListener(Listener(connection.getOutput()))
+	val connection = XctlConnectionStub()
+	connection.addXTouchListener(Listener(connection.getConnectionToXTouch()))
 	connection.run()
 }

@@ -1,77 +1,85 @@
 package be.t_ars.xtouch.xairedit
 
 import be.t_ars.xtouch.session.IXTouchSessionListener
-import be.t_ars.xtouch.session.XTouchSession
+import be.t_ars.xtouch.session.XTouchSessionState
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class XAirEditController(private val interactor: IXAirEditInteractor) :
 	IXTouchSessionListener {
-	override suspend fun selectionChanged(
+	override fun selectionChanged(
 		output: Int,
 		channel: Int,
-		encoder: XTouchSession.EEncoder?,
-		dynamicEncoder: XTouchSession.EDynamicEncoder
-	) =
-		selectChannel(output, channel, encoder, dynamicEncoder)
+		encoder: XTouchSessionState.EEncoder?,
+		dynamicEncoder: XTouchSessionState.EDynamicEncoder
+	) {
+		GlobalScope.launch {
+			selectChannel(output, channel, encoder, dynamicEncoder)
+		}
+	}
 
-	override suspend fun effectsSettingsChanged(effectsSettings: Int?) =
+	override fun effectsSettingsChanged(effectsSettings: Int?) =
 		selectEffectSettings(effectsSettings)
 
 	private suspend fun selectChannel(
 		output: Int,
 		channel: Int,
-		encoder: XTouchSession.EEncoder?,
-		dynamicEncoder: XTouchSession.EDynamicEncoder
+		encoder: XTouchSessionState.EEncoder?,
+		dynamicEncoder: XTouchSessionState.EDynamicEncoder
 	) {
 		when (output) {
-			XTouchSession.OUTPUT_MAINLR -> {
+			XTouchSessionState.OUTPUT_MAINLR -> {
 				when (channel) {
-					in XTouchSession.CHANNEL_BUS1..XTouchSession.CHANNEL_BUS6 ->
-						interactor.clickBus(channel - XTouchSession.CHANNEL_BUS1 + 1)
-					in XTouchSession.CHANNEL_FX1..XTouchSession.CHANNEL_FX4 ->
-						interactor.clickFx(channel - XTouchSession.CHANNEL_FX1 + 1)
+					in XTouchSessionState.CHANNEL_BUS1..XTouchSessionState.CHANNEL_BUS6 ->
+						interactor.clickBus(channel - XTouchSessionState.CHANNEL_BUS1 + 1)
+					in XTouchSessionState.CHANNEL_FX1..XTouchSessionState.CHANNEL_FX4 ->
+						interactor.clickFx(channel - XTouchSessionState.CHANNEL_FX1 + 1)
 					else ->
 						interactor.clickMainLR()
 				}
 				selectEncoder(encoder, dynamicEncoder)
 			}
-			in XTouchSession.OUTPUT_FX1..XTouchSession.OUTPUT_FX4 -> {
-				interactor.clickFx(output - XTouchSession.OUTPUT_FX1 + 1)
+			in XTouchSessionState.OUTPUT_FX1..XTouchSessionState.OUTPUT_FX4 -> {
+				interactor.clickFx(output - XTouchSessionState.OUTPUT_FX1 + 1)
 				interactor.clickTab(IXAirEditInteractor.ETab.MIXER)
 			}
-			in XTouchSession.OUTPUT_BUS1..XTouchSession.OUTPUT_BUS6 -> {
-				interactor.clickBus(output - XTouchSession.OUTPUT_BUS1 + 1)
+			in XTouchSessionState.OUTPUT_BUS1..XTouchSessionState.OUTPUT_BUS6 -> {
+				interactor.clickBus(output - XTouchSessionState.OUTPUT_BUS1 + 1)
 				interactor.clickTab(IXAirEditInteractor.ETab.MIXER)
 			}
 		}
 		when (channel) {
 			in 1..CHANNEL_COUNT ->
 				interactor.clickChannel(channel)
-			XTouchSession.CHANNEL_AUX ->
+			XTouchSessionState.CHANNEL_AUX ->
 				interactor.clickAux()
-			in XTouchSession.CHANNEL_RTN1..XTouchSession.CHANNEL_RTN4 ->
-				interactor.clickRtn(channel - XTouchSession.CHANNEL_RTN1 + 1)
+			in XTouchSessionState.CHANNEL_RTN1..XTouchSessionState.CHANNEL_RTN4 ->
+				interactor.clickRtn(channel - XTouchSessionState.CHANNEL_RTN1 + 1)
 			else ->
 				interactor.clickMainFader()
 		}
 	}
 
-	private suspend fun selectEncoder(encoder: XTouchSession.EEncoder?, dynamicEncoder: XTouchSession.EDynamicEncoder) =
+	private suspend fun selectEncoder(
+		encoder: XTouchSessionState.EEncoder?,
+		dynamicEncoder: XTouchSessionState.EDynamicEncoder
+	) =
 		interactor.clickTab(
 			when (encoder) {
-				XTouchSession.EEncoder.BUS -> IXAirEditInteractor.ETab.SENDS
-				XTouchSession.EEncoder.FX -> IXAirEditInteractor.ETab.SENDS
-				XTouchSession.EEncoder.EQ -> IXAirEditInteractor.ETab.EQ
-				XTouchSession.EEncoder.DYNAMIC ->
+				XTouchSessionState.EEncoder.BUS -> IXAirEditInteractor.ETab.SENDS
+				XTouchSessionState.EEncoder.FX -> IXAirEditInteractor.ETab.SENDS
+				XTouchSessionState.EEncoder.EQ -> IXAirEditInteractor.ETab.EQ
+				XTouchSessionState.EEncoder.DYNAMIC ->
 					when (dynamicEncoder) {
-						XTouchSession.EDynamicEncoder.GATE -> IXAirEditInteractor.ETab.GATE
-						XTouchSession.EDynamicEncoder.COMPRESSOR -> IXAirEditInteractor.ETab.COMP
-						XTouchSession.EDynamicEncoder.AUTOMIX -> IXAirEditInteractor.ETab.MAIN
+						XTouchSessionState.EDynamicEncoder.GATE -> IXAirEditInteractor.ETab.GATE
+						XTouchSessionState.EDynamicEncoder.COMPRESSOR -> IXAirEditInteractor.ETab.COMP
+						XTouchSessionState.EDynamicEncoder.AUTOMIX -> IXAirEditInteractor.ETab.MAIN
 					}
 				else -> IXAirEditInteractor.ETab.MIXER
 			}
 		)
 
-	private suspend fun selectEffectSettings(effectsSettings: Int?) {
+	private fun selectEffectSettings(effectsSettings: Int?) {
 		if (effectsSettings == null) {
 			interactor.closeDialog()
 		} else {
@@ -83,3 +91,4 @@ class XAirEditController(private val interactor: IXAirEditInteractor) :
 		private const val CHANNEL_COUNT = 16
 	}
 }
+

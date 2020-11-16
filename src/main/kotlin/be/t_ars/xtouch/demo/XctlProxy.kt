@@ -1,30 +1,30 @@
 package be.t_ars.xtouch.demo
 
 import be.t_ars.xtouch.xctl.IXTouchListener
-import be.t_ars.xtouch.xctl.XctlConnectionImpl
+import be.t_ars.xtouch.xctl.XctlConnectionProxy
 import java.net.Inet4Address
 
 private class DebugListener : IXTouchListener {
-	override suspend fun channelRecPressed(channel: Int) {
+	override fun channelRecPressedDown(channel: Int) {
 		println("Channel $channel rec")
 	}
 
-	override suspend fun channelSoloPressed(channel: Int) {
+	override fun channelSoloPressedDown(channel: Int) {
 		println("Channel $channel solo")
 	}
 
-	override suspend fun channelSelectPressed(channel: Int) {
+	override fun channelSelectPressedDown(channel: Int) {
 		println("Channel $channel select")
 	}
 
-	override suspend fun channelMutePressed(channel: Int) {
+	override fun channelMutePressedDown(channel: Int) {
 		println("Channel $channel mute")
 	}
 }
 
 fun main() {
 	val xairAddress = Inet4Address.getByName("192.168.0.238")
-	val connection = XctlConnectionImpl(xairAddress)
+	val connection = XctlConnectionProxy(xairAddress)
 	connection.addXTouchListener(DebugListener())
 	connection.run()
 }

@@ -11,7 +11,7 @@ class SelectFxOutputTest {
 				1,
 				XAirEditInteractorMock.OUTPUT_FX1 + fx - 1
 			) {
-				it.modifyPressed(fx)
+				it.modifyPressed(fx, true)
 			}
 		}
 	}
@@ -22,11 +22,11 @@ class SelectFxOutputTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.modifyPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.modifyPressed(1, true)
 		}
 	}
 
@@ -36,8 +36,8 @@ class SelectFxOutputTest {
 			5,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.channelSelectPressed(5)
-			it.modifyPressed(1)
+			it.channelSelectPressed(5, true)
+			it.modifyPressed(1, true)
 		}
 	}
 
@@ -48,8 +48,8 @@ class SelectFxOutputTest {
 			XAirEditInteractorMock.OUTPUT_FX1,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderEqPressed()
-			it.modifyPressed(1)
+			it.encoderEqPressed(true)
+			it.modifyPressed(1, true)
 		}
 	}
 
@@ -59,8 +59,8 @@ class SelectFxOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.modifyPressed(1)
-			it.modifyPressed(1)
+			it.modifyPressed(1, true)
+			it.modifyPressed(1, true)
 		}
 	}
 
@@ -71,9 +71,9 @@ class SelectFxOutputTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.EQ
 		) {
-			it.encoderEqPressed()
-			it.modifyPressed(1)
-			it.modifyPressed(1)
+			it.encoderEqPressed(true)
+			it.modifyPressed(1, true)
+			it.modifyPressed(1, true)
 		}
 	}
 
@@ -83,8 +83,8 @@ class SelectFxOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_FX2
 		) {
-			it.modifyPressed(1)
-			it.modifyPressed(2)
+			it.modifyPressed(1, true)
+			it.modifyPressed(2, true)
 		}
 	}
 
@@ -94,8 +94,8 @@ class SelectFxOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.automationPressed(1)
-			it.modifyPressed(1)
+			it.automationPressed(1, true)
+			it.modifyPressed(1, true)
 		}
 	}
 
@@ -105,10 +105,10 @@ class SelectFxOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.modifyPressed(1)
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
+			it.modifyPressed(1, true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
 		}
 	}
 
@@ -118,12 +118,12 @@ class SelectFxOutputTest {
 			2,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.modifyPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.modifyPressed(1, true)
 			// state resets to first bank
-			it.channelSelectPressed(2)
+			it.channelSelectPressed(2, true)
 		}
 	}
 
@@ -133,9 +133,9 @@ class SelectFxOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.encoderEqPressed()
-			it.modifyPressed(1)
-			it.nextBankPressed()
+			it.encoderEqPressed(true)
+			it.modifyPressed(1, true)
+			it.nextBankPressed(true)
 		}
 	}
 
@@ -145,12 +145,12 @@ class SelectFxOutputTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.modifyPressed(1)
-			it.modifyPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.modifyPressed(1, true)
+			it.modifyPressed(1, true)
 		}
 	}
 }

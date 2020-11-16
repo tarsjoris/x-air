@@ -22,6 +22,6 @@ interface IXAirEditInteractor {
 	suspend fun clickBus(bus: Int)
 	suspend fun clickFx(fx: Int)
 	suspend fun clickTab(tab: ETab)
-	suspend fun openEffectSettings(effect: Int)
-	suspend fun closeDialog()
+	fun openEffectSettings(effect: Int)
+	fun closeDialog()
 }

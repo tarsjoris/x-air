@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 private const val PORT = 10024
 
-private const val OUTPUT_COUNT = 6
-private const val CHANNEL_COUNT = 17;
-private const val AUX_CHANNEL = 17;
+private const val CHANNEL_COUNT = 17
+private const val AUX_CHANNEL = 17
+private const val BUS_COUNT = 6
 private const val DEBUG = false
 
 class XR18API(private val host: InetAddress) {
@@ -42,6 +42,10 @@ class XR18API(private val host: InetAddress) {
 				e.printStackTrace()
 			}
 		}
+	}
+
+	fun stop() {
+		running.set(false)
 	}
 
 	private fun processPacket(packet: IOSCPacket) {
@@ -99,11 +103,15 @@ class XR18API(private val host: InetAddress) {
 		}
 	}
 
-	fun requestBusMixOn(bus: Int) =
+	fun requestBusMixOn(bus: Int) {
+		validateBus(bus)
 		send("/bus/$bus/mix/on")
+	}
 
-	fun setBusMixOn(bus: Int, on: Boolean) =
+	fun setBusMixOn(bus: Int, on: Boolean) {
+		validateBus(bus)
 		send("/bus/$bus/mix/on", OSCArgInt(if (on) 1 else 0))
+	}
 
 	fun requestLRMixOn() =
 		send("/lr/mix/on")
@@ -119,6 +127,12 @@ class XR18API(private val host: InetAddress) {
 		printPacket(payload)
 		socket.send(DatagramPacket(payload, payload.size, host, PORT))
 	}
+
+	private fun validateChannel(channel: Int) =
+		assert(channel in 1..CHANNEL_COUNT)
+
+	private fun validateBus(bus: Int) =
+		assert(bus in 1..BUS_COUNT)
 
 	private fun pad(number: Int) =
 		number.toString().padStart(2, '0')

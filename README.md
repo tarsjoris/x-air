@@ -1,6 +1,8 @@
 # XTouch
 
 A JVM (Kotlin) proxy-tool that sits between a Behringer X-Touch controller and a Behringer X-Air XR18 digital mixer.
+It monitors what buttons are clicked on the X-Touch,
+and controls the X-Air-Edit app.
 
 ## Purpose
 
@@ -11,7 +13,7 @@ you have to manually select that channel and the EQ tab in X-Air-Edit.
 
 This proxy-tool looks at all the buttons that are pressed on the X-Touch,
 and clicks the matching button in the X-Air-Edit app so that the relevant parts are visible.
-The X-Air-Edit app now "follows" what the X-Touch.
+The X-Air-Edit app now "follows" the X-Touch.
 
 ## Usage
 
@@ -39,5 +41,12 @@ You still have the possibility to fine-tune the callibration.
 The X-Touch should now connect to this proxy-tool.
 This will be indicated by a green message *Connected*.
 
-To enable extra functions, add the line `addon.enable=true` to the file `~/xtouch/xr18.properties`.
-The buttons next to *Global view* function as mute buttons for the main outputs.
+## Addon
+
+To enable extra functions, add the line `addon.enabled=true` to the file `~/xtouch/xr18.properties`.
+
+Add these lines to enable the features
+* `addon.mute-buttons=true`
+    * The buttons next to *Global view* will function as mute buttons for the output channels.
+* `addon.channel-name=true`
+    * The channel names will be displayed when an output bus is selected.

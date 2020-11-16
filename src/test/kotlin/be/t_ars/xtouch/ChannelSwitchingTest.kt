@@ -10,7 +10,7 @@ class ChannelSwitchingTest {
 				channel,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.channelSelectPressed(channel)
+				it.channelSelectPressed(channel, true)
 			}
 		}
 	}
@@ -22,8 +22,8 @@ class ChannelSwitchingTest {
 				channel + 8,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.nextBankPressed()
-				it.channelSelectPressed(channel)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(channel, true)
 			}
 		}
 	}
@@ -34,9 +34,9 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_AUX,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
 		}
 	}
 
@@ -47,9 +47,9 @@ class ChannelSwitchingTest {
 				XAirEditInteractorMock.CHANNEL_RTN1 + rtn - 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(4 + rtn)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(4 + rtn, true)
 			}
 		}
 	}
@@ -61,10 +61,10 @@ class ChannelSwitchingTest {
 				XAirEditInteractorMock.CHANNEL_MAIN,
 				XAirEditInteractorMock.OUTPUT_BUS1 + bus - 1
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(bus)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(bus, true)
 			}
 		}
 	}
@@ -75,10 +75,10 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(8)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(8, true)
 		}
 	}
 
@@ -89,11 +89,11 @@ class ChannelSwitchingTest {
 				XAirEditInteractorMock.CHANNEL_MAIN,
 				XAirEditInteractorMock.OUTPUT_FX1 + fx - 1
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(fx)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(fx, true)
 			}
 		}
 	}
@@ -105,8 +105,8 @@ class ChannelSwitchingTest {
 				channel + 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.channelSelectPressed(channel)
-				it.nextChannelPressed()
+				it.channelSelectPressed(channel, true)
+				it.nextChannelPressed(true)
 			}
 		}
 	}
@@ -118,9 +118,9 @@ class ChannelSwitchingTest {
 				channel + 8 + 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.nextBankPressed()
-				it.channelSelectPressed(channel)
-				it.nextChannelPressed()
+				it.nextBankPressed(true)
+				it.channelSelectPressed(channel, true)
+				it.nextChannelPressed(true)
 			}
 		}
 		// from channel16 to aux
@@ -128,9 +128,9 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_AUX,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.channelSelectPressed(8)
-			it.nextChannelPressed()
+			it.nextBankPressed(true)
+			it.channelSelectPressed(8, true)
+			it.nextChannelPressed(true)
 		}
 	}
 
@@ -141,10 +141,10 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_RTN1,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.nextChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.nextChannelPressed(true)
 		}
 	}
 
@@ -155,10 +155,10 @@ class ChannelSwitchingTest {
 				XAirEditInteractorMock.CHANNEL_RTN1 + rtn - 1 + 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(4 + rtn)
-				it.nextChannelPressed()
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(4 + rtn, true)
+				it.nextChannelPressed(true)
 			}
 		}
 		// from rtn4 to bus1
@@ -166,10 +166,10 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(8)
-			it.nextChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(8, true)
+			it.nextChannelPressed(true)
 		}
 	}
 
@@ -180,11 +180,11 @@ class ChannelSwitchingTest {
 				XAirEditInteractorMock.CHANNEL_MAIN,
 				XAirEditInteractorMock.OUTPUT_BUS1 + bus - 1 + 1
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(bus)
-				it.nextChannelPressed()
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(bus, true)
+				it.nextChannelPressed(true)
 			}
 		}
 		// from bus6 to fx1
@@ -192,11 +192,11 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(6)
-			it.nextChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(6, true)
+			it.nextChannelPressed(true)
 		}
 	}
 
@@ -207,12 +207,12 @@ class ChannelSwitchingTest {
 				XAirEditInteractorMock.CHANNEL_MAIN,
 				XAirEditInteractorMock.OUTPUT_FX1 + fx - 1 + 1
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(fx)
-				it.nextChannelPressed()
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(fx, true)
+				it.nextChannelPressed(true)
 			}
 		}
 		// from fx4 to main
@@ -220,12 +220,12 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(4)
-			it.nextChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(4, true)
+			it.nextChannelPressed(true)
 		}
 	}
 
@@ -236,11 +236,11 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(8)
-			it.nextChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(8, true)
+			it.nextChannelPressed(true)
 		}
 	}
 
@@ -251,16 +251,16 @@ class ChannelSwitchingTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.channelSelectPressed(1)
-			it.previousChannelPressed()
+			it.channelSelectPressed(1, true)
+			it.previousChannelPressed(true)
 		}
 		for (channel in 2..8) {
 			performTest(
 				channel - 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.channelSelectPressed(channel)
-				it.previousChannelPressed()
+				it.channelSelectPressed(channel, true)
+				it.previousChannelPressed(true)
 			}
 		}
 	}
@@ -272,9 +272,9 @@ class ChannelSwitchingTest {
 				channel + 8 - 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.nextBankPressed()
-				it.channelSelectPressed(channel)
-				it.previousChannelPressed()
+				it.nextBankPressed(true)
+				it.channelSelectPressed(channel, true)
+				it.previousChannelPressed(true)
 			}
 		}
 	}
@@ -286,10 +286,10 @@ class ChannelSwitchingTest {
 			16,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.previousChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.previousChannelPressed(true)
 		}
 	}
 
@@ -300,20 +300,20 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_AUX,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(5)
-			it.previousChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(5, true)
+			it.previousChannelPressed(true)
 		}
 		for (rtn in 2..4) {
 			performTest(
 				XAirEditInteractorMock.CHANNEL_RTN1 + rtn - 1 - 1,
 				XAirEditInteractorMock.OUTPUT_MAINLR
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(4 + rtn)
-				it.previousChannelPressed()
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(4 + rtn, true)
+				it.previousChannelPressed(true)
 			}
 		}
 	}
@@ -325,22 +325,22 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_RTN4,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.previousChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.previousChannelPressed(true)
 		}
 		for (bus in 2..6) {
 			performTest(
 				XAirEditInteractorMock.CHANNEL_MAIN,
 				XAirEditInteractorMock.OUTPUT_BUS1 + bus - 1 - 1
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(bus)
-				it.previousChannelPressed()
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(bus, true)
+				it.previousChannelPressed(true)
 			}
 		}
 	}
@@ -352,24 +352,24 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_BUS6
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.previousChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.previousChannelPressed(true)
 		}
 		for (fx in 2..4) {
 			performTest(
 				XAirEditInteractorMock.CHANNEL_MAIN,
 				XAirEditInteractorMock.OUTPUT_FX1 + fx - 1 - 1
 			) {
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.nextBankPressed()
-				it.channelSelectPressed(fx)
-				it.previousChannelPressed()
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.nextBankPressed(true)
+				it.channelSelectPressed(fx, true)
+				it.previousChannelPressed(true)
 			}
 		}
 	}
@@ -381,11 +381,11 @@ class ChannelSwitchingTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_FX4
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(8)
-			it.previousChannelPressed()
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(8, true)
+			it.previousChannelPressed(true)
 		}
 	}
 }

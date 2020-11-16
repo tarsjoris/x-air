@@ -108,14 +108,17 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 		}
 	}
 
-	override suspend fun openEffectSettings(effect: Int) =
+	override fun openEffectSettings(effect: Int) =
 		keyPress(KeyEvent.VK_F1 + effect - 1)
 
-	override suspend fun closeDialog() =
+	override fun closeDialog() =
 		keyPress(KeyEvent.VK_ESCAPE)
 
 	private suspend fun click(x: Int, y: Int) {
-		robot.mouseMove(offsetX + (x.toFloat() * xFactor).roundToInt(), offsetY + (y.toFloat() * yFactor).roundToInt())
+		robot.mouseMove(
+			offsetX + (x.toFloat() * xFactor).roundToInt(),
+			offsetY + (y.toFloat() * yFactor).roundToInt()
+		)
 		delay(10)
 		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK)
 		delay(10)

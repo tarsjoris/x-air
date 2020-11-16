@@ -13,7 +13,7 @@ class EffectsSettingsTest {
 				IXAirEditInteractor.ETab.MIXER,
 				settings
 			) {
-				it.functionPressed(settings)
+				it.functionPressed(settings, true)
 			}
 		}
 	}
@@ -26,8 +26,8 @@ class EffectsSettingsTest {
 			IXAirEditInteractor.ETab.MIXER,
 			null
 		) {
-			it.functionPressed(1)
-			it.functionPressed(1)
+			it.functionPressed(1, true)
+			it.functionPressed(1, true)
 		}
 	}
 
@@ -39,8 +39,8 @@ class EffectsSettingsTest {
 			IXAirEditInteractor.ETab.MIXER,
 			2
 		) {
-			it.functionPressed(1)
-			it.functionPressed(2)
+			it.functionPressed(1, true)
+			it.functionPressed(2, true)
 		}
 	}
 
@@ -52,9 +52,9 @@ class EffectsSettingsTest {
 			IXAirEditInteractor.ETab.MIXER,
 			null
 		) {
-			it.encoderEqPressed()
-			it.functionPressed(1)
-			it.functionPressed(1)
+			it.encoderEqPressed(true)
+			it.functionPressed(1, true)
+			it.functionPressed(1, true)
 		}
 	}
 
@@ -66,11 +66,11 @@ class EffectsSettingsTest {
 			IXAirEditInteractor.ETab.COMP,
 			null
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed(true)
 			it.knobRotated(2, true)
-			it.functionPressed(1)
-			it.functionPressed(1)
-			it.encoderInstPressed()
+			it.functionPressed(1, true)
+			it.functionPressed(1, true)
+			it.encoderInstPressed(true)
 		}
 	}
 }

@@ -40,11 +40,11 @@ class XAirEditInteractorMock : IXAirEditInteractor {
 		currenTab = tab
 	}
 
-	override suspend fun openEffectSettings(effect: Int) {
+	override fun openEffectSettings(effect: Int) {
 		currentEffectsSettingsDialog = effect
 	}
 
-	override suspend fun closeDialog() {
+	override fun closeDialog() {
 		currentEffectsSettingsDialog = null
 	}
 

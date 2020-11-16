@@ -11,7 +11,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderTrackPressed()
+			it.encoderTrackPressed( true)
 		}
 	}
 	@Test
@@ -21,8 +21,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderTrackPressed()
-			it.encoderTrackPressed()
+			it.encoderTrackPressed( true)
+			it.encoderTrackPressed( true)
 		}
 	}
 
@@ -33,7 +33,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.SENDS
 		) {
-			it.encoderSendPressed()
+			it.encoderSendPressed( true)
 		}
 	}
 
@@ -44,8 +44,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderSendPressed()
-			it.encoderSendPressed()
+			it.encoderSendPressed( true)
+			it.encoderSendPressed( true)
 		}
 	}
 
@@ -56,7 +56,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderPanPressed()
+			it.encoderPanPressed( true)
 		}
 	}
 
@@ -67,8 +67,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderPanPressed()
-			it.encoderPanPressed()
+			it.encoderPanPressed( true)
+			it.encoderPanPressed( true)
 		}
 	}
 
@@ -79,7 +79,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.SENDS
 		) {
-			it.encoderPluginPressed()
+			it.encoderPluginPressed( true)
 		}
 	}
 
@@ -90,8 +90,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderPluginPressed()
-			it.encoderPluginPressed()
+			it.encoderPluginPressed( true)
+			it.encoderPluginPressed( true)
 		}
 	}
 
@@ -102,7 +102,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.EQ
 		) {
-			it.encoderEqPressed()
+			it.encoderEqPressed( true)
 		}
 	}
 
@@ -113,8 +113,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderEqPressed()
-			it.encoderEqPressed()
+			it.encoderEqPressed( true)
+			it.encoderEqPressed( true)
 		}
 	}
 
@@ -125,7 +125,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.GATE
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 		}
 	}
 
@@ -136,8 +136,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderInstPressed()
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
+			it.encoderInstPressed( true)
 		}
 	}
 
@@ -148,7 +148,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.COMP
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, true)
 		}
 	}
@@ -160,7 +160,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MAIN
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, true)
 			it.knobRotated(2, true)
 		}
@@ -173,7 +173,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.MAIN
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, true)
 			it.knobRotated(2, true)
 			it.knobRotated(2, true)
@@ -187,7 +187,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.GATE
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, false)
 		}
 	}
@@ -199,7 +199,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.GATE
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, true)
 			it.knobRotated(2, false)
 		}
@@ -212,7 +212,7 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.COMP
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, true)
 			it.knobRotated(2, true)
 			it.knobRotated(2, false)
@@ -226,10 +226,10 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.COMP
 		) {
-			it.encoderInstPressed()
+			it.encoderInstPressed( true)
 			it.knobRotated(2, true)
-			it.encoderEqPressed()
-			it.encoderInstPressed()
+			it.encoderEqPressed( true)
+			it.encoderInstPressed( true)
 		}
 	}
 
@@ -240,8 +240,8 @@ class SelectEncoderTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.EQ
 		) {
-			it.encoderSendPressed()
-			it.encoderEqPressed()
+			it.encoderSendPressed( true)
+			it.encoderEqPressed( true)
 		}
 	}
 }

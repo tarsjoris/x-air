@@ -1,9 +1,14 @@
 package be.t_ars.xtouch.games
 
+import be.t_ars.xtouch.xctl.EButton
+import be.t_ars.xtouch.xctl.EChannelButton
+import be.t_ars.xtouch.xctl.ELEDMode
+import be.t_ars.xtouch.xctl.EScribbleColor
+import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
-import be.t_ars.xtouch.xctl.IXctlOutput
-import be.t_ars.xtouch.xctl.XctlConnectionImpl
+import be.t_ars.xtouch.xctl.XctlConnectionStub
+import be.t_ars.xtouch.xctl.toFaderPercentage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -11,17 +16,17 @@ import kotlin.math.roundToInt
 
 private val playerChannels = arrayOf(1, 8)
 private val channelButtonTypes = arrayOf(
-	IXctlOutput.EChannelButton.SELECT,
-	IXctlOutput.EChannelButton.MUTE,
-	IXctlOutput.EChannelButton.SOLO,
-	IXctlOutput.EChannelButton.REC
+	EChannelButton.SELECT,
+	EChannelButton.MUTE,
+	EChannelButton.SOLO,
+	EChannelButton.REC
 )
 private const val FIELD_X_OFFSET = 2
 private const val FIELD_WIDTH = 6
 private const val FIELD_HEIGHT = 4
 private const val DELAY = 1000L
 
-private class PongListener(private val output: IXctlOutput) : IXctlConnectionListener, IXTouchListener {
+private class PongListener(private val output: IConnectionToXTouch) : IXctlConnectionListener, IXTouchListener {
 	val playerPositions = arrayOf(0, 0)
 	val playerScores = arrayOf(0, 0)
 	var playing = false
@@ -37,33 +42,33 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 			output.setChannelButtonLED(
 				playerChannels[player],
 				channelButtonTypes[playerPositions[player]],
-				IXctlOutput.ELEDMode.ON
+				ELEDMode.ON
 			)
 		}
-		output.setButtonLED(IXctlOutput.EButton.FLIP, IXctlOutput.ELEDMode.FLASH)
+		output.setButtonLED(EButton.FLIP, ELEDMode.FLASH)
 	}
 
-	override suspend fun flipPressed() {
-		if (!playing) {
+	override fun flipPressed(down: Boolean) {
+		if (down && !playing) {
 			startBall()
 		}
 	}
 
-	override suspend fun faderMoved(channel: Int, position: Float) {
+	override fun faderMoved(channel: Int, position: Int) {
 		if (channel in playerChannels) {
 			val player = playerChannels.indexOf(channel)
-			val button = (position * 3F).roundToInt()
+			val button = (toFaderPercentage(position) * 3F).roundToInt()
 			if (playerPositions[player] != button) {
 				output.setChannelButtonLED(
 					channel,
 					channelButtonTypes[playerPositions[player]],
-					IXctlOutput.ELEDMode.OFF
+					ELEDMode.OFF
 				)
 				playerPositions[player] = button
 				output.setChannelButtonLED(
 					channel,
 					channelButtonTypes[playerPositions[player]],
-					IXctlOutput.ELEDMode.ON
+					ELEDMode.ON
 				)
 			}
 		}
@@ -71,7 +76,7 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 
 	private fun startBall() {
 		GlobalScope.launch {
-			output.setButtonLED(IXctlOutput.EButton.FLIP, IXctlOutput.ELEDMode.OFF)
+			output.setButtonLED(EButton.FLIP, ELEDMode.OFF)
 			setBall(false)
 			right = true
 			up = true
@@ -80,11 +85,11 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 			playing = true
 			setBall(true)
 			for (player in 0..1) {
-				output.setScribbleTrip(playerChannels[player], IXctlOutput.EScribbleColor.WHITE, false, "", "")
+				output.setScribbleTrip(playerChannels[player], EScribbleColor.WHITE, false, "", "")
 				output.setChannelButtonLED(
 					playerChannels[player],
 					channelButtonTypes[playerPositions[player]],
-					IXctlOutput.ELEDMode.ON
+					ELEDMode.ON
 				)
 			}
 			while (playing) {
@@ -117,13 +122,13 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 	private fun endGame(winner: Int) {
 		playing = false
 		blinkBall()
-		output.setScribbleTrip(playerChannels[1 - winner], IXctlOutput.EScribbleColor.RED, true, "", "LOOSER")
-		output.setScribbleTrip(playerChannels[winner], IXctlOutput.EScribbleColor.GREEN, true, "", "WINNER")
+		output.setScribbleTrip(playerChannels[1 - winner], EScribbleColor.RED, true, "", "LOOSER")
+		output.setScribbleTrip(playerChannels[winner], EScribbleColor.GREEN, true, "", "WINNER")
 		++playerScores[winner]
 		for (player in 0..1) {
 			output.setLEDRingContinuous(playerChannels[player], playerScores[player] - 1)
 		}
-		output.setButtonLED(IXctlOutput.EButton.FLIP, IXctlOutput.ELEDMode.FLASH)
+		output.setButtonLED(EButton.FLIP, ELEDMode.FLASH)
 	}
 
 	private fun progressBall() {
@@ -146,18 +151,18 @@ private class PongListener(private val output: IXctlOutput) : IXctlConnectionLis
 	}
 
 	private fun setBall(on: Boolean) =
-		setBallMode(if (on) IXctlOutput.ELEDMode.ON else IXctlOutput.ELEDMode.OFF)
+		setBallMode(if (on) ELEDMode.ON else ELEDMode.OFF)
 
 	private fun blinkBall() =
-		setBallMode(IXctlOutput.ELEDMode.FLASH)
+		setBallMode(ELEDMode.FLASH)
 
-	private fun setBallMode(mode: IXctlOutput.ELEDMode) =
+	private fun setBallMode(mode: ELEDMode) =
 		output.setChannelButtonLED(FIELD_X_OFFSET + x, channelButtonTypes[y], mode)
 }
 
 fun main() {
-	val connection = XctlConnectionImpl()
-	val listener = PongListener(connection.getOutput())
+	val connection = XctlConnectionStub()
+	val listener = PongListener(connection.getConnectionToXTouch())
 	connection.addConnectionListener(listener)
 	connection.addXTouchListener(listener)
 	connection.run()

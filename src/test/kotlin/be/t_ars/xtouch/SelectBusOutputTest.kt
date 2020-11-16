@@ -11,7 +11,7 @@ class SelectBusOutputTest {
 				1,
 				XAirEditInteractorMock.OUTPUT_BUS1 + bus - 1
 			) {
-				it.automationPressed(bus)
+				it.automationPressed(bus, true)
 			}
 		}
 	}
@@ -22,12 +22,12 @@ class SelectBusOutputTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.automationPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.automationPressed(1, true)
 		}
 	}
 
@@ -37,8 +37,8 @@ class SelectBusOutputTest {
 			5,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.channelSelectPressed(5)
-			it.automationPressed(1)
+			it.channelSelectPressed(5, true)
+			it.automationPressed(1, true)
 		}
 	}
 
@@ -49,8 +49,8 @@ class SelectBusOutputTest {
 			XAirEditInteractorMock.OUTPUT_BUS1,
 			IXAirEditInteractor.ETab.MIXER
 		) {
-			it.encoderEqPressed()
-			it.automationPressed(1)
+			it.encoderEqPressed(true)
+			it.automationPressed(1, true)
 		}
 	}
 
@@ -60,8 +60,8 @@ class SelectBusOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.automationPressed(1)
-			it.automationPressed(1)
+			it.automationPressed(1, true)
+			it.automationPressed(1, true)
 		}
 	}
 
@@ -72,9 +72,9 @@ class SelectBusOutputTest {
 			XAirEditInteractorMock.OUTPUT_MAINLR,
 			IXAirEditInteractor.ETab.EQ
 		) {
-			it.encoderEqPressed()
-			it.automationPressed(1)
-			it.automationPressed(1)
+			it.encoderEqPressed(true)
+			it.automationPressed(1, true)
+			it.automationPressed(1, true)
 		}
 	}
 
@@ -84,8 +84,8 @@ class SelectBusOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_BUS2
 		) {
-			it.automationPressed(1)
-			it.automationPressed(2)
+			it.automationPressed(1, true)
+			it.automationPressed(2, true)
 		}
 	}
 
@@ -95,8 +95,8 @@ class SelectBusOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.modifyPressed(1)
-			it.automationPressed(1)
+			it.modifyPressed(1, true)
+			it.automationPressed(1, true)
 		}
 	}
 
@@ -106,10 +106,10 @@ class SelectBusOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_MAINLR
 		) {
-			it.automationPressed(1)
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
+			it.automationPressed(1, true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
 		}
 	}
 
@@ -119,12 +119,12 @@ class SelectBusOutputTest {
 			2,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.automationPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.automationPressed(1, true)
 			// state resets to first bank
-			it.channelSelectPressed(2)
+			it.channelSelectPressed(2, true)
 		}
 	}
 
@@ -134,9 +134,9 @@ class SelectBusOutputTest {
 			1,
 			XAirEditInteractorMock.OUTPUT_BUS1
 		) {
-			it.encoderEqPressed()
-			it.automationPressed(1)
-			it.nextBankPressed()
+			it.encoderEqPressed(true)
+			it.automationPressed(1, true)
+			it.nextBankPressed(true)
 		}
 	}
 
@@ -146,13 +146,13 @@ class SelectBusOutputTest {
 			XAirEditInteractorMock.CHANNEL_MAIN,
 			XAirEditInteractorMock.OUTPUT_FX1
 		) {
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.nextBankPressed()
-			it.channelSelectPressed(1)
-			it.automationPressed(1)
-			it.automationPressed(1)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.nextBankPressed(true)
+			it.channelSelectPressed(1, true)
+			it.automationPressed(1, true)
+			it.automationPressed(1, true)
 		}
 	}
 }
