@@ -43,11 +43,11 @@ internal class ConnectionWithXR18Impl(
 
 	private fun sendToXR18(payload: ByteArray) {
 		printPacket("To XR18 ", payload)
-		socket.send(DatagramPacket(payload, 0, payload.size, xr18Address, PORT))
+		socket.send(DatagramPacket(payload, 0, payload.size, xr18Address, XctlUtil.PORT))
 	}
 
 	private fun processPacket(packet: ByteArray) {
-		if (isXR18Heartbeat(packet)) {
+		if (XctlUtil.isXR18Heartbeat(packet)) {
 			heartbeatListener()
 		} else {
 			printPacket("From XR18", packet)

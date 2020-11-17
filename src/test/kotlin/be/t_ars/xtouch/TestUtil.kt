@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions
 fun performTest(
 	expectedChannel: Int,
 	expectedOutput: Int,
-	whenPart: suspend (IXTouchEvents) -> Unit
+	whenPart: (IXTouchEvents) -> Unit
 ) {
 	performTest(expectedChannel, expectedOutput, IXAirEditInteractor.ETab.MIXER, null, whenPart)
 }
@@ -19,7 +19,7 @@ fun performTest(
 	expectedChannel: Int,
 	expectedOutput: Int,
 	expectedTab: IXAirEditInteractor.ETab,
-	whenPart: suspend (IXTouchEvents) -> Unit
+	whenPart: (IXTouchEvents) -> Unit
 ) {
 	performTest(expectedChannel, expectedOutput, expectedTab, null, whenPart)
 }
@@ -29,14 +29,15 @@ fun performTest(
 	expectedOutput: Int,
 	expectedTab: IXAirEditInteractor.ETab,
 	expectedEffectsSettingsDialog: Int?,
-	whenPart: suspend (IXTouchEvents) -> Unit
+	whenPart: (IXTouchEvents) -> Unit
 ) {
 	val mock = XAirEditInteractorMock()
-	val controller = XAirEditController(mock)
-	val session = XTouchSessionState()
-	session.addListener(controller)
 
 	runBlocking {
+		val controller = XAirEditController(this, mock)
+		val session = XTouchSessionState()
+		session.addListener(controller)
+
 		whenPart.invoke(session)
 	}
 

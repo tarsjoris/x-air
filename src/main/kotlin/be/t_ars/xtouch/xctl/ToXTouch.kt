@@ -2,7 +2,7 @@ package be.t_ars.xtouch.xctl
 
 internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IConnectionToXTouch {
 	override fun sendHeartbeat() {
-		sendPayload(XR18_HEARTBEAT_PAYLOAD)
+		sendPayload(XctlUtil.XR18_HEARTBEAT_PAYLOAD)
 	}
 
 	override fun setButtonLEDs(buttonLEDEvents: Array<AbstractButtonLEDEvent>) {
@@ -138,21 +138,13 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IConnect
 				4 -> 0x58.toByte()
 				5 -> (0x20 + event.channel - 1).toByte()
 				6 ->
-					(when (event.color) {
-						EScribbleColor.RED -> 0x01
-						EScribbleColor.GREEN -> 0x02
-						EScribbleColor.YELLOW -> 0x03
-						EScribbleColor.BLUE -> 0x04
-						EScribbleColor.PINK -> 0x05
-						EScribbleColor.CYAN -> 0x06
-						EScribbleColor.WHITE -> 0x07
-					} + if (event.secondLineInverted) 0x40 else 0x00).toByte()
+					(event.color.ordinal + if (event.secondLineInverted) 0x40 else 0x00).toByte()
 				in 7..13 -> {
 					val charIndex = offset - 7
 					if (charIndex < event.line1.length) {
 						event.line1[charIndex].toByte()
 					} else {
-						0x20.toByte()
+						0x00.toByte()
 					}
 				}
 				in 14..20 -> {
@@ -160,7 +152,7 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IConnect
 					if (charIndex < event.line2.length) {
 						event.line2[charIndex].toByte()
 					} else {
-						0x20.toByte()
+						0x00.toByte()
 					}
 				}
 				else -> 0xF7.toByte()

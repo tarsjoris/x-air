@@ -1,6 +1,6 @@
 package be.t_ars.xtouch.util
 
-import be.t_ars.xtouch.xctl.DEBUG
+import be.t_ars.xtouch.xctl.XctlUtil
 
 fun matchesData(actual: ByteArray, expected: ByteArray): Boolean {
 	if (actual.size != expected.size) {
@@ -15,7 +15,7 @@ fun matchesData(actual: ByteArray, expected: ByteArray): Boolean {
 }
 
 fun printPacket(from: String, packet: ByteArray) {
-	if (DEBUG) {
+	if (XctlUtil.DEBUG) {
 		doPrintPacket(from, packet)
 	}
 }
@@ -28,7 +28,7 @@ private fun doPrintPacket(label: String, packet: ByteArray) {
 	print("$label: ")
 	for (i in packet.indices) {
 		val entry = packet[i]
-		val entryInt = entry.toUByte().toInt()
+		val entryInt = entry.toInt() and 0xFF
 		val entryHex = String.format("%02X", entry)
 		print("$entryInt(0x$entryHex) ")
 	}

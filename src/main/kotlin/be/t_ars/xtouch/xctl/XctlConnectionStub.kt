@@ -57,7 +57,7 @@ open class XctlConnectionStub {
 		GlobalScope.launch {
 			while (running.get()) {
 				connectionWithXTouch.getConnectionToXTouch().sendHeartbeat()
-				delay(HEARTBEAT_INTERVAL)
+				delay(XctlUtil.HEARTBEAT_INTERVAL)
 			}
 		}
 	}
@@ -73,7 +73,7 @@ open class XctlConnectionStub {
 
 	protected open fun checkConnection() {
 		synchronized(connectionLock) {
-			if (xTouchConnected && System.currentTimeMillis() - lastXTouchHeartbeat > HEARTBEAT_TIMEOUT) {
+			if (xTouchConnected && System.currentTimeMillis() - lastXTouchHeartbeat > XctlUtil.HEARTBEAT_TIMEOUT) {
 				println("XTouch disconnected")
 				broadcastIfWillDisconnect()
 				xTouchConnected = false

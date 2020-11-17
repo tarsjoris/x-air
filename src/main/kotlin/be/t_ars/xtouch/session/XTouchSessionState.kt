@@ -19,12 +19,19 @@ class XTouchSessionState : IXTouchListener {
 		AUTOMIX
 	}
 
-	private var currentOutput = OUTPUT_MAINLR
-	private var currentEncoder: EEncoder? = null
-	private var currentDynamicEncoder = 0
-	private var currentChannel = 1
-	private var currentBank = 1
-	private var currentEffectSettings: Int? = null
+	var currentOutput = OUTPUT_MAINLR
+		private set
+	var currentEncoder: EEncoder? = null
+		private set
+	var currentDynamicEncoder = 0
+		private set
+	var currentChannel = 1
+		private set
+	var currentBank = 1
+		private set
+	var currentEffectSettings: Int? = null
+		private set
+
 	private val listeners = Listeners<IXTouchSessionListener>()
 
 	fun addListener(listener: IXTouchSessionListener) =

@@ -85,6 +85,11 @@ class OSCMessage(val address: String, val arguments: Array<out IOSCArg> = emptyA
 			if (it is OSCArgInt) it.data else null
 		}
 
+	fun getString(argumentIndex: Int): String? =
+		getArg(argumentIndex)?.let {
+			if (it is OSCArgString) it.data else null
+		}
+
 	private fun getArg(argumentIndex: Int): IOSCArg? =
 		if (argumentIndex in arguments.indices) {
 			arguments[argumentIndex]

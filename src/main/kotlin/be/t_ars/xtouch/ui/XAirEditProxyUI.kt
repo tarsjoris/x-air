@@ -18,7 +18,7 @@ import kotlin.system.exitProcess
 class XAirEditProxyUI(
 	private val settingsManager: ISettingsManager,
 	private val windowClosingListener: () -> Unit,
-	calibrationUpdater: (Int, Int, Int, Int) -> Unit
+	calibrationUpdater: ((Int, Int, Int, Int) -> Unit)?
 ) : JFrame() {
 	private inner class WListener : WindowAdapter() {
 		override fun windowClosing(e: WindowEvent?) {
@@ -29,7 +29,6 @@ class XAirEditProxyUI(
 	}
 
 	private val statusLabel = JLabel("", SwingConstants.CENTER)
-	private val calibrateButton = JButton()
 
 	init {
 		isAlwaysOnTop = true
@@ -51,19 +50,22 @@ class XAirEditProxyUI(
 			insets = Insets(INSET, INSET, INSET, INSET)
 		})
 
-		calibrateButton.text = "Calibrate"
-		calibrateButton.addActionListener {
-			val callibrateFrame = CallibrateFrame(calibrationUpdater)
-			callibrateFrame.start()
+		if (calibrationUpdater != null) {
+			val calibrateButton = JButton()
+			calibrateButton.text = "Calibrate"
+			calibrateButton.addActionListener {
+				val callibrateFrame = CallibrateFrame(calibrationUpdater)
+				callibrateFrame.start()
+			}
+			add(calibrateButton, GridBagConstraints().apply {
+				fill = GridBagConstraints.BOTH
+				gridx = 0
+				gridy = 1
+				weightx = 1.toDouble()
+				weighty = 1.toDouble()
+				insets = Insets(INSET, INSET, INSET, INSET)
+			})
 		}
-		add(calibrateButton, GridBagConstraints().apply {
-			fill = GridBagConstraints.BOTH
-			gridx = 0
-			gridy = 1
-			weightx = 1.toDouble()
-			weighty = 1.toDouble()
-			insets = Insets(INSET, INSET, INSET, INSET)
-		})
 
 		addWindowListener(WListener())
 

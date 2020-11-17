@@ -12,26 +12,24 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class AddonMuteButtons(
+class AddonChannelCue(
 	private val xr18OSCAPI: XR18OSCAPI,
 	private val toXTouch: IConnectionToXTouch
 ) : IAddon, IOSCListener {
 	private val connectionListener = ConnectionListener()
 	private val xTouchListener = XTouchListener()
 
-	private var lrMixOn = true
-	private val busMixOn = Array(6) { true }
+	private var cueChannel: Int = 0
 
-	// Events
-	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) =
+	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) {
 		event(connectionListener)
+	}
 
-	override fun processEventFromXTouch(event: Event<IXTouchEvents>) =
+	override fun processEventFromXTouch(event: Event<IXTouchEvents>): Event<IXTouchEvents>? =
 		xTouchListener.processEvent(event)
 
 	// XR18
 	override fun lrMixOn(on: Boolean) {
-		lrMixOn = on
 		toXTouch.setButtonLED(
 			EButton.USER,
 			if (on) ELEDMode.OFF else ELEDMode.FLASH
@@ -39,7 +37,6 @@ class AddonMuteButtons(
 	}
 
 	override fun busMixOn(bus: Int, on: Boolean) {
-		busMixOn[bus - 1] = on
 		toXTouch.setButtonLED(
 			when (bus) {
 				1 -> EButton.MIDI_TRACKS
@@ -58,7 +55,9 @@ class AddonMuteButtons(
 			GlobalScope.launch {
 				delay(1000)
 				xr18OSCAPI.requestLRMixOn()
-				xr18OSCAPI.requestBusesMixOn()
+				for (i in 1..6) {
+					xr18OSCAPI.requestBusMixOn(i)
+				}
 			}
 		}
 	}
@@ -84,14 +83,14 @@ class AddonMuteButtons(
 
 		private fun setBusMixOn(bus: Int) {
 			GlobalScope.launch {
-				xr18OSCAPI.setBusMixOn(bus, !busMixOn[bus - 1])
+				xr18OSCAPI.setBusMixOn(bus, true)
 			}
 			nextEvent = null
 		}
 
 		override fun userPressedDown() {
 			GlobalScope.launch {
-				xr18OSCAPI.setLRMixOn(!lrMixOn)
+				xr18OSCAPI.setLRMixOn(true)
 			}
 			nextEvent = null
 		}

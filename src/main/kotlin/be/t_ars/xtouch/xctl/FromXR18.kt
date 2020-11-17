@@ -159,6 +159,7 @@ internal class FromXR18(private val processEvent: EventProcessor<IXR18Events>) {
 		val indexToScribbleStripEvent: (Int) -> ScribbleStripEvent? = { index ->
 			val channel = packet[index + 5] - 0x20 + 1
 			val color = when (packet[index + 6].rem(0x40)) {
+				0x00 -> EScribbleColor.BLACK
 				0x01 -> EScribbleColor.RED
 				0x02 -> EScribbleColor.GREEN
 				0x03 -> EScribbleColor.YELLOW

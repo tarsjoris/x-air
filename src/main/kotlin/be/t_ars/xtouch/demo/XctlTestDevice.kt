@@ -4,11 +4,10 @@ import be.t_ars.xtouch.xctl.EButton
 import be.t_ars.xtouch.xctl.EChannelButton
 import be.t_ars.xtouch.xctl.ELEDMode
 import be.t_ars.xtouch.xctl.EScribbleColor
-import be.t_ars.xtouch.xctl.FADER_POSIION_RANGE
 import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.XctlConnectionStub
-import be.t_ars.xtouch.xctl.toFaderPercentage
+import be.t_ars.xtouch.xctl.XctlUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,12 +23,12 @@ private class Listener(val output: IConnectionToXTouch) : IXTouchListener {
 
 	override fun faderMoved(channel: Int, position: Int) {
 		when (channel) {
-			in 1..2 -> output.setLEDRingSingle(channel, (toFaderPercentage(position) * 12).toInt())
-			in 3..4 -> output.setLEDRingWithHalves(channel, (toFaderPercentage(position) * 24).toInt())
-			in 5..6 -> output.setLEDRingContinuous(channel, (toFaderPercentage(position) * 12).toInt())
+			in 1..2 -> output.setLEDRingSingle(channel, (XctlUtil.toFaderPercentage(position) * 12).toInt())
+			in 3..4 -> output.setLEDRingWithHalves(channel, (XctlUtil.toFaderPercentage(position) * 24).toInt())
+			in 5..6 -> output.setLEDRingContinuous(channel, (XctlUtil.toFaderPercentage(position) * 12).toInt())
 			in 7..8 -> output.setLEDRingLeftRight(
 				channel,
-				(toFaderPercentage(position) * 12).toInt() - 6
+				(XctlUtil.toFaderPercentage(position) * 12).toInt() - 6
 			)
 		}
 	}
@@ -54,7 +53,7 @@ private class Listener(val output: IConnectionToXTouch) : IXTouchListener {
 					if (predicate.invoke(angleDegrees)) {
 						val angle = angleDegrees / 360F * 2 * PI
 						val fraction = (1F - cos(angle).toFloat()) / 2F
-						val position = fraction.times(FADER_POSIION_RANGE.last).roundToInt()
+						val position = fraction.times(XctlUtil.FADER_POSIION_RANGE.last).roundToInt()
 						if (channel < 8) {
 							output.setChannelFaderPosition(channel + 1, position)
 						} else {

@@ -15,7 +15,7 @@ class ConnectionWithXTouchImpl(
 
 	private var xTouchAddress: InetAddress? = null
 	private val running = AtomicBoolean(true)
-	private val socket = DatagramSocket(PORT)
+	private val socket = DatagramSocket(XctlUtil.PORT)
 
 	fun getConnectionToXTouch(): IConnectionToXTouch =
 		toXTouch
@@ -41,7 +41,7 @@ class ConnectionWithXTouchImpl(
 	private fun sendToXTouch(payload: ByteArray) {
 		xTouchAddress?.also { address ->
 			printPacket("To XTouch ", payload)
-			socket.send(DatagramPacket(payload, 0, payload.size, address, PORT))
+			socket.send(DatagramPacket(payload, 0, payload.size, address, XctlUtil.PORT))
 		} ?: print("Dropping packet: no connection with XTouch")
 	}
 
@@ -49,7 +49,7 @@ class ConnectionWithXTouchImpl(
 		val data = ByteArray(packet.length) { i ->
 			packet.data[packet.offset + i]
 		}
-		if (isXTouchHeartbeat(data)) {
+		if (XctlUtil.isXTouchHeartbeat(data)) {
 			xTouchAddress = packet.address
 			heartbeatListener()
 		} else {

@@ -6,29 +6,20 @@ import be.t_ars.xtouch.xctl.ButtonLEDEvent
 import be.t_ars.xtouch.xctl.EButton
 import be.t_ars.xtouch.xctl.Event
 import be.t_ars.xtouch.xctl.IXR18Events
-import be.t_ars.xtouch.xctl.IXR18Listener
 import be.t_ars.xtouch.xctl.IXTouchEvents
-import be.t_ars.xtouch.xctl.IXTouchListener
 
 class AddonBusOrder : IAddon {
 	private val xTouchListener = XTouchListener()
-	private val xR18Listener = XR18Listener()
+	private val xr18Listener = XR18Listener()
 
+	// Events
 	override fun processEventFromXTouch(event: Event<IXTouchEvents>): Event<IXTouchEvents>? =
 		xTouchListener.processEvent(event)
 
 	override fun processEventFromXR18(event: Event<IXR18Events>): Event<IXR18Events>? =
-		xR18Listener.processEvent(event)
+		xr18Listener.processEvent(event)
 
-	inner class XTouchListener : IXTouchListener {
-		private var nextEvent: Event<IXTouchEvents>? = null
-
-		fun processEvent(event: Event<IXTouchEvents>): Event<IXTouchEvents>? {
-			nextEvent = event
-			event(this)
-			return nextEvent
-		}
-
+	inner class XTouchListener : AbstractAddonXTouchListener() {
 		override fun automationPressed(automation: Int, down: Boolean) {
 			nextEvent = partial(
 				when (automation) {
@@ -44,15 +35,7 @@ class AddonBusOrder : IAddon {
 		}
 	}
 
-	inner class XR18Listener : IXR18Listener {
-		private var nextEvent: Event<IXR18Events>? = null
-
-		fun processEvent(event: Event<IXR18Events>): Event<IXR18Events>? {
-			nextEvent = event
-			event(this)
-			return nextEvent
-		}
-
+	inner class XR18Listener : AbstractAddonXR18Listener() {
 		override fun setButtonLEDs(buttonLEDEvents: Array<AbstractButtonLEDEvent>) {
 			if (buttonLEDEvents.any(this::isRemappadBusEvent)) {
 				nextEvent = partial(buttonLEDEvents.map { event ->

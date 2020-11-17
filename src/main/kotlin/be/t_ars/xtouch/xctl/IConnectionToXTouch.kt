@@ -108,7 +108,7 @@ interface IConnectionToXTouch : IXR18Events {
 	}
 
 	fun setLEDRing(channel: Int, left: Byte, right: Byte) {
-		validateChannel(channel)
+		XctlUtil.validateChannel(channel)
 		setLEDs(arrayOf(LEDRingEvent(channel, true, left), LEDRingEvent(channel, false, right)))
 	}
 
@@ -146,7 +146,11 @@ interface IConnectionToXTouch : IXR18Events {
 		line1: String,
 		line2: String
 	) {
-		setScribbleTrips(arrayOf(ScribbleStripEvent(channel, color, secondLineInverted, line1, line2)))
+		setScribbleTrip(ScribbleStripEvent(channel, color, secondLineInverted, line1, line2))
+	}
+
+	fun setScribbleTrip(event: ScribbleStripEvent) {
+		setScribbleTrips(arrayOf(event))
 	}
 
 	companion object {

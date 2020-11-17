@@ -2,10 +2,10 @@ package be.t_ars.xtouch.xairedit
 
 import be.t_ars.xtouch.session.IXTouchSessionListener
 import be.t_ars.xtouch.session.XTouchSessionState
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class XAirEditController(private val interactor: IXAirEditInteractor) :
+class XAirEditController(private val scope: CoroutineScope, private val interactor: IXAirEditInteractor) :
 	IXTouchSessionListener {
 	override fun selectionChanged(
 		output: Int,
@@ -13,7 +13,7 @@ class XAirEditController(private val interactor: IXAirEditInteractor) :
 		encoder: XTouchSessionState.EEncoder?,
 		dynamicEncoder: XTouchSessionState.EDynamicEncoder
 	) {
-		GlobalScope.launch {
+		scope.launch {
 			selectChannel(output, channel, encoder, dynamicEncoder)
 		}
 	}

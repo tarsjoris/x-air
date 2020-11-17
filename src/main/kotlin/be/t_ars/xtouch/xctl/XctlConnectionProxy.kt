@@ -33,7 +33,7 @@ class XctlConnectionProxy(xr18Address: InetAddress) : XctlConnectionStub() {
 
 	override fun checkConnection() {
 		synchronized(connectionLock) {
-			if (xr18Connected && System.currentTimeMillis() - lastXR18Heartbeat > HEARTBEAT_TIMEOUT) {
+			if (xr18Connected && System.currentTimeMillis() - lastXR18Heartbeat > XctlUtil.HEARTBEAT_TIMEOUT) {
 				println("XR18 disconnected")
 				broadcastIfWillDisconnect()
 				xr18Connected = false

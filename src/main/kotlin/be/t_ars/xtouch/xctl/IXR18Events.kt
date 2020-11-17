@@ -55,7 +55,7 @@ enum class ELEDMode {
 }
 
 enum class EScribbleColor {
-	RED, GREEN, YELLOW, BLUE, PINK, CYAN, WHITE
+	BLACK, RED, GREEN, YELLOW, BLUE, PINK, CYAN, WHITE
 }
 
 data class Meter(val channel: Int, val value: Int)

@@ -8,7 +8,7 @@ import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.XctlConnectionStub
-import be.t_ars.xtouch.xctl.toFaderPercentage
+import be.t_ars.xtouch.xctl.XctlUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -57,7 +57,7 @@ private class PongListener(private val output: IConnectionToXTouch) : IXctlConne
 	override fun faderMoved(channel: Int, position: Int) {
 		if (channel in playerChannels) {
 			val player = playerChannels.indexOf(channel)
-			val button = (toFaderPercentage(position) * 3F).roundToInt()
+			val button = (XctlUtil.toFaderPercentage(position) * 3F).roundToInt()
 			if (playerPositions[player] != button) {
 				output.setChannelButtonLED(
 					channel,
