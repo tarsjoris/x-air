@@ -2,10 +2,7 @@ package be.t_ars.xtouch.router
 
 import be.t_ars.xtouch.osc.IOSCListener
 import be.t_ars.xtouch.osc.XR18OSCAPI
-import be.t_ars.xtouch.xctl.EButton
-import be.t_ars.xtouch.xctl.ELEDMode
 import be.t_ars.xtouch.xctl.Event
-import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchEvents
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import kotlinx.coroutines.GlobalScope
@@ -13,9 +10,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AddonChannelCue(
-	private val xr18OSCAPI: XR18OSCAPI,
-	private val toXTouch: IConnectionToXTouch
-) : IAddon, IOSCListener {
+	private val xr18OSCAPI: XR18OSCAPI
+) : AbstractAddon(), IOSCListener {
 	private val connectionListener = ConnectionListener()
 	private val xTouchListener = XTouchListener()
 
@@ -25,30 +21,8 @@ class AddonChannelCue(
 		event(connectionListener)
 	}
 
-	override fun processEventFromXTouch(event: Event<IXTouchEvents>): Event<IXTouchEvents>? =
+	override fun getNextXTouchEvent(event: Event<IXTouchEvents>) =
 		xTouchListener.processEvent(event)
-
-	// XR18
-	override fun lrMixOn(on: Boolean) {
-		toXTouch.setButtonLED(
-			EButton.USER,
-			if (on) ELEDMode.OFF else ELEDMode.FLASH
-		)
-	}
-
-	override fun busMixOn(bus: Int, on: Boolean) {
-		toXTouch.setButtonLED(
-			when (bus) {
-				1 -> EButton.MIDI_TRACKS
-				2 -> EButton.INPUTS
-				3 -> EButton.AUDIO_TRACKS
-				4 -> EButton.AUDIO_INST
-				5 -> EButton.AUX
-				else -> EButton.BUSES
-			},
-			if (on) ELEDMode.OFF else ELEDMode.FLASH
-		)
-	}
 
 	inner class ConnectionListener : IXctlConnectionListener {
 		override fun connected() {

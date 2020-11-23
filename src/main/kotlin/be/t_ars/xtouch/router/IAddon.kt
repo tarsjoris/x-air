@@ -8,9 +8,7 @@ import be.t_ars.xtouch.xctl.IXctlConnectionListener
 interface IAddon {
 	fun processConnectionEvent(event: Event<IXctlConnectionListener>) {}
 
-	fun processEventFromXTouch(event: Event<IXTouchEvents>): Event<IXTouchEvents>? =
-		event
+	fun processEventFromXTouch(event: Event<IXTouchEvents>)
 
-	fun processEventFromXR18(event: Event<IXR18Events>): Event<IXR18Events>? =
-		event
+	fun processEventFromXR18(event: Event<IXR18Events>)
 }

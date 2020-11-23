@@ -1,8 +1,8 @@
 # XTouch
 
 A JVM (Kotlin) proxy-tool that sits between a Behringer X-Touch controller and a Behringer X-Air XR18 digital mixer.
-It monitors what buttons are clicked on the X-Touch,
-and controls the X-Air-Edit app.
+It monitors what buttons are pressed on the X-Touch,
+and it controls the X-Air-Edit app.
 
 ## Purpose
 
@@ -21,11 +21,11 @@ The X-Air-Edit app now "follows" the X-Touch.
 1. Make sure the *java* process is allowed to control the mouse.
     * On Mac, this is located under `System Preferences` > `Security & Privacy` > `Accessibility`
 1. Configure this proxy-tool to connect to the XR18 mixer by setting its IP address.
-In your home-directory, create a directory `xtouch` with a file `xr18.properties`.  
-File: *~/xtouch/xr18.properties*  
+In your home-directory, create a directory `xtouch` with a file `xtouch.properties`.  
+File: *~/xtouch/xtouch.properties*  
 Contents: `xr18.ipaddress=192.168.0.2`
 1. Start X-Air-Edit
-1. Start this proxy-tool: `java -jar XTouch-1.0-SNAPSHOT-jar-with-dependencies.jar`
+1. Start this proxy-tool: `java -jar XTouch-2.0-SNAPSHOT-jar-with-dependencies.jar`
 1. Callibrate the proxy-tool so that it knows where to click in the X-Air-Edit app.
 By clicking on two positions in the app, a first guess is done.
 You still have the possibility to fine-tune the callibration.
@@ -41,12 +41,18 @@ You still have the possibility to fine-tune the callibration.
 The X-Touch should now connect to this proxy-tool.
 This will be indicated by a green message *Connected*.
 
-## Addon
+## Addons
 
-To enable extra functions, add the line `addon.enabled=true` to the file `~/xtouch/xr18.properties`.
+Some extra functions are provided.
+They are enabled by default.
+They can be disabled by setting their configuration option to false in `~/xtouch/xr18.properties`.
 
-Add these lines to enable the features
-* `addon.mute-buttons=true`
-    * The buttons next to *Global view* will function as mute buttons for the output channels.
-* `addon.channel-name=true`
-    * The channel names will be displayed when an output bus is selected.
+* `router.mutebuttons`
+    * The buttons next to *Global view* will function as mute buttons for the output channels (buses and main output).
+* `router.busorder`
+    * The order of the bus buttons operate according to N-order instead of Z-order.
+    More like the buttons in the X-Air-Edit app.
+* `addon.channel-name`
+    * The channel names will be displayed when an output bus or effects send is selected.
+* `router.busscribblestrip`
+    * When selecting an effects send or bus send, the channel names are still displayed. 

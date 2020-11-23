@@ -8,15 +8,14 @@ import be.t_ars.xtouch.xctl.Event
 import be.t_ars.xtouch.xctl.IXR18Events
 import be.t_ars.xtouch.xctl.IXTouchEvents
 
-class AddonBusOrder : IAddon {
+class AddonBusOrder : AbstractAddon() {
 	private val xTouchListener = XTouchListener()
 	private val xr18Listener = XR18Listener()
 
-	// Events
-	override fun processEventFromXTouch(event: Event<IXTouchEvents>): Event<IXTouchEvents>? =
+	override fun getNextXTouchEvent(event: Event<IXTouchEvents>) =
 		xTouchListener.processEvent(event)
 
-	override fun processEventFromXR18(event: Event<IXR18Events>): Event<IXR18Events>? =
+	override fun getNextXR18Event(event: Event<IXR18Events>) =
 		xr18Listener.processEvent(event)
 
 	inner class XTouchListener : AbstractAddonXTouchListener() {

@@ -8,6 +8,10 @@ import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.XctlConnectionStub
+import be.t_ars.xtouch.xctl.setButtonLED
+import be.t_ars.xtouch.xctl.setChannelButtonLED
+import be.t_ars.xtouch.xctl.setDigits
+import be.t_ars.xtouch.xctl.setScribbleTrip
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

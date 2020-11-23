@@ -5,6 +5,7 @@ import be.t_ars.xtouch.session.XTouchSessionState
 import be.t_ars.xtouch.util.Listeners
 import be.t_ars.xtouch.util.getBoolean
 import be.t_ars.xtouch.xctl.Event
+import be.t_ars.xtouch.xctl.EventProcessor
 import be.t_ars.xtouch.xctl.IConnectionToXR18
 import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXR18Events
@@ -25,14 +26,16 @@ class ProxyRouter(
 	private val xr18Listeners = Listeners<IXR18Events>()
 
 	private val addons: Array<IAddon>
+	private val firstXTouchListener: EventProcessor<IXTouchEvents>
+	private val firstXR18Listener: EventProcessor<IXR18Events>
 
 	private val xr18OSCAPI: Lazy<XR18OSCAPI> = lazy(this::createXR18API)
 
 	init {
-		val addonBuilder = mutableListOf<IAddon>()
+		val addonBuilder = mutableListOf<AbstractAddon>()
 
 		if (properties.getBoolean("router.mutebuttons")) {
-			val addonMuteButtons = AddonMuteButtons(xr18OSCAPI.value, connectionToXTouch)
+			val addonMuteButtons = AddonMuteButtons(xr18OSCAPI.value)
 			xr18OSCAPI.value.addListener(addonMuteButtons)
 			addonBuilder.add(addonMuteButtons)
 		}
@@ -47,7 +50,6 @@ class ProxyRouter(
 		if (properties.getBoolean("router.busscribblestrip")) {
 			val addonBusScribbleStrip = AddonBusScribbleStrip(
 				xr18OSCAPI.value,
-				connectionToXTouch,
 				sessionState
 			)
 			xr18OSCAPI.value.addListener(addonBusScribbleStrip)
@@ -58,6 +60,22 @@ class ProxyRouter(
 		}
 
 		addons = addonBuilder.toTypedArray()
+
+		if (addonBuilder.isEmpty()) {
+			firstXTouchListener = this::sendEventToXR18
+			firstXR18Listener = this::sendEventToXTouch
+		} else {
+			firstXTouchListener = addonBuilder.first()::processEventFromXTouch
+			firstXR18Listener = addonBuilder.last()::processEventFromXR18
+
+			addonBuilder.first().nextXR18Processor = this::sendEventToXTouch
+			addonBuilder.last().nextXTouchProcessor = this::sendEventToXR18
+
+			for (i in 1 until addonBuilder.size) {
+				addonBuilder[i - 1].nextXTouchProcessor = addonBuilder[i]::processEventFromXTouch
+				addonBuilder[i].nextXR18Processor = addonBuilder[i - 1]::processEventFromXR18
+			}
+		}
 	}
 
 	fun stop() {
@@ -83,24 +101,24 @@ class ProxyRouter(
 		connectionListeners.broadcast(event)
 	}
 
-	fun routeEventFromXTouch(initialEvent: Event<IXTouchEvents>) {
-		val startEvent: Event<IXTouchEvents>? = initialEvent
-		val resultEvent = addons.fold(startEvent) { event, addon ->
-			event?.let(addon::processEventFromXTouch)
-		}
-		resultEvent?.also(xTouchListeners::broadcast)
-		// forward event to device last to allow states to update
-		resultEvent?.also { it(connectionToXR18) }
+	fun routeEventFromXTouch(event: Event<IXTouchEvents>) {
+		firstXTouchListener(event)
 	}
 
-	fun routeEventFromXR18(initialEvent: Event<IXR18Events>) {
-		val startEvent: Event<IXR18Events>? = initialEvent
-		val resultEvent = addons.fold(startEvent) { event, addon ->
-			event?.let(addon::processEventFromXR18)
-		}
-		resultEvent?.also(xr18Listeners::broadcast)
+	private fun sendEventToXR18(event: Event<IXTouchEvents>) {
+		xTouchListeners.broadcast(event)
 		// forward event to device last to allow states to update
-		resultEvent?.also { it(connectionToXTouch) }
+		event(connectionToXR18)
+	}
+
+	fun routeEventFromXR18(event: Event<IXR18Events>) {
+		firstXR18Listener(event)
+	}
+
+	private fun sendEventToXTouch(event: Event<IXR18Events>) {
+		xr18Listeners.broadcast(event)
+		// forward event to device last to allow states to update
+		event(connectionToXTouch)
 	}
 
 	private fun createXR18API(): XR18OSCAPI {

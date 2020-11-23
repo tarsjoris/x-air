@@ -103,10 +103,6 @@ internal class ToXTouch(private val sendPayload: (ByteArray) -> Unit) : IConnect
 		})
 	}
 
-	override fun setMeter(channel: Int, value: Int) {
-		setMeters(arrayOf(Meter(channel, value)))
-	}
-
 	override fun setMeters(meters: Array<Meter>) {
 		sendPayload(byteArrayOf(0xD0.toByte()) + ByteArray(meters.size) { i ->
 			((meters[i].channel - 1) * 16 + meters[i].value).toByte()

@@ -8,6 +8,17 @@ import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXTouchListener
 import be.t_ars.xtouch.xctl.XctlConnectionStub
 import be.t_ars.xtouch.xctl.XctlUtil
+import be.t_ars.xtouch.xctl.setButtonLED
+import be.t_ars.xtouch.xctl.setChannelButtonLED
+import be.t_ars.xtouch.xctl.setChannelFaderPosition
+import be.t_ars.xtouch.xctl.setDigits
+import be.t_ars.xtouch.xctl.setLEDRingContinuous
+import be.t_ars.xtouch.xctl.setLEDRingLeftRight
+import be.t_ars.xtouch.xctl.setLEDRingSingle
+import be.t_ars.xtouch.xctl.setLEDRingWithHalves
+import be.t_ars.xtouch.xctl.setMainFaderPosition
+import be.t_ars.xtouch.xctl.setMeter
+import be.t_ars.xtouch.xctl.setScribbleTrip
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

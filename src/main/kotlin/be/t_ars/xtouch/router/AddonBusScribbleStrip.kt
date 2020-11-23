@@ -3,23 +3,23 @@ package be.t_ars.xtouch.router
 import be.t_ars.xtouch.osc.IOSCListener
 import be.t_ars.xtouch.osc.XR18OSCAPI
 import be.t_ars.xtouch.session.XTouchSessionState
+import be.t_ars.xtouch.util.partial
 import be.t_ars.xtouch.xctl.EScribbleColor
 import be.t_ars.xtouch.xctl.Event
-import be.t_ars.xtouch.xctl.IConnectionToXTouch
 import be.t_ars.xtouch.xctl.IXR18Events
 import be.t_ars.xtouch.xctl.IXTouchEvents
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.ScribbleStripEvent
 import be.t_ars.xtouch.xctl.XctlUtil
+import be.t_ars.xtouch.xctl.setScribbleTrip
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AddonBusScribbleStrip(
 	private val xr18OSCAPI: XR18OSCAPI,
-	private val toXTouch: IConnectionToXTouch,
 	private val sessionState: XTouchSessionState
-) : IAddon, IOSCListener {
+) : AbstractAddon(), IOSCListener {
 	private data class XR18ChannelConfig(
 		var name: String?,
 		var color: EScribbleColor?,
@@ -69,10 +69,10 @@ class AddonBusScribbleStrip(
 	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) =
 		event(connectionListener)
 
-	override fun processEventFromXTouch(event: Event<IXTouchEvents>) =
+	override fun getNextXTouchEvent(event: Event<IXTouchEvents>) =
 		xTouchListener.processEvent(event)
 
-	override fun processEventFromXR18(event: Event<IXR18Events>) =
+	override fun getNextXR18Event(event: Event<IXR18Events>) =
 		xr18Listener.processEvent(event)
 
 	// XR18
@@ -116,11 +116,6 @@ class AddonBusScribbleStrip(
 		getOverrideConfigCurrentXR18Channel(channel)
 			?.toXTouchEvent(channel, xtouchChannels[channel - 1]?.line1 ?: "")
 
-	private fun sendOverridenConfigToXTouch(channel: Int) {
-		getOverridenConfigEvent(channel)
-			?.also(toXTouch::setScribbleTrip)
-	}
-
 	inner class ConnectionListener : IXctlConnectionListener {
 		override fun connected() {
 			GlobalScope.launch {
@@ -133,10 +128,13 @@ class AddonBusScribbleStrip(
 	inner class XTouchistener : AbstractAddonXTouchListener() {
 		override fun knobPressed(knob: Int, down: Boolean) {
 			channelKnobPressed = if (down) knob else null
-			if (down) {
-				xtouchChannels[knob - 1]?.also(toXTouch::setScribbleTrip)
+			val event = if (down) {
+				xtouchChannels[knob - 1]
 			} else {
-				sendOverridenConfigToXTouch(knob)
+				getOverridenConfigEvent(knob)
+			}
+			if (event != null) {
+				sendToXTouch(partial(event, IXR18Events::setScribbleTrip))
 			}
 		}
 
@@ -153,7 +151,7 @@ class AddonBusScribbleStrip(
 						getOverridenConfigEvent(channel)
 					} else null
 				}.toTypedArray()
-				toXTouch.setScribbleTrips(events)
+				sendToXTouch(partial(events, IXR18Events::setScribbleTrips))
 			}
 		}
 	}
