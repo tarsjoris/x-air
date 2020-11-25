@@ -135,6 +135,8 @@ class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Un
 		})
 
 		addMouseListener(ClickListener())
+
+		setBounds(100, 100, 500, 500)
 	}
 
 	private fun adjustRect(deltaX1: Int, deltaY1: Int, deltaX2: Int, deltaY2: Int) {
