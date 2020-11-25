@@ -1,8 +1,9 @@
 # XTouch
 
 A JVM (Kotlin) proxy-tool that sits between a Behringer X-Touch controller and a Behringer X-Air XR18 digital mixer.
-It monitors what buttons are pressed on the X-Touch,
-and it controls the X-Air-Edit app.
+It monitors what buttons are pressed on the X-Touch, and it controls the X-Air-Edit app.pain
+
+![App](docs/app.png)
 
 ## Purpose
 
@@ -15,6 +16,8 @@ This proxy-tool looks at all the buttons that are pressed on the X-Touch,
 and clicks the matching button in the X-Air-Edit app so that the relevant parts are visible.
 The X-Air-Edit app now "follows" the X-Touch.
 
+![Setup](docs/setup.png)
+
 ## Usage
 
 1. Build a jar of this tool with maven: `mvn package`
@@ -26,7 +29,8 @@ File: *~/xtouch/xtouch.properties*
 Contents: `xr18.ipaddress=192.168.0.2`
 1. Start X-Air-Edit
 1. Start this proxy-tool: `java -jar XTouch-2.0-SNAPSHOT-jar-with-dependencies.jar`
-1. Callibrate the proxy-tool so that it knows where to click in the X-Air-Edit app.
+1. Callibrate the proxy-tool so that it knows where to click in the X-Air-Edit app.   
+![Callibrate](docs/callibrate.png)    
 By clicking on two positions in the app, a first guess is done.
 You still have the possibility to fine-tune the callibration.
     * Click the *Callibrate* button
@@ -45,14 +49,12 @@ This will be indicated by a green message *Connected*.
 
 Some extra functions are provided.
 They are enabled by default.
-They can be disabled by setting their configuration option to false in `~/xtouch/xr18.properties`.
+They can be disabled by setting their configuration option to false in `~/xtouch/xtouch.properties`.
 
 * `router.mutebuttons`
     * The buttons next to *Global view* will function as mute buttons for the output channels (buses and main output).
 * `router.busorder`
     * The order of the bus buttons operate according to N-order instead of Z-order.
     More like the buttons in the X-Air-Edit app.
-* `addon.channel-name`
-    * The channel names will be displayed when an output bus or effects send is selected.
 * `router.busscribblestrip`
     * When selecting an effects send or bus send, the channel names are still displayed. 
