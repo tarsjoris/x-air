@@ -127,14 +127,16 @@ class AddonBusScribbleStrip(
 
 	inner class XTouchistener : AbstractAddonXTouchListener() {
 		override fun knobPressed(knob: Int, down: Boolean) {
-			channelKnobPressed = if (down) knob else null
-			val event = if (down) {
-				xtouchChannels[knob - 1]
-			} else {
-				getOverridenConfigEvent(knob)
-			}
-			if (event != null) {
-				sendToXTouch(partial(event, IXR18Events::setScribbleTrip))
+			if (isInOverrideMode()) {
+				channelKnobPressed = if (down) knob else null
+				val event = if (down) {
+					xtouchChannels[knob - 1]
+				} else {
+					getOverridenConfigEvent(knob)
+				}
+				if (event != null) {
+					sendToXTouch(partial(event, IXR18Events::setScribbleTrip))
+				}
 			}
 		}
 
