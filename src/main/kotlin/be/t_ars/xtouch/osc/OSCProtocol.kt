@@ -15,7 +15,7 @@ private fun padCount(length: Int) =
 
 private fun serializeInt32(data: Int) =
 	ByteArray(4) { i ->
-		((data shr (8 * i)) and 0x0F).toByte()
+		((data shr (8 * (3 - i))) and 0x0F).toByte()
 	}
 
 private fun serializeLong64(data: Long) =

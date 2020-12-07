@@ -4,6 +4,7 @@ import be.t_ars.xtouch.util.Listeners
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -81,6 +82,7 @@ class XR18OSCAPI(private val host: InetAddress) {
 							processBusMessage(bus, parts, message)
 						}
 					}
+					"config" -> processConfigMessage(parts, message)
 				}
 			}
 		}
@@ -149,10 +151,34 @@ class XR18OSCAPI(private val host: InetAddress) {
 		}
 	}
 
+	private fun processConfigMessage(parts: List<String>, message: OSCMessage) {
+		when (parts[2]) {
+			"solo" -> {
+				when (parts[3]) {
+					"source" -> {
+						val source = IOSCListener.ESoloSource.getSoloSource(message.getInt(0))
+						listeners.broadcast { it.soloSource(source) }
+					}
+				}
+			}
+			"buslink" -> {
+				val buslink = IOSCListener.EBusLink.getBusLink(parts[3])
+				if (buslink != null) {
+					val on = message.getInt(0) == 1
+					listeners.broadcast { it.busLink(buslink, on) }
+				}
+			}
+		}
+	}
+
 	private fun startRequestChanges() {
 		GlobalScope.launch {
 			while (running.get()) {
-				send("/xremote")
+				try {
+					send("/xremote")
+				} catch (e: IOException) {
+					// retry later
+				}
 				delay(7500)
 			}
 		}
@@ -180,28 +206,40 @@ class XR18OSCAPI(private val host: InetAddress) {
 	fun setLRMixOn(on: Boolean) =
 		send("/lr/mix/on", OSCArgInt(if (on) 1 else 0))
 
-	fun fetchConfigs() {
+	fun requestConfigs() {
 		for (i in 1..BUS_COUNT) {
-			fetchBusConfig(i)
+			requestBusConfig(i)
 		}
 		for (i in 1..CHANNEL_COUNT) {
-			this.fetchChannelConfig(i)
+			this.requestChannelConfig(i)
 		}
 	}
 
-	private fun fetchBusConfig(bus: Int) {
+	private fun requestBusConfig(bus: Int) {
 		validateBus(bus)
-		fetchConfig("/bus/$bus")
+		requestConfig("/bus/$bus")
 	}
 
-	private fun fetchChannelConfig(channel: Int) {
+	private fun requestChannelConfig(channel: Int) {
 		validateChannel(channel)
-		fetchConfig(getChannelPrefix(channel))
+		requestConfig(getChannelPrefix(channel))
 	}
 
-	private fun fetchConfig(prefix: String) {
+	private fun requestConfig(prefix: String) {
 		send("$prefix/config/name")
 		send("$prefix/config/color")
+	}
+
+	fun requestSoloSource() {
+		send("/config/solo/source")
+	}
+
+	fun setSoloSource(source: IOSCListener.ESoloSource) {
+		send("/config/solo/source", OSCArgInt(source.id))
+	}
+
+	fun requestBusLink(busLink: IOSCListener.EBusLink) {
+		send("/config/buslink/${busLink.id}")
 	}
 
 	private fun getChannelPrefix(channel: Int) =

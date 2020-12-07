@@ -155,8 +155,8 @@ class XTouchSessionState : IXTouchListener {
 			resetEncoder()
 		} else {
 			resetEffectSettings()
-			resetOutput()
 
+			currentOutput = OUTPUT_MAINLR
 			setEncoder(encoder)
 		}
 	}

@@ -8,7 +8,7 @@ internal typealias EventProcessor<ListenerType> = (Event<ListenerType>) -> Unit
 
 class XctlUtil private constructor() {
 	companion object {
-		val CHANNEL_COUNT = 8
+		const val CHANNEL_COUNT = 8
 		val FADER_POSIION_RANGE = 0..16380
 
 		fun toFaderPercentage(position: Int) =

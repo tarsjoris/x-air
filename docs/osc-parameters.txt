@@ -1,0 +1,1291 @@
+XR18/16/12 1.14 (2016-12-16)
+
+// model specific parameters                          268 // not used in 2:XR12, 6:XR16, 8:XR18
+
+  -stat/                                                        
+    solo            [0,1]                                              // OFF, ON; global flag
+    keysolo         [0,39]                                             // OFF, G01..G16, D01..D16, DB1..DB6, DLR
+    autosave        [0,1]                                              // OFF, ON
+    netmode         [0,2]                                              // LAN, IS, AP
+    usbmounted      [0,1]                                            8 // OFF, ON
+    solosw/  
+      01..54        [0,53]                                             // 0..15 ch1-16; 16 aux; 17..20 fxrtn 1-4; 21..38 usb 1-18
+                                                                       // 39..44 bus 1-6; 45..48 send 1-4; 49 main (OFF, ON); 50..53 dca 1-4
+    rta/                                                        
+      source        [0,32]                                             // Ch01..Ch16, Aux, Fx1..Fx4, Bus1..Bus4, Send1..Send4, LR, MON
+      pos           [0,1]                                              // PRE, POST
+    networks/                                                   
+      01..10/  
+        ssid        (32)                                               // max 32 chars
+        strength    [0,100]                                            // 0..100 (%)
+        flags       [0,7]                                              // b0: is encrypted; b1: supports WPA; b2: supports WPA2
+    tape/                                                       
+      state         [0,6]                                            8 // STOP, PPAUSE, PLAY, RPAUSE, REC, FF, REW
+      file          (256)                                            8 // file name
+      etime         [0,35999]                                        8 // elapsed time (seconds)
+      rtime         [-1000,35999]                                    8 // remaining time (seconds) or -(dropouts + 1) during rec
+    usb/  
+      path          (256)                                            8 // directory path (change initiates usb directory scan)
+      count         [0,200]                                          8 // number of entries in path
+      001..200/                                                 
+        type        [0,1]                                            8 // FILE, DIR
+        name        (128)                                            8 // filename (only subdirectories and wave files)
+  
+  -prefs/                                                       
+    clockrate       [0,1]                                              // 48K, 44K1
+    ponmute         [0,1]                                              // OFF, ON; mutes buses/main after power-on
+    usbifcmode      [0,1]                                          26  // 18x18, 2x2
+    midiconfig      [0,127]                                            // b0: din cc/pc rx; b1: din cc tx; b2: din X/OSC
+                                                                   26  // b3: usb cc/pc rx; b4: usb cc tx; b5: usb X/OSC
+                                                                   26  // b6: din midi <-> usb midi passthru (remote control disabled)
+    name            (24)                                               // console name (user defined) 24 chars max
+    playnext        [0,1]                                            8 // OFF, ON (play all files in directory)
+    hardmute        [0,1]                                              // OFF, ON
+    dcamute         [0,1]                                              // OFF, ON
+    lan/                                                               // lan mode
+      mode          [0,2]                                              // STATIC, DHCP, DHCPS
+      addr/0..3     [0,255]                                            // 4x 0..255 (static only)
+      mask/0..3     [0,255]                                            // 4x 0..255
+      gateway/0..3  [0,255]                                            // 4x 0..255
+    ap/                                                                // access point mode
+      security      [0,1]                                              // OPEN, WEP
+      ssid          (32)                                               // max 32 chars
+      key           (13)                                               // 5 chars (WEP40) or 13 chars (WEP104)
+      channel       [1,11]                                             // 1..11
+    is/                                                                // infrastructure (client) mode
+      security      [0,3]                                              // OPEN, WEP, WPA, WPA2
+      ssid          (32)                                               // max 32 chars
+      key           (64)                                               // 5 chars (WEP40), 13 chars (WEP104), any (WPA/WPA2)
+      mode          [0,1]                                              // DHCP, STATIC
+      addr/0..3     [0,255]                                            // 4x 0..255 (static only)
+      mask/0..3     [0,255]                                            // 4x 0..255
+      gateway/0..3  [0,255]                                            // 4x 0..255
+    rta/                                                        
+      det           [0,1]                                              // PEAK, RMS
+      decay         [0.0,1.0] log(19)                                  // 0.25..16
+  
+  ch/01..16/                                                           // all arrays zero based (ch 1: i = 0)!
+  rtn/aux/                                                             // or ch[16]->
+  rtn/1..4/                                                            // or ch[17..20]->
+  bus/1..6/                                                            // or ch[21..26]->
+  fxsend/1..4/                                                         // or ch[27..30]->
+  lr/                                                                  // or ch[31]->
+  - availability ---------------------------- ch-rtn-bus-send-lr -
+    config/                                   ch rtn bus send lr
+      name          (16)                      ch rtn bus send lr       // [16]
+      color         [0,15]                    ch rtn bus send lr       // 0..15
+      insrc         [0,18]                    ch                     8 // In01..In16, L(Aux), R(Aux), OFF; mic input channel
+      insrc         [0,18]                    ch                   2   // In01..In16, L(USB), R(USB), OFF; mic input channel, 13..16 = off
+      insrc         [0,18]                    ch                    6  // In01..In16, L(USB), R(USB), OFF; mic input channel
+      rtnsrc        [0,17]                    ch                   26  // U01..U18; usb return
+      rtnsrc        [0,8]                        rtn               26  // U0102..U1718; usb return stereo pair
+    preamp/                                   ch rtn
+      rtntrim       [0.0,1.0] lin(145)        ch rtn               26  // -18..+18; return trim
+      rtnsw         [0,1]                     ch rtn               26  // OFF, ON; use return source 
+      invert        [0,1]                     ch                       // OFF, ON
+      hpon          [0,1]                     ch                       // OFF, ON
+      hpf           [0.0,1.0] log(101)        ch                       // 20..400
+    gate/                                     ch
+      on            [0,1]                     ch                       // OFF, ON
+      mode          [0,4]                     ch                       // GATE, EXP2, EXP3, EXP4, DUCK
+      thr           [0.0,1.0] log(161)        ch                       // -80..0
+      range         [0.0,1.0] log(58)         ch                       // 3..60
+      attack        [0.0,1.0] log(121)        ch                       // 0..120
+      hold          [0.0,1.0] log(101)        ch                       // 0.02..2000
+      release       [0.0,1.0] log(101)        ch                       // 5..4000
+      keysrc        [0,22]                    ch                       // SELF, Ch01..Ch16, Bus1..Bus6
+      filter/                                 ch
+        on          [0,1]                     ch                       // OFF, ON
+        type        [0,8]                     ch                       // LC6, LC12, HC6, HC12, 1.0, 2.0, 3.0, 5.0, 10.0
+        f           [0.0,1.0] log(201)        ch                       // 20..20000
+    dyn/                                      ch     bus      lr
+      on            [0,1]                     ch     bus      lr       // OFF, ON
+      mode          [0,1]                     ch     bus      lr       // COMP, EXP
+      det           [0,1]                     ch     bus      lr       // PEAK, RMS
+      env           [0,1]                     ch     bus      lr       // LIN, LOG
+      thr           [0.0,1.0] log(121)        ch     bus      lr       // -60..0
+      ratio         [0,11]                    ch     bus      lr       // 1.1, 1.3, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 7.0, 10, 20, 100
+      knee          [0.0,1.0] lin(6)          ch     bus      lr       // 0..5
+      mgain         [0.0,1.0] lin(49)         ch     bus      lr       // 0..24
+      attack        [0.0,1.0] log(121)        ch     bus      lr       // 0..120
+      hold          [0.0,1.0] log(101)        ch     bus      lr       // 0.02..2000
+      release       [0.0,1.0] log(101)        ch     bus      lr       // 5..4000
+      mix           [0.0,1.0] lin(51)         ch     bus      lr       // 0..100
+      keysrc        [0,22]                    ch     bus               // SELF, Ch01..Ch16, Bus1..Bus6
+      auto          [0,1]                     ch     bus      lr       // OFF, ON
+      filter/                                 ch     bus      lr      
+        on          [0,1]                     ch     bus      lr       // OFF, ON
+        type        [0,8]                     ch     bus      lr       // LC6, LC12, HC6, HC12, 1.0, 2.0, 3.0, 5.0, 10.0
+        f           [0.0,1.0] log(201)        ch     bus      lr       // 20..20000
+    insert/                                   ch     bus      lr 
+      on            [0,1]                     ch     bus      lr       // OFF, ON
+      fxslot        [0,8];[0..4]              ch     bus      lr       // OFF, Fx1A, Fx1B, .., Fx4A, Fx4B; OFF, Fx1, .., Fx4 on lr
+    eq/                                       ch rtn bus      lr
+      on            [0,1]                     ch rtn bus      lr       // OFF, ON
+      mode          [0,2]                            bus      lr       // PEQ, GEQ, TEQ
+      1..n/                                   4  4   6        6
+        type        [0,5]                     ch rtn bus      lr       // LCut, LShv, PEQ, VEQ, HShv, HCut
+        f           [0.0,1.0] log(201)        ch rtn bus      lr       // 20..20000
+        g           [0.0,1.0] lin(121)        ch rtn bus      lr       // -15..15
+        q           [0.0,1.0] log(72)         ch rtn bus      lr       // 10..0.3
+    geq/                                             bus      lr
+      20..20k       [0.0,1.0] lin(61)                bus      lr       // -15..15
+    mix/                                      ch rtn bus send lr
+      on            [0,1]                     ch rtn bus send lr       // OFF, ON; channel on/off
+      fader         [0.0,1.0] fader(1024)     ch rtn bus send lr       // -oo..10
+      lr            [0,1]                     ch rtn bus               // OFF, ON; route to lr
+      pan           [0.0,1.0] lin(101)        ch rtn bus      lr       // -100..100; bal on lr
+      01..n/                                  10 10
+        level       [0.0,1.0] level(161)      ch rtn                   // -oo..10
+        grpon       [0,1]                     ch rtn                   // to group on/off
+        tap         [0,5]                     ch rtn                   // IN, PREEQ, POSTEQ, PRE, POST, GRP
+        pan (odd)   [0.0,1.0] lin(101)        ch rtn                   // -100..100; on sends 01,03,05 only
+    grp/                                      ch rtn bus send
+      dca           [0,15]                    ch rtn bus send          // bit mask 
+      mute          [0,15]                    ch rtn bus send          // bit mask
+    automix/                                  ch
+      group         [0,2]                     ch                       // OFF, X, Y
+      weight        [0.0,1.0] log(49)         ch                       // -12..+12
+
+  dca/                                                
+    1..4/
+      on            [0,1]                                              // OFF, ON
+      fader         [0.0,1.0] fader(1024)                              // -oo..10
+      config/                                         
+        name        (16)                                               // [16]
+        color       [0,15]                                             // 0..15
+
+  config/                                             
+    chlink/                                                            // link params actually in ch[]->link
+      1-2..15-16    [0,1]                                              // OFF, ON
+    buslink/ 
+      1-2..5-6      [0,1]                                              // OFF, ON
+    linkcfg/
+      preamp        [0,1]                                              // OFF, ON
+      eq            [0,1]                                              // OFF, ON
+      dyn           [0,1]                                              // OFF, ON
+      fdrmute       [0,1]                                              // OFF, ON
+    solo/                                             
+      level         [0.0,1.0] level(161)                               // -oo .. +10
+      source        [0,14]                                                   // off, LR, LRPFL, LRAFL, AUX, U1718, Bus1, .., Bus6,
+                                                                       // Bus12, Bus34, Bus56 (XR12/16: U1718 = OFF)
+      sourcetrim    [0.0,1.0] log(73)                                  // source trim -18..+12 dB
+      chmode        [0,1]                                              // input solo mode PFL,AFL
+      busmode       [0,1]                                              // bus solo mode PFL,AFL
+      dimatt        [0.0,1.0] lin(40)                                  // -40..0
+      dim           [0,1]                                              // OFF, ON
+      mono          [0,1]                                              // OFF, ON
+      mute          [0,1]                                              // OFF, ON
+      dimpfl        [0,1]                                              // OFF, ON
+    amixenable/
+      X..Y          [0,1]                                              // OFF, ON
+    amixlock/
+      X..Y          [0,1]                                              // OFF, ON
+    mute/
+      1..4          [0,1]                                              // mutegroup on/off
+
+  routing/
+    main/01..02/                                                       // 01:MAIN, 02:PHONES
+      src           [0,10]                                             // LR, MON, U0102..U1718
+    aux/01..02/                                       
+    aux/03..04/                                                     6
+    aux/05..06/                                                    26 
+    p16/01..16/                                                    26
+      src           [0,55]                                             // Ch01..Ch16, AuxL..R, Fx1L..Fx4R, Bus1..Bus6, Send1..Send4,
+                                                                       // L, R, U1..U18
+      pos           [0,10]                                             // AIN, AIN+M, IN, IN+M, PREEQ, PREEQ+M, POSTEQ, POSTEQ+M, 
+                                                                       // PRE, PRE+M, POST
+    usb/01..02/                                       
+    usb/03..18/                                                    26
+      src           [0,37]                                             // Ch01..Ch16, AuxL..R, Fx1L..Fx4R, Bus1..Bus6, Send1..Send4,
+                                                                       // L, R
+      pos           [0,10]                                             // AIN, AIN+M, IN, IN+M, PREEQ, PREEQ+M, POSTEQ, POSTEQ+M, 
+                                                                       // PRE, PRE+M, POST
+
+  fx/                                                  
+    1..4/
+      type          [0,60]                                             // algorithm short name
+      insert        [0,1]                                              // OFF, ON
+      par/
+        01..64      (see fx list)                                      // up to 64 fx parameters
+
+  headamp/
+    01..04/                                            
+    05..08/                                                        2
+    09..16/                                                        26
+      gain          [0.0,1.0] lin(145)                                 // -12..60
+      phantom       [0,1]                                              // OFF, ON
+    17/                                                
+    18..24                                                           8
+      gain          [0.0,1.0] lin(65)                                  // -12..20 (aux/line dígital trim)
+
+  -action/                                             
+    updnet          [0,3]                                              // update network settings; LAN, IS, AP (lan, infrastructure, access point)
+                                                                       // might temporarily disconnect the corresponding network
+    wlanscan        [0,1]                                              // GO to start network scan (LAN mode only, results in -stat/networks)
+    initall         [0,1]                                              // GO initialize console
+    savestate       [0,1]                                              // GO save console state now
+    clearsolo       [0,1]                                              // GO clear solo
+    setclock        (14)                                               // set clock ('20YYMMDDHHMMSS'), ignored on X18/XR18
+    mididump        [0,1]                                              // GO to send out all MIDI CCs (used at end of snapshot recall)
+  
+  -snap                                                
+    name            (31)                                               // snapshot name for save, recently loaded snapshort name
+    index           [1,64]                                             // recently loaded/saved snapshot number
+    load            [1,64]                                             // 1..64 (triggers snapshot load)
+    save            [1,64]                                             // 1..64 (triggers snapshot save)
+    delete          [1,64]                                             // 1..64 (triggers snapshot delete)
+    01..64/                                            
+      name          (31)                                               // snapshot name (31 chars max)
+      scope         (59)                                               // -/+ recall scope ch1..16,aux,fxrtn1..4,busmstr1..6,fxsendmstr1..4,lr,
+                                                                       //                  dca1..4,fx1..4,
+                                                                       //                  source,input,config,eq,dyn,bussend1..6,fxsend1..4,fdrpan,mute,
+                                                                       //                  routing,consolecfg  (59 chars)
+
+linear parameter:      value = fmin + (fmax - fmin) * float
+log parameter:         value = fmin * exp(log(fmax / fmin) * float)
+fader/level parameter: dblevel = 40  * idx / (steps - 1) - 30; if idx >= steps / 2
+                                 80  * idx / (steps - 1) - 50; if idx >= steps / 4
+                                 160 * idx / (steps - 1) - 70; if idx >= steps / 16
+                                 480 * idx / (steps - 1) - 90; if idx > 0
+                                 -144;                         if idx = 0
+
+effect index: HALL,CHAM,ROOM,RPLT,PLAT,AMBI,GATE,RVRS,VRM,VREV,CRS,FLNG,PIT,PIT2,CR/R,FL/R,D/RV,D/CR,
+              D/FL,MODD,DLY,3TAP,4TAP,GEQ,GEQ2,TEQ,TEQ2,PHAS,ROTA,WAVD,LIM,ENH,ENH2,EXC,EXC2,
+              AMP,AMP2,DRV,DRV2,IMG,PAN,FILT,DES,DES2,P1A,P1A2,PQ5,PQ52,FAC,FAC1M,FAC2,
+              LEC,LEC2,ULC,ULC2,SON,EDI,SUB,DIMC,CMB,CMB2
+
+effect parameters (stp: resolution, >0 lin; <0 log)
+--fxname---min----max---stp---u---def---parname--
+  HALL
+             0,   200,  101, ms,   20,  PreDelay  
+           0.2,     5,  -51, s,  1.57,  Decay     
+             2,   100,   50, ,     60,  Size      
+          1000, 20000,  -25, Hz, 5740,  Damping   
+             1,    30,   30, ,     25,  Diffusion 
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   83,  LoCut     
+           200, 20000,  -51, Hz, 7200,  HiCut     
+           0.5,     2,  -51, ,   0.95,  BassMult  
+             0,    50,   51, ,     25,  Spread    
+             0,   250,   51, ,     50,  Shape     
+             0,   100,   21, ,     30,  ModSpeed  
+
+  CHAM
+             0,   200,  101, ms,   14,  PreDelay  
+           0.3,    29,  -51, s,  1.70,  Decay     
+             4,    76,   37, m,    56,  Size      
+          1000, 20000,  -25, Hz, 4470,  Damping   
+             0,   100,   26, %,   100,  Diffusion 
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   60,  LoCut     
+           200, 20000,  -51, Hz, 5000,  HiCut     
+           0.25 ,   4,  -53, ,    1.0,  BassMult  
+             0,    50,   51, ,     33,  Spread    
+             0,   250,   51, ,     70,  Shape     
+             0,   100,   21, %,    50,  ModSpin   
+             0,   500,  101, ms,  115,  ERLeft    
+             0,   500,  101, ms,  135,  ERRight   
+             0,   100,   51, %,    54,  ERLevelL  
+             0,   100,   51, %,    66,  ERLevelR  
+
+  ROOM
+             0,   200,  101, ms,    6,  PreDelay  
+           0.3,    29,  -51, s,  0.43,  Decay     
+             4,    76,   37, m,    18,  Size      
+          1000, 20000,  -25, Hz, 3940,  Damping   
+             0,   100,   26, %,    68,  Diffusion 
+           -12,    12,   49, dB,  1.5,  Level     
+            10,   500,  -51, Hz,   83,  LoCut     
+           200, 20000,  -51, Hz, 5000,  HiCut     
+           0.25 ,   4,  -53, ,      1,  BassMult  
+             0,    50,   51, ,     18,  Spread    
+             0,   250,   51, ,     40,  Shape     
+             0,   100,   21, %,    25,  ModSpin   
+             0,  1200,  241, ms,   10,  EchoLeft  
+             0,  1200,  241, ms,   20,  EchoRight 
+          -100,   100,  101, %,     0,  EchoFbL   
+          -100,   100,  101, %,     0,  EchoFbR   
+
+  RPLT
+             0,   200,  101, ms,   10,  PreDelay  
+           0.3,    29,  -51, s,  1.70,  Decay     
+             4,    39,   36, m,    27,  Size      
+          1000, 20000,  -25, Hz, 4470,  Damping   
+             0,   100,   26, %,   100,  Diffusion 
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   89,  LoCut     
+           200, 20000,  -51, Hz, 5000,  HiCut     
+           0.25 ,   4,  -53, ,    0.8,  BassMult  
+             0,    50,   51, ,     18,  Spread    
+             0,   100,   51, ,     26,  Attack    
+             0,   100,   21, %,    50,  ModSpin   
+             0,  1200,  241, ms,   90,  EchoLeft  
+             0,  1200,  241, ms,   80,  EchoRight 
+          -100,   100,  101, %,    34,  EchoFbL   
+          -100,   100,  101, %,   -28,  EchoFbR   
+
+  PLAT
+             0,   200,  101, ms,   32,  PreDelay  
+           0.5,    10,  -51, s,  2.11,  Decay     
+             2,   100,   50, ,     60,  Size      
+          1000, 20000,  -25, Hz, 6500,  Damping   
+             1,    30,   30, ,     30,  Diffusion 
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   60,  LoCut     
+           200, 20000,  -51, Hz, 7200,  HiCut     
+           0.5,     2,  -51, ,    1.1,  BassMult  
+            10,   500,  -51, Hz,  211,  Xover     
+             1,    50,   50, ,     20,  ModDepth  
+             0,   100,   21, ,     20,  ModSpeed  
+
+  AMBI
+             0,   200,  101, ms,    4,  PreDelay  
+           0.2,   7.3,  -51, s,  0.84,  Decay     
+             2,   100,   50, ,     60,  Size      
+          1000, 20000,  -25, Hz, 5060,  Damping   
+             1,    30,   30, ,     30,  Diffusion 
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   71,  LoCut     
+           200, 20000,  -51, Hz, 7900,  HiCut     
+             0,   100,   51, %,    20,  Mod       
+             0,   100,   51, %,    50,  TailGain  
+
+  GATE
+             0,   200,  101, ms,    8,  PreDelay  
+           140,  1000,   51, ms,  312,  Decay     
+             0,    30,   31, ,      6,  Attack    
+             1,    50,   50, ,     22,  Density   
+             0,   100,   51, ,     60,  Spread    
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   65,  LoCut     
+           200, 20000,  -51, Hz, 5000,  HiSvFreq  
+           -30,     0,   61, dB,  -12,  HiSvGain  
+             1,    30,   30, ,     30,  Diffusion 
+
+  RVRS
+             0,   200,  101, ms,   30,  PreDelay  
+           140,  1000,  -51, ms,  624,  Decay     
+             0,    50,   51, ,     28,  Rise      
+             1,    30,   30, ,     24,  Diffusion 
+             0,   100,   51, ,     78,  Spread    
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,  105,  LoCut     
+           200, 20000,  -51, Hz, 7900,  HiSvFreq  
+           -30,     0,   61, dB,  -12,  HiSvGain  
+
+  VRM
+             0,   200,  101, ms,   20,  RevDelay  
+           0.1,    20,  -51, s,  2.16,  Decay     
+             2,   100,   50, ,     24,  Size      
+             1,    30,   30, ,     30,  Density   
+             0,   100,   51, %,    22,  ERLevel   
+           -12,    12,   49, dB,    0,  Level     
+           0.1,    10,  -51, ,    1.1,  LoMult    
+           0.1,    10,  -51, ,    0.7,  HiMult    
+            10,   500,  -51, Hz,   89,  LoCut     
+           200, 20000,  -51, Hz,10400,  HiCut     
+             0,   200,  101, ms,   28,  ERLeft    
+             0,   200,  101, ms,   34,  ERRight   
+             0,     1,    2, ,      0,  Freeze    
+
+  VREV
+             0,   120,   61, ms,   40,  PreDelay  
+           0.4,   4.5,   42, s,     3,  Decay     
+             0,   100,   51, %,   100,  Mod       
+             0,     1,    2, ,      0,  Vintage   
+             0,     1,    2, ,      0,  Output    
+           -12,    12,   49, dB,    0,  Level     
+            10,   500,  -51, Hz,   76,  LoCut     
+          10000 ,20000, -51, Hz,12000,  HiCut     
+           0.5,     2,  -51, ,      1,  LoMult    
+          0.25,     1,  -51, ,    0.7,  HiMult    
+
+  CRS
+          0.05,     5, -101, Hz, 0.48,  Speed     
+             0,   100,   21, %,    20,  DepthL    
+             0,   100,   21, %,    20,  DepthR    
+           0.5,    50,  -51, ms, 15.1,  DelayL    
+           0.5,    50,  -51, ms, 16.6,  DelayR    
+             0,   100,   51, %,   100,  Mix       
+            10,   500,  -51, Hz,   83,  LoCut     
+           200, 20000,  -51, Hz,10400,  HiCut     
+             0,   180,   37, ,    120,  Phase     
+             0,   100,   21, %,   100,  Wave      
+             0,   100,   21, %,   100,  Spread    
+
+  FLNG
+          0.05,     5, -101, Hz, 0.32,  Speed     
+             0,   100,   21, %,    80,  DepthL    
+             0,   100,   21, %,    80,  DepthR    
+           0.5,    20,  -51, ms,  4.2,  DelayL    
+           0.5,    20,  -51, ms,  4.2,  DelayR    
+             0,   100,   51, %,   100,  Mix       
+            10,   500,  -51, Hz,   83,  LoCut     
+           200, 20000,  -51, Hz,15100,  HiCut     
+             0,   180,   37, ,    180,  Phase     
+            10,   500,  -51, Hz,  122,  FeedLC    
+           200, 20000,  -51, Hz,11500,  FeedHC    
+           -90,    90,   37, %,    70,  Feed      
+
+  PIT
+           -12,    12,   25, ,      0,  Semi      
+           -50,    50,  101, ,      0,  Cent      
+             1,   500, -101, ms,    5,  Delay     
+            10,   500,  -51, Hz,   50,  LoCut     
+          2000, 20000,  -51, Hz,16000,  HiCut     
+             0,   100,   51, %,   100,  Mix       
+
+  PIT2
+           -12,    12,   25, ,      0,  Semi  1   
+           -50,    50,  101, ,    -10,  Cent  1   
+             1,   500, -101, ms,    5,  Delay 1   
+             0,   100,   51, %,   100,  Gain  1   
+          -100,   100,   41, %,   -50,  Pan   1   
+             0,   100,   51, %,   100,  Mix       
+           -12,    12,   25, ,      0,  Semi  2   
+           -50,    50,  101, ,     10,  Cent  2   
+             1,   500, -101, ms,    7,  Delay 2   
+             0,   100,   51, %,   100,  Gain  2   
+          -100,   100,   41, %,    50,  Pan   2   
+          2000, 20000,  -51, Hz,16000,  HiCut     
+
+  CR/R
+          0.05,     4, -101, Hz, 0.47,  Speed     
+             0,   100,   21, %,    20,  Depth     
+           0.5,    50,  -51, ms, 15.1,  Delay     
+             0,   180,   37, ,    180,  Phase     
+             0,   100,   21, %,   100,  Wave      
+          -100,   100,   41, ,     10,  Balance   
+             0,   200,  101, ms,   20,  PreDelay  
+           0.1,     5,  -51, s,  1.32,  Decay     
+             2,   100,   50, ,     40,  Size      
+          1000, 20000,  -51, Hz, 6400,  Damp      
+            10,   500,  -51, Hz,   83,  LoCut     
+             0,   100,   51, %,   100,  Mix       
+
+  FL/R
+          0.05,     4, -101, Hz, 0.41,  Speed     
+             0,   100,   21, %,    80,  Depth     
+           0.5,    20,  -51, ms,  2.2,  Delay     
+             0,   180,   37, ,     25,  Phase     
+           -90,    90,   37, %,    70,  Feed      
+          -100,   100,   41, ,    -15,  Balance   
+             0,   200,  101, ms,   14,  PreDelay  
+           0.1,     5,  -51, s,  0.97,  Decay     
+             2,   100,   50, ,     24,  Size      
+          1000, 20000,  -51, Hz, 7200,  Damp      
+            10,   500,  -51, Hz,  113,  LoCut     
+             0,   100,   51, %,   100,  Mix       
+
+  D/RV
+             1,  3000, 3000, ms,  240,  Time      
+             0,    13,   14, ,      5,  Pattern   
+          1000, 20000,  -51, Hz, 7600,  FeedHC    
+             0,   100,   51, %,    40,  Feedback  
+             0,   100,   51, %,    40,  X-Feed    
+          -100,   100,   41, ,      0,  Balance   
+             0,   200,  101, ms,   24,  PreDelay  
+           0.1,     5,  -51, s,  1.43,  Decay     
+             2,   100,   50, ,     52,  Size      
+          1000, 20000,  -51, Hz, 5600,  Damp      
+            10,   500,  -51, Hz,   89,  LoCut     
+             0,   100,   51, %,   100,  Mix       
+
+  D/CR
+             1,  3000, 3000, ms,  201,  Time      
+             0,    13,   14, ,      6,  Pattern   
+          1000, 20000,  -51, Hz, 9700,  FeedHC    
+             0,   100,   51, %,    30,  Feedback  
+             0,   100,   51, %,    40,  X-Feed    
+          -100,   100,   41, ,     60,  Balance   
+          0.05,     4, -101, Hz, 1.07,  Speed     
+             0,   100,   21, %,    20,  Depth     
+           0.5,    50,  -51, ms, 15.1,  Delay     
+             0,   180,   37, ,    100,  Phase     
+             0,   100,   21, %,   100,  Wave      
+             0,   100,   51, %,   100,  Mix       
+
+  D/FL
+             1,  3000, 3000, ms,  185,  Time      
+             0,    13,   14, ,      6,  Pattern   
+          1000, 20000,  -51, Hz, 9700,  FeedHC    
+             0,   100,   51, %,    38,  Feedback  
+             0,   100,   51, %,    30,  X-Feed    
+          -100,   100,   41, ,     50,  Balance   
+          0.05,     4, -101, Hz, 0.56,  Speed     
+             0,   100,   21, %,    80,  Depth     
+           0.5,    20,  -51, ms,  4.2,  Delay     
+             0,   180,   37, ,    180,  Phase     
+           -90,    90,   37, %,    80,  Feed      
+             0,   100,   51, %,   100,  Mix       
+
+  MODD
+             1,  3000, 3000, ms,  300,  Time      
+             0,     3,    4, ,      0,  Factor    
+             0,   100,   51, %,    30,  Feedback  
+            10,   500,  -51, Hz,   97,  FeedLC    
+           200, 20000,  -51, Hz, 9700,  FeedHC    
+             0,   100,   21, %,    20,  Depth     
+          0.05,    10, -101, Hz, 1.07,  Speed     
+             0,     1,    2, ,      1,  Serial    
+             0,     2,    3, ,      1,  Rtype     
+             1,    10,   19, ,      5,  Decay     
+          1000, 20000,  -51, Hz, 5600,  Damp      
+          -100,   100,   41, ,      0,  Balance   
+             0,   100,   51, %,   100,  Mix       
+
+  DLY
+             0,   100,   51, %,   100,  Mix       
+             1,  3000, 3000, ms,  223,  Time      
+             0,     2,    3, ,      1,  Mode      
+             0,     8,    9, ,      4,  FactorL   
+             0,     8,    9, ,      4,  FactorR   
+          -100,   100,  201, ms,   13,  Offset    
+            10,   500,  -51, Hz,   10,  LC        
+           200, 20000,  -51, Hz,20000,  HC        
+            10,   500,  -51, Hz,   97,  FeedLC    
+             0,   100,   51, %,    30,  FeedL     
+             0,   100,   51, %,    30,  FeedR     
+           200, 20000,  -51, Hz,20000,  FeedHC    
+
+  3TAP
+             1,  3000, 3000, ms,  200,  Time      
+             0,   100,   51, %,   100,  GainT     
+          -100,   100,   41, %,     0,  PanT      
+             0,   100,   51, %,    30,  Feedback  
+            10,   500,  -51, Hz,   10,  LC        
+           200, 20000,  -51, Hz,20000,  HC        
+             0,     8,    9, ,      5,  FactorA   
+             0,   100,   51, %,    50,  GainA     
+          -100,   100,   41, %,  -100,  PanA      
+             0,     8,    9, ,      6,  FactorB   
+             0,   100,   51, %,    60,  GainB     
+          -100,   100,   41, %,   100,  PanB      
+             0,     1,    2, ,      0,  X-Feed    
+             0,     1,    2, ,      0,  Mono      
+             0,     1,    2, ,      0,  Dry       
+
+  4TAP
+             1,  3000, 3000, ms,  200,  Time      
+             0,   100,   51, %,   100,  Gain      
+             0,   100,   51, %,    30,  Feedback  
+            10,   500,  -51, Hz,   10,  LC        
+           200, 20000,  -51, Hz,20000,  HC        
+             0,     6,    7, ,      5,  Spread    
+             0,     8,    9, ,      5,  FactorA   
+             0,   100,   51, %,    50,  GainA     
+             0,     8,    9, ,      4,  FactorB   
+             0,   100,   51, %,    50,  GainB     
+             0,     8,    9, ,      6,  FactorC   
+             0,   100,   51, %,    50,  GainC     
+             0,     1,    2, ,      0,  X-Feed    
+             0,     1,    2, ,      0,  Mono      
+             0,     1,    2, ,      0,  Dry       
+
+  GEQ
+           -15,   +15,   61, dB,    0,  20 
+           -15,   +15,   61, dB,    0,  25 
+           -15,   +15,   61, dB,    0,  31.5
+           -15,   +15,   61, dB,    0,  40 
+           -15,   +15,   61, dB,    0,  50 
+           -15,   +15,   61, dB,    0,  63 
+           -15,   +15,   61, dB,    0,  80 
+           -15,   +15,   61, dB,    0,  100
+           -15,   +15,   61, dB,    0,  125
+           -15,   +15,   61, dB,    0,  160
+           -15,   +15,   61, dB,    0,  200
+           -15,   +15,   61, dB,    0,  250
+           -15,   +15,   61, dB,    0,  315
+           -15,   +15,   61, dB,    0,  400
+           -15,   +15,   61, dB,    0,  500
+           -15,   +15,   61, dB,    0,  630
+           -15,   +15,   61, dB,    0,  800
+           -15,   +15,   61, dB,    0,  1k 
+           -15,   +15,   61, dB,    0,  1k25
+           -15,   +15,   61, dB,    0,  1k6
+           -15,   +15,   61, dB,    0,  2k 
+           -15,   +15,   61, dB,    0,  2k5
+           -15,   +15,   61, dB,    0,  3k15
+           -15,   +15,   61, dB,    0,  4k 
+           -15,   +15,   61, dB,    0,  5k 
+           -15,   +15,   61, dB,    0,  6k3
+           -15,   +15,   61, dB,    0,  8k 
+           -15,   +15,   61, dB,    0,  10k
+           -15,   +15,   61, dB,    0,  12k5
+           -15,   +15,   61, dB,    0,  16k
+           -15,   +15,   61, dB,    0,  20k
+           -15,   +15,   61, dB,    0,  Lvl
+
+  GEQ2
+           -15,   +15,   61, dB,    0,  20 
+           -15,   +15,   61, dB,    0,  25 
+           -15,   +15,   61, dB,    0,  31.5
+           -15,   +15,   61, dB,    0,  40 
+           -15,   +15,   61, dB,    0,  50 
+           -15,   +15,   61, dB,    0,  63 
+           -15,   +15,   61, dB,    0,  80 
+           -15,   +15,   61, dB,    0,  100
+           -15,   +15,   61, dB,    0,  125
+           -15,   +15,   61, dB,    0,  160
+           -15,   +15,   61, dB,    0,  200
+           -15,   +15,   61, dB,    0,  250
+           -15,   +15,   61, dB,    0,  315
+           -15,   +15,   61, dB,    0,  400
+           -15,   +15,   61, dB,    0,  500
+           -15,   +15,   61, dB,    0,  630
+           -15,   +15,   61, dB,    0,  800
+           -15,   +15,   61, dB,    0,  1k 
+           -15,   +15,   61, dB,    0,  1k25
+           -15,   +15,   61, dB,    0,  1k6
+           -15,   +15,   61, dB,    0,  2k 
+           -15,   +15,   61, dB,    0,  2k5
+           -15,   +15,   61, dB,    0,  3k15
+           -15,   +15,   61, dB,    0,  4k 
+           -15,   +15,   61, dB,    0,  5k 
+           -15,   +15,   61, dB,    0,  6k3
+           -15,   +15,   61, dB,    0,  8k 
+           -15,   +15,   61, dB,    0,  10k
+           -15,   +15,   61, dB,    0,  12k5
+           -15,   +15,   61, dB,    0,  16k
+           -15,   +15,   61, dB,    0,  20k
+           -15,   +15,   61, dB,    0,  LvlA
+           -15,   +15,   61, dB,    0,  20 
+           -15,   +15,   61, dB,    0,  25 
+           -15,   +15,   61, dB,    0,  31.5
+           -15,   +15,   61, dB,    0,  40 
+           -15,   +15,   61, dB,    0,  50 
+           -15,   +15,   61, dB,    0,  63 
+           -15,   +15,   61, dB,    0,  80 
+           -15,   +15,   61, dB,    0,  100
+           -15,   +15,   61, dB,    0,  125
+           -15,   +15,   61, dB,    0,  160
+           -15,   +15,   61, dB,    0,  200
+           -15,   +15,   61, dB,    0,  250
+           -15,   +15,   61, dB,    0,  315
+           -15,   +15,   61, dB,    0,  400
+           -15,   +15,   61, dB,    0,  500
+           -15,   +15,   61, dB,    0,  630
+           -15,   +15,   61, dB,    0,  800
+           -15,   +15,   61, dB,    0,  1k 
+           -15,   +15,   61, dB,    0,  1k25
+           -15,   +15,   61, dB,    0,  1k6
+           -15,   +15,   61, dB,    0,  2k 
+           -15,   +15,   61, dB,    0,  2k5
+           -15,   +15,   61, dB,    0,  3k15
+           -15,   +15,   61, dB,    0,  4k 
+           -15,   +15,   61, dB,    0,  5k 
+           -15,   +15,   61, dB,    0,  6k3
+           -15,   +15,   61, dB,    0,  8k 
+           -15,   +15,   61, dB,    0,  10k
+           -15,   +15,   61, dB,    0,  12k5
+           -15,   +15,   61, dB,    0,  16k
+           -15,   +15,   61, dB,    0,  20k
+           -15,   +15,   61, dB,    0,  LvlB
+
+  TEQ
+           -15,   +15,   61, dB,    0,  20 
+           -15,   +15,   61, dB,    0,  25 
+           -15,   +15,   61, dB,    0,  31.5
+           -15,   +15,   61, dB,    0,  40 
+           -15,   +15,   61, dB,    0,  50 
+           -15,   +15,   61, dB,    0,  63 
+           -15,   +15,   61, dB,    0,  80 
+           -15,   +15,   61, dB,    0,  100
+           -15,   +15,   61, dB,    0,  125
+           -15,   +15,   61, dB,    0,  160
+           -15,   +15,   61, dB,    0,  200
+           -15,   +15,   61, dB,    0,  250
+           -15,   +15,   61, dB,    0,  315
+           -15,   +15,   61, dB,    0,  400
+           -15,   +15,   61, dB,    0,  500
+           -15,   +15,   61, dB,    0,  630
+           -15,   +15,   61, dB,    0,  800
+           -15,   +15,   61, dB,    0,  1k 
+           -15,   +15,   61, dB,    0,  1k25
+           -15,   +15,   61, dB,    0,  1k6
+           -15,   +15,   61, dB,    0,  2k 
+           -15,   +15,   61, dB,    0,  2k5
+           -15,   +15,   61, dB,    0,  3k15
+           -15,   +15,   61, dB,    0,  4k 
+           -15,   +15,   61, dB,    0,  5k 
+           -15,   +15,   61, dB,    0,  6k3
+           -15,   +15,   61, dB,    0,  8k 
+           -15,   +15,   61, dB,    0,  10k
+           -15,   +15,   61, dB,    0,  12k5
+           -15,   +15,   61, dB,    0,  16k
+           -15,   +15,   61, dB,    0,  20k
+           -15,   +15,   61, dB,    0,  Lvl
+  TEQ2
+           -15,   +15,   61, dB,    0,  20 
+           -15,   +15,   61, dB,    0,  25 
+           -15,   +15,   61, dB,    0,  31.5
+           -15,   +15,   61, dB,    0,  40 
+           -15,   +15,   61, dB,    0,  50 
+           -15,   +15,   61, dB,    0,  63 
+           -15,   +15,   61, dB,    0,  80 
+           -15,   +15,   61, dB,    0,  100
+           -15,   +15,   61, dB,    0,  125
+           -15,   +15,   61, dB,    0,  160
+           -15,   +15,   61, dB,    0,  200
+           -15,   +15,   61, dB,    0,  250
+           -15,   +15,   61, dB,    0,  315
+           -15,   +15,   61, dB,    0,  400
+           -15,   +15,   61, dB,    0,  500
+           -15,   +15,   61, dB,    0,  630
+           -15,   +15,   61, dB,    0,  800
+           -15,   +15,   61, dB,    0,  1k 
+           -15,   +15,   61, dB,    0,  1k25
+           -15,   +15,   61, dB,    0,  1k6
+           -15,   +15,   61, dB,    0,  2k 
+           -15,   +15,   61, dB,    0,  2k5
+           -15,   +15,   61, dB,    0,  3k15
+           -15,   +15,   61, dB,    0,  4k 
+           -15,   +15,   61, dB,    0,  5k 
+           -15,   +15,   61, dB,    0,  6k3
+           -15,   +15,   61, dB,    0,  8k 
+           -15,   +15,   61, dB,    0,  10k
+           -15,   +15,   61, dB,    0,  12k5
+           -15,   +15,   61, dB,    0,  16k
+           -15,   +15,   61, dB,    0,  20k
+           -15,   +15,   61, dB,    0,  LvlA
+           -15,   +15,   61, dB,    0,  20 
+           -15,   +15,   61, dB,    0,  25 
+           -15,   +15,   61, dB,    0,  31.5
+           -15,   +15,   61, dB,    0,  40 
+           -15,   +15,   61, dB,    0,  50 
+           -15,   +15,   61, dB,    0,  63 
+           -15,   +15,   61, dB,    0,  80 
+           -15,   +15,   61, dB,    0,  100
+           -15,   +15,   61, dB,    0,  125
+           -15,   +15,   61, dB,    0,  160
+           -15,   +15,   61, dB,    0,  200
+           -15,   +15,   61, dB,    0,  250
+           -15,   +15,   61, dB,    0,  315
+           -15,   +15,   61, dB,    0,  400
+           -15,   +15,   61, dB,    0,  500
+           -15,   +15,   61, dB,    0,  630
+           -15,   +15,   61, dB,    0,  800
+           -15,   +15,   61, dB,    0,  1k 
+           -15,   +15,   61, dB,    0,  1k25
+           -15,   +15,   61, dB,    0,  1k6
+           -15,   +15,   61, dB,    0,  2k 
+           -15,   +15,   61, dB,    0,  2k5
+           -15,   +15,   61, dB,    0,  3k15
+           -15,   +15,   61, dB,    0,  4k 
+           -15,   +15,   61, dB,    0,  5k 
+           -15,   +15,   61, dB,    0,  6k3
+           -15,   +15,   61, dB,    0,  8k 
+           -15,   +15,   61, dB,    0,  10k
+           -15,   +15,   61, dB,    0,  12k5
+           -15,   +15,   61, dB,    0,  16k
+           -15,   +15,   61, dB,    0,  20k
+           -15,   +15,   61, dB,    0,  LvlB
+
+  PHAS
+          0.05,     5, -101, Hz, 1.44,  Speed     
+             0,   100,   51, %,    54,  Depth     
+             0,    80,   41, %,    42,  Reso      
+             0,    50,   26, ,     28,  Base      
+             2,    12,   11, ,      4,  Stages    
+             0,   100,   51, %,    70,  Mix       
+           -50,    50,   21, ,    -25,  Wave      
+             0,   180,   37, ,      0,  Phase     
+          -100,   100,   41, %,     0,  EnvMod    
+            10,  1000,  -51, ms,   21,  Attack    
+             1,  2000,  -51, ms,   52,  Hold      
+            10,  1000,  -51, ms,  209,  Release   
+
+  ROTA
+           0.1,     4, -101, Hz, 0.66,  LoSpeed   
+             2,    10, -101, Hz, 5.01,  HiSpeed   
+             0,   100,   51, %,    38,  Accel     
+             0,   100,   51, %,     0,  Distance  
+          -100,   100,   41, %,   -15,  Balance   
+             0,   100,   51, %,   100,  Mix       
+             0,     1,    2, ,      0,  StopSW    
+             0,     1,    2, ,      0,  SpeedSW   
+
+  WAVD
+          -100,   100,  101, %,     0,  AttackA   
+          -100,   100,  101, %,     0,  SustainA  
+           -24,    24,   97, dB,    0,  OutGainA  
+          -100,   100,  101, %,     0,  AttackB   
+          -100,   100,  101, %,     0,  SustainB  
+           -24,    24,   97, dB,    0,  OutGainB  
+
+  LIM
+             0,    18,   37, dB,    0,  InGain    
+           -18,     0,   37, dB, -0.5,  OutGain   
+             0,   100,   51, %,     0,  Squeeze   
+             0,    10,   11, dB,    3,  Knee      
+          0.05,     1,  -51, ms, 0.05,  Attack    
+            20,  2000,  -51, ms,  662,  Release   
+             0,     1,    2, ,      1,  STLink    
+             0,     1,    2, ,      0,  AutoGain  
+
+  ENH
+           -12,    12,   49, dB,    0,  OutGain   
+             0,   100,   51, %,    22,  Spread    
+             0,   100,   51, %,    16,  BassGain  
+             1,    50,   50, ,     11,  BassFreq  
+             0,   100,   51, %,    16,  MidGain   
+             1,    50,   50, ,     25,  MidQ      
+             0,   100,   51, %,    12,  HiGain    
+             1,    50,   50, ,     40,  HiFreq    
+             0,     1,    2, ,      0,  Solo      
+
+  ENH2
+           -12,    12,   49, dB,    0,  OutGain   
+             0,   100,   51, %,    14,  BassGain  
+             1,    50,   50, ,     20,  BassFreq  
+             0,   100,   51, %,    12,  MidGain   
+             1,    50,   50, ,     38,  MidQ      
+             0,   100,   51, %,    16,  HiGain    
+             1,    50,   50, ,     50,  HiFreq    
+             0,     1,    2, ,      0,  Solo      
+           -12,    12,   49, dB,    0,  OutGain   
+             0,   100,   51, %,    14,  BassGain  
+             1,    50,   50, ,     20,  BassFreq  
+             0,   100,   51, %,    12,  MidGain   
+             1,    50,   50, ,     38,  MidQ      
+             0,   100,   51, %,    16,  HiGain    
+             1,    50,   50, ,     50,  HiFreq    
+             0,     1,    2, ,      0,  Solo      
+
+  EXC
+          1000, 10000,  -51, Hz, 3310,  Tune      
+             0,   100,   51, %,    28,  Peak      
+             0,   100,   51, %,    24,  ZeroFill  
+           -50,    50,   51, ,     14,  Timbre    
+             0,   100,   51, %,    30,  Harmonics 
+             0,   100,   51, %,    30,  Mix       
+             0,     1,    2, ,      0,  Solo      
+
+  EXC2
+          1000, 10000,  -51, Hz, 7000,  Tune      
+             0,   100,   51, %,     0,  Peak      
+             0,   100,   51, %,     0,  ZeroFill  
+           -50,    50,   51, ,      0,  Timbre    
+             0,   100,   51, %,     0,  Harmonics 
+             0,   100,   51, %,    30,  Mix       
+             0,     1,    2, ,      0,  Solo      
+          1000, 10000,  -51, Hz, 7000,  Tune      
+             0,   100,   51, %,     0,  Peak      
+             0,   100,   51, %,     0,  ZeroFill  
+           -50,    50,   51, ,      0,  Timbre    
+             0,   100,   51, %,     0,  Harmonics 
+             0,   100,   51, %,    30,  Mix       
+             0,     1,    2, ,      0,  Solo      
+
+  AMP
+             0,    10,   41, ,      5,  PreAmp    
+             0,    10,   41, ,      5,  Buzz      
+             0,    10,   41, ,      5,  Punch     
+             0,    10,   41, ,      5,  Crunch    
+             0,    10,   41, ,      5,  Drive     
+             0,    10,   41, ,      5,  Level     
+             0,    10,   41, ,      5,  Low       
+             0,    10,   41, ,      5,  High      
+             0,     1,    2, ,      1,  Cabinet   
+
+  AMP2
+             0,    10,   41, ,      5,  PreAmp    
+             0,    10,   41, ,      5,  Buzz      
+             0,    10,   41, ,      5,  Punch     
+             0,    10,   41, ,      5,  Crunch    
+             0,    10,   41, ,      5,  Drive     
+             0,    10,   41, ,      5,  Level     
+             0,    10,   41, ,      5,  Low       
+             0,    10,   41, ,      5,  High      
+             0,     1,    2, ,      1,  Cabinet   
+             0,    10,   41, ,      5,  PreAmp    
+             0,    10,   41, ,      5,  Buzz      
+             0,    10,   41, ,      5,  Punch     
+             0,    10,   41, ,      5,  Crunch    
+             0,    10,   41, ,      5,  Drive     
+             0,    10,   41, ,      5,  Level     
+             0,    10,   41, ,      5,  Low       
+             0,    10,   41, ,      5,  High      
+             0,     1,    2, ,      1,  Cabinet   
+
+  DRV
+             0,   100,   21, %,    25,  Drive     
+             0,    50,   26, %,    20,  Even      
+             0,    50,   26, %,    28,  Odd       
+           -12,    12,   49, dB, -6.5,  Gain      
+            20,   200,  -51, Hz,   55,  LoCut     
+          4000, 20000,  -51, Hz,18700,  HiCut     
+           -12,    12,   49, dB,    0,  LoGain    
+            50,   400,  -51, Hz,  154,  LoFreq    
+           -12,    12,   49, dB,    0,  HiGain    
+          1000, 10000,  -51, Hz, 4100,  HiFreq    
+
+  DRV2
+             0,   100,   21, %,    50,  Drive     
+             0,    50,   26, %,    20,  Even      
+             0,    50,   26, %,    20,  Odd       
+           -12,    12,   49, dB,    0,  Gain      
+            20,   200,  -51, Hz,  100,  LoCut     
+          4000, 20000,  -51, Hz, 7000,  HiCut     
+           -12,    12,   49, dB,    0,  LoGain    
+            50,   400,  -51, Hz,  200,  LoFreq    
+           -12,    12,   49, dB,    0,  HiGain    
+          1000, 10000,  -51, Hz, 3000,  HiFreq    
+             0,   100,   21, %,    50,  Drive     
+             0,    50,   26, %,    20,  Even      
+             0,    50,   26, %,    20,  Odd       
+           -12,    12,   49, dB,    0,  Gain      
+            20,   200,  -51, Hz,  100,  LoCut     
+          4000, 20000,  -51, Hz, 7000,  HiCut     
+           -12,    12,   49, dB,    0,  LoGain    
+            50,   400,  -51, Hz,  200,  LoFreq    
+           -12,    12,   49, dB,    0,  HiGain    
+          1000, 10000,  -51, Hz, 3000,  HiFreq    
+
+  IMG
+          -100,   100,  101, %,     0,  Balance   
+          -100,   100,  101, %,     0,  MonoPan   
+          -100,   100,  101, %,     0,  StereoPan 
+             0,    12,   25, dB,    0,  ShvGain   
+           100,  1000,  -25, Hz,  250,  ShvFreq   
+             1,    10,  -25, ,      2,  ShvQ      
+           -12,    12,   49, dB,    0,  OutGain   
+
+  PAN
+          0.05,     5, -101, Hz, 1.44,  Speed     
+             0,   180,   37, ,    180,  Phase     
+           -50,    50,   21, ,      0,  Wave      
+             0,   100,   21, %,   100,  Depth     
+             0,   100,   21, %,     0,  EnvSpd    
+             0,   100,   21, %,     0,  EnvDepth  
+            10,  1000,  -51, ms,   21,  Attack    
+             1,  2000,  -51, ms,   52,  Hold      
+            10,  1000,  -51, ms,  209,  Release   
+
+  FILT
+          0.05,    20, -151, Hz,  0.2,  Speed     
+             0,   100,   51, %,     0,  Depth     
+             0,   100,   21, %,    70,  Reso      
+            20, 15000, -101, Hz,104.7,  Base      
+             0,     3,    4, ,      0,  Mode      
+             0,   100,   51, %,   100,  Mix       
+             0,     6,    7, ,      0,  Wave      
+             0,   180,   37, ,     90,  Phase     
+          -100,   100,  101, %,    64,  EnvMod    
+            10,   250,  -51, ms,   12,  Attack    
+            10,   500,  -51, ms,  143,  Release   
+             0,   100,   51, %,    60,  Drive     
+             0,     1,    2, ,      1,  4pole     
+             0,     1,    2, ,      0,  SideChain 
+
+  DES
+             0,    50,   51, ,      0,  Low (M)   
+             0,    50,   51, ,      0,  High (M)  
+             0,    50,   51, ,      0,  Low S     
+             0,    50,   51, ,      0,  High S    
+             0,     1,    2, ,      0,  Male      
+             0,     1,    2, ,      0,  M/S       
+
+  DES2
+             0,    50,   51, ,      0,  Low A     
+             0,    50,   51, ,      0,  High A    
+             0,    50,   51, ,      0,  Low B     
+             0,    50,   51, ,      0,  High B    
+             0,     1,    2, ,      0,  Male A    
+             0,     1,    2, ,      0,  Male B    
+
+  P1A
+             0,     1,    2, ,      1,  On        
+           -12,    12,   49, dB,    0,  Gain      
+             0,    10,  101, ,      0,  Lo Boost  
+             0,     3,    4, ,      0,  Lo Freq   
+             0,    10,  101, ,      0,  Lo Atten  
+             0,    10,  101, ,    0.6,  Hi Width  
+             0,    10,  101, ,      0,  Hi Boost  
+             0,     6,    7, ,      5,  Hi Freq   
+             0,    10,  101, ,      0,  Hi Atten  
+             0,     2,    3, ,      2,  Atten Fr  
+             0,     1,    2, ,      1,  Transf    
+
+  P1A2
+             0,     1,    2, ,      1,  On        
+           -12,    12,   49, dB,    0,  Gain      
+             0,    10,  101, ,      0,  Lo Boost  
+             0,     3,    4, ,      0,  Lo Freq   
+             0,    10,  101, ,      0,  Lo Atten  
+             0,    10,  101, ,    0.6,  Hi Width  
+             0,    10,  101, ,      0,  Hi Boost  
+             0,     6,    7, ,      5,  Hi Freq   
+             0,    10,  101, ,      0,  Hi Atten  
+             0,     2,    3, ,      2,  Atten Fr  
+             0,     1,    2, ,      1,  Transf    
+             0,     1,    2, ,      1,  On        
+           -12,    12,   49, dB,    0,  Gain      
+             0,    10,  101, ,      0,  Lo Boost  
+             0,     3,    4, ,      0,  Lo Freq   
+             0,    10,  101, ,      0,  Lo Atten  
+             0,    10,  101, ,    0.6,  Hi Width  
+             0,    10,  101, ,      0,  Hi Boost  
+             0,     6,    7, ,      5,  Hi Freq   
+             0,    10,  101, ,      0,  Hi Atten  
+             0,     2,    3, ,      2,  Atten Fr  
+             0,     1,    2, ,      1,  Transf    
+
+  PQ5
+             0,     1,    2, ,      1,  On        
+           -12,    12,   49, dB,    0,  Gain      
+             0,     4,    5, ,      0,  Lo Freq   
+             0,    10,  101, ,      0,  Lo Boost  
+             0,    10,   11, ,      5,  Mid Freq  
+             0,    10,  101, ,      0,  Mid Cut   
+             0,     4,    5, ,      3,  Hi Freq   
+             0,    10,  101, ,      0,  Hi Boost  
+             0,     1,    2, ,      1,  Transf    
+
+  PQ5S
+             0,     1,    2, ,      0,  On        
+           -12,    12,   49, dB,    0,  Gain      
+             0,     4,    5, ,      0,  Lo Freq   
+             0,    10,  101, ,      0,  Lo Boost  
+             0,    10,   11, ,      0,  Mid Freq  
+             0,    10,  101, ,      0,  Mid Cut   
+             0,     4,    5, ,      0,  Hi Freq   
+             0,    10,  101, ,      0,  Hi Boost  
+             0,     1,    2, ,      0,  Transf    
+             0,     1,    2, ,      0,  On        
+           -12,    12,   49, dB,    0,  Gain      
+             0,     4,    5, ,      0,  Lo Freq   
+             0,    10,  101, ,      0,  Lo Boost  
+             0,    10,   11, ,      0,  Mid Freq  
+             0,    10,  101, ,      0,  Mid Cut   
+             0,     4,    5, ,      0,  Hi Freq   
+             0,    10,  101, ,      0,  Hi Boost  
+             0,     1,    2, ,      0,  Transf    
+
+  FAC
+             0,     1,    2, ,      1,  On        
+           -20,     0,   41, ,     -8,  InGain    
+             0,    10,  101, ,      5,  Threshold 
+             1,     6,    6, ,      2,  Time      
+             0,   100,   51, %,    50,  DCBias    
+           -18,     6,   49, dB, -8.5,  OutGain   
+          -100,   100,   41, %,    55,  Balance   
+
+  FAC
+             0,     1,    2, ,      1,  On        
+           -20,     0,   41, ,     -8,  InGain    
+             0,    10,  101, ,      5,  Threshold 
+             1,     6,    6, ,      2,  Time      
+             0,   100,   51, %,    50,  DCBias    
+           -18,     6,   49, dB, -8.5,  OutGain   
+          -100,   100,   41, %,    55,  Balance   
+           -20,     0,   41, ,     -8,  InGain    
+             0,    10,  101, ,      5,  Threshold 
+             1,     6,    6, ,      2,  Time      
+             0,   100,   51, %,    50,  DCBias    
+           -18,     6,   49, dB, -8.5,  OutGain   
+          -100,   100,   41, %,    55,  Balance   
+
+  FAC2
+             0,     1,    2, ,      1,  On        
+           -20,     0,   41, dB,   -8,  InGain    
+             0,    10,  101, ,      5,  Threshold 
+             1,     6,    6, ,      2,  Time      
+             0,   100,   51, %,    50,  DCBias    
+           -18,     6,   49, dB, -8.5,  OutGain   
+          -100,   100,   41, %,    55,  Balance   
+             0,     1,    2, ,      1,  On        
+           -20,     0,   41, dB,   -8,  InGain    
+             0,    10,  101, ,      5,  Threshold 
+             1,     6,    6, ,      2,  Time      
+             0,   100,   51, %,    50,  DCBias    
+           -18,     6,   49, dB, -8.5,  OutGain   
+          -100,   100,   41, %,    55,  Balance   
+
+  LEC
+             0,     1,    2, ,      1,  On        
+             0,   100,   51, ,     44,  Gain      
+             0,   100,   51, ,     48,  Peak Red  
+             0,     1,    2, ,      0,  Mode      
+           -18,     6,   49, dB,    1,  OutGain   
+
+  LEC2
+             0,     1,    2, ,      1,  On        
+             0,   100,   51, ,     44,  Gain      
+             0,   100,   51, ,     48,  Peak Red  
+             0,     1,    2, ,      0,  Mode      
+           -18,     6,   49, dB,    1,  OutGain   
+             0,     1,    2, ,      1,  On        
+             0,   100,   51, ,     44,  Gain      
+             0,   100,   51, ,     48,  Peak Red  
+             0,     1,    2, ,      0,  Mode      
+           -18,     6,   49, dB,    1,  OutGain   
+
+  ULC
+             0,     1,    2, ,      1,  On        
+           -48,     0,   49, dB,  -24,  InGain    
+           -48,     0,   49, dB,  -23,  OutGain   
+             1,     7,   61, ,    3.7,  Attack    
+             1,     7,   61, ,    1.9,  Release   
+             0,     4,    5, ,      0,  Ratio     
+
+  ULC2
+             0,     1,    2, ,      1,  On        
+           -48,     0,   49, dB,  -24,  InGain    
+           -48,     0,   49, dB,  -23,  OutGain   
+             1,     7,   61, ,    3.7,  Attack    
+             1,     7,   61, ,    1.9,  Release   
+             0,     4,    5, ,      0,  Ratio     
+             0,     1,    2, ,      1,  On        
+           -48,     0,   49, dB,  -24,  InGain    
+           -48,     0,   49, dB,  -23,  OutGain   
+             1,     7,   61, ,    3.7,  Attack    
+             1,     7,   61, ,    1.9,  Release   
+             0,     4,    5, ,      0,  Ratio     
+
+  SON
+             0,     1,    2, ,      1,  On        
+             0,    10,   51, ,    0.6,  LoContour 
+             0,    10,   51, ,    0.8,  Process   
+           -12,    12,   49, dB,    0,  Gain      
+             0,     1,    2, ,      1,  On        
+             0,    10,   51, ,    0.6,  LoContour 
+             0,    10,   51, ,    0.8,  Process   
+           -12,    12,   49, dB,    0,  Gain      
+
+  EDI
+             0,     1,    2, ,      1,  On        
+             0,     1,    2, ,      0,  In ST/MS  
+             0,     1,    2, ,      0,  Out ST/MS 
+           -50,    50,   51, ,      0,  StSpread  
+           -50,    50,   51, ,      0,  LMFSpread 
+           -50,    50,   51, ,      0,  Balance   
+           -50,    50,   51, ,      0,  CntrDist  
+           -12,    12,   49, dB,    0,  Gain      
+
+  SUB
+             0,     1,    2, ,      1,  On        
+             0,     2,    3, ,      0,  Range     
+             0,   100,   51, %,   100,  Dry       
+             0,   100,   51, %,    30,  Oct1      
+             0,   100,   51, %,     0,  Oct2      
+             0,     1,    2, ,      1,  On        
+             0,     2,    3, ,      0,  Range     
+             0,   100,   51, %,   100,  Dry       
+             0,   100,   51, %,    30,  Oct1      
+             0,   100,   51, %,     0,  Oct2      
+
+  DIMC
+             0,     1,    2, ,      1,  On        
+             0,     1,    2, ,      1,  M/St      
+             0,     1,    2, ,      0,  Dry       
+             0,     1,    2, ,      1,  Sw1       
+             0,     1,    2, ,      0,  Sw2       
+             0,     1,    2, ,      1,  Sw3       
+             0,     1,    2, ,      0,  Sw4       
+
+  CMB
+             0,     1,    2, ,      1,  On        
+             0,     5,    6, ,      0,  SoloBd    
+             0,   100,   51, %,   100,  Mix       
+             0,    19,   20, ,      5,  Attack    
+            20,  3000,  -51, ms,  500,  Release   
+             0,     1,    2, ,      1,  AutoRel   
+             1,    10,   10, ,      5,  SBC       
+             0,     1,    2, ,      1,  SBCOn     
+           -50,    50,   51, ,      0,  XOSpc     
+             0,     1,    2, ,      1,  Slope     
+             0,    13,   14, ,      7,  Ratio     
+           -40,     0,   81, dB,    0,  Thresh    
+           -10,    10,   41, dB,    0,  Gain      
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+             0,     2,    3, ,      0,  MeterSel  
+
+  CMB2
+             0,     1,    2, ,      1,  On        
+             0,     5,    6, ,      0,  SoloBd    
+             0,   100,   51, %,   100,  Mix       
+             0,    19,   20, ,      5,  Attack    
+            20,  3000,  -51, ms,  500,  Release   
+             0,     1,    2, ,      1,  AutoRel   
+             1,    10,   10, ,      5,  SBC       
+             0,     1,    2, ,      1,  SBCOn     
+           -50,    50,   51, ,      0,  XOSpc     
+             0,     1,    2, ,      1,  Slope     
+             0,    13,   14, ,      7,  Ratio     
+           -40,     0,   81, dB,    0,  Thresh    
+           -10,    10,   41, dB,    0,  Gain      
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+             0,     2,    3, ,      0,  MeterSel  
+             0,     1,    2, ,      1,  On        
+             0,     5,    6, ,      0,  SoloBd    
+             0,   100,   51, %,   100,  Mix       
+             0,    19,   20, ,      5,  Attack    
+            20,  3000,  -51, ms,  500,  Release   
+             0,     1,    2, ,      1,  AutoRel   
+             1,    10,   10, ,      5,  SBC       
+             0,     1,    2, ,      1,  SBCOn     
+           -50,    50,   51, ,      0,  XOSpc     
+             0,     1,    2, ,      1,  Slope     
+             0,    13,   14, ,      7,  Ratio     
+           -40,     0,   81, dB,    0,  Thresh    
+           -10,    10,   41, dB,    0,  Gain      
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+           -10,    10,   41, dB,    0,  ThrTrim   
+           -10,    10,   41, dB,    0,  GainTrim  
+             0,     1,    2, ,      0,  BdLock    
+             0,     2,    3, ,      0,  MeterSel 
+
+
+osc meter batches (all levels 16 bit signed short integers, resolution 1/256 dB):
+  0   (8)   pre l, pre r, gate gr, comp gr, post l, post r, gate key, comp key; (single channel data)
+  1   (40)  16x ch pre, aux pre l, aux pre r, fx1 pre l, fx1 pre r, ... fx4 prel, fx4 pre r, 
+            bus1 pre, ..., bus6 pre, fxsend1 pre, ..., fxsend4 pre, main post l, main post r, mon l, mon r
+  2   (36)  16x preamp in, 2x aux in, 18x usb in
+  3   (56)  4x (fx in l, fx in r, 10x fx state mtr, fx out l, fx out r)
+  4   (100) 100x rta level
+  5   (44)  6x aux out, main l out, main r out, 16x ultranet out, 18x usb out, phones l, phones r
+  6   (39)  16x ch gate gr, 16x ch comp gr, 6x bus comp gr, main comp gr
+  7   (16)  16x ch automix gr
+  8   (4)   4x dca (ch post)
+  9   (4)   recorder in l, recorder in r, recorder out l, recorder out r;

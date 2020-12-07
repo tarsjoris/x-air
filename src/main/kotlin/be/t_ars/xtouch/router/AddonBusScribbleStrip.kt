@@ -120,7 +120,7 @@ class AddonBusScribbleStrip(
 		override fun connected() {
 			GlobalScope.launch {
 				delay(1000)
-				xr18OSCAPI.fetchConfigs()
+				xr18OSCAPI.requestConfigs()
 			}
 		}
 	}

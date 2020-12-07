@@ -57,6 +57,10 @@ class ProxyRouter(
 		}
 
 		if (properties.getBoolean("router.channelcue")) {
+			val addonChannelCue = AddonChannelCue(xr18OSCAPI.value)
+			xr18OSCAPI.value.addListener(addonChannelCue)
+			sessionState.addListener(addonChannelCue)
+			addonBuilder.add(addonChannelCue)
 		}
 
 		addons = addonBuilder.toTypedArray()
