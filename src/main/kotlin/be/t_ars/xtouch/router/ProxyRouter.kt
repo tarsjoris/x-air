@@ -44,9 +44,6 @@ class ProxyRouter(
 			addonBuilder.add(AddonBusOrder())
 		}
 
-		if (properties.getBoolean("router.linkbusleds")) {
-		}
-
 		if (properties.getBoolean("router.busscribblestrip")) {
 			val addonBusScribbleStrip = AddonBusScribbleStrip(
 				xr18OSCAPI.value,
@@ -54,6 +51,12 @@ class ProxyRouter(
 			)
 			xr18OSCAPI.value.addListener(addonBusScribbleStrip)
 			addonBuilder.add(addonBusScribbleStrip)
+		}
+
+		if (properties.getBoolean("router.linkbusleds")) {
+			val addonsLinkBusLEDs = AddonLinkBusLEDs(xr18OSCAPI.value)
+			xr18OSCAPI.value.addListener(addonsLinkBusLEDs)
+			addonBuilder.add(addonsLinkBusLEDs)
 		}
 
 		if (properties.getBoolean("router.channelcue")) {
