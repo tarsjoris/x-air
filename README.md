@@ -1,7 +1,7 @@
 # XTouch
 
 A JVM (Kotlin) proxy-tool that sits between a Behringer X-Touch controller and a Behringer X-Air XR18 digital mixer.
-It monitors what buttons are pressed on the X-Touch, and it controls the X-Air-Edit app.pain
+It monitors what buttons are pressed on the X-Touch, and it controls the X-Air-Edit app.
 
 ![App](docs/app.png)
 
@@ -24,8 +24,8 @@ The X-Air-Edit app now "follows" the X-Touch.
 1. Make sure the *java* process is allowed to control the mouse.
     * On Mac, this is located under `System Preferences` > `Security & Privacy` > `Accessibility`
 1. Configure this proxy-tool to connect to the XR18 mixer by setting its IP address.
-In your home-directory, create a directory `xtouch` with a file `xtouch.properties`.  
-File: *~/xtouch/xtouch.properties*  
+In your home-directory, create a directory **xtouch** with a file **xtouch.properties**.  
+File: **~/xtouch/xtouch.properties**  
 Contents: `xr18.ipaddress=192.168.0.2`
 1. Start X-Air-Edit
 1. Start this proxy-tool: `java -jar XTouch-2.0-SNAPSHOT-jar-with-dependencies.jar`
@@ -49,12 +49,28 @@ This will be indicated by a green message *Connected*.
 
 Some extra functions are provided.
 They are enabled by default.
-They can be disabled by setting their configuration option to false in `~/xtouch/xtouch.properties`.
+They can be disabled by setting their configuration option to false in **~/xtouch/xtouch.properties**.
 
 * `router.mutebuttons`
     * The buttons next to *Global view* will function as mute buttons for the output channels (buses and main output).
+    * ![mutebuttons](docs/mutebuttons.png)
 * `router.busorder`
     * The order of the bus buttons operate according to N-order instead of Z-order.
     More like the buttons in the X-Air-Edit app.
+    * Before: Z-order    
+    ![busorder-before](docs/busorder-before.png)
+    * After: N-order    
+    ![busorder-after](docs/busorder-after.png)
 * `router.busscribblestrip`
-    * When selecting an effects send or bus send, the channel names are still displayed. 
+    * When selecting an effects send or bus send, the channel names are still displayed.
+    * When pressing down the channel knob, the **tap** is displayed like normal (`IN`, `PREEQ`, `POSTEQ`, `PRE`, `POST`, `GRP`)
+* `router.linkbusleds`
+    * Both bus leds light up when a linked bus is selected.
+* `router.channelcue`
+    * Pressing `FLIP` when a bus is selected, sets that bus as monitor channel.
+    * Pressing `REC` when in the `SENDS` encoder is selected, sets that bus as monitor channel.
+* `xairedit.interact`
+    * Clicks in the X-Air-Edit app to keep it in sync with the XTouch Controller.
+    Disable if you just want to use the addons.
+* `ui`
+    * Disable to run this app on headless systems.
