@@ -50,12 +50,15 @@ class AddonBusScribbleStrip(
 				) else null
 	}
 
+	// XR18 state
 	private val xr18channels = Array(XR18OSCAPI.CHANNEL_COUNT) {
 		XR18ChannelConfig(null, null, null)
 	}
 	private val xr18buses = Array(XR18OSCAPI.BUS_COUNT) {
 		XR18ChannelConfig(null, null, null)
 	}
+
+	// XTouch state
 	private val xtouchChannels = Array<ScribbleStripEvent?>(XctlUtil.CHANNEL_COUNT) {
 		null
 	}
@@ -65,7 +68,7 @@ class AddonBusScribbleStrip(
 	private val xTouchListener = XTouchistener()
 	private val xr18Listener = XR18Listener()
 
-	// Events
+	// Router events
 	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) =
 		event(connectionListener)
 
@@ -75,7 +78,7 @@ class AddonBusScribbleStrip(
 	override fun getNextXR18Event(event: Event<IXR18Events>) =
 		xr18Listener.processEvent(event)
 
-	// XR18
+	// XR18 events
 	override fun channelName(channel: Int, name: String) {
 		xr18channels[channel - 1].name = name
 	}

@@ -27,7 +27,7 @@ class AddonChannelCue(
 	private val xTouchListener = XTouchListener()
 	private val xr18Listener = XR18Listener()
 
-	// XTouch state
+	// Session state
 	private var currentOutput = XTouchSessionState.OUTPUT_MAINLR
 
 	// XR18 state
@@ -41,7 +41,7 @@ class AddonChannelCue(
 	// Session state
 	private var busEncoderSelected = false
 
-	// Events
+	// Router events
 	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) {
 		event(connectionListener)
 	}
@@ -52,7 +52,7 @@ class AddonChannelCue(
 	override fun getNextXR18Event(event: Event<IXR18Events>) =
 		xr18Listener.processEvent(event)
 
-	// Session Events
+	// Session events
 	override fun selectionChanged(
 		output: Int,
 		channel: Int,
@@ -71,7 +71,7 @@ class AddonChannelCue(
 		}
 	}
 
-	// XR18
+	// XR18 events
 	override fun soloSource(source: IOSCListener.ESoloSource) {
 		soloSource = source
 		updateFlipButtonLED()

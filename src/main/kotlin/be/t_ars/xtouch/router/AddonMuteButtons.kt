@@ -16,17 +16,18 @@ class AddonMuteButtons(private val xr18OSCAPI: XR18OSCAPI) : AbstractAddon(), IO
 	private val connectionListener = ConnectionListener()
 	private val xTouchListener = XTouchListener()
 
+	// XR18 state
 	private var lrMixOn = true
 	private val busMixOn = Array(6) { true }
 
-	// Events
+	// Router events
 	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) =
 		event(connectionListener)
 
 	override fun getNextXTouchEvent(event: Event<IXTouchEvents>) =
 		xTouchListener.processEvent(event)
 
-	// XR18
+	// XR18 events
 	override fun lrMixOn(on: Boolean) {
 		lrMixOn = on
 		sendToXTouch {

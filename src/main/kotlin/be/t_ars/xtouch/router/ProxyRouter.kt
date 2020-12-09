@@ -54,9 +54,10 @@ class ProxyRouter(
 		}
 
 		if (properties.getBoolean("router.linkbusleds")) {
-			val addonsLinkBusLEDs = AddonLinkBusLEDs(xr18OSCAPI.value)
-			xr18OSCAPI.value.addListener(addonsLinkBusLEDs)
-			addonBuilder.add(addonsLinkBusLEDs)
+			val addonLinkBusLEDs = AddonLinkBusLEDs(xr18OSCAPI.value)
+			xr18OSCAPI.value.addListener(addonLinkBusLEDs)
+			sessionState.addListener(addonLinkBusLEDs)
+			addonBuilder.add(addonLinkBusLEDs)
 		}
 
 		if (properties.getBoolean("router.channelcue")) {

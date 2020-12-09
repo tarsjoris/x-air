@@ -12,6 +12,7 @@ class AddonBusOrder : AbstractAddon() {
 	private val xTouchListener = XTouchListener()
 	private val xr18Listener = XR18Listener()
 
+	// Router events
 	override fun getNextXTouchEvent(event: Event<IXTouchEvents>) =
 		xTouchListener.processEvent(event)
 

@@ -2,6 +2,8 @@ package be.t_ars.xtouch.router
 
 import be.t_ars.xtouch.osc.IOSCListener
 import be.t_ars.xtouch.osc.XR18OSCAPI
+import be.t_ars.xtouch.session.IXTouchSessionListener
+import be.t_ars.xtouch.session.XTouchSessionState
 import be.t_ars.xtouch.xctl.AbstractButtonLEDEvent
 import be.t_ars.xtouch.xctl.ButtonLEDEvent
 import be.t_ars.xtouch.xctl.EButton
@@ -15,9 +17,12 @@ import kotlinx.coroutines.launch
 
 class AddonLinkBusLEDs(
 	private val xr18OSCAPI: XR18OSCAPI
-) : AbstractAddon(), IOSCListener {
+) : AbstractAddon(), IOSCListener, IXTouchSessionListener {
 	private val connectionListener = ConnectionListener()
 	private val xr18Listener = XR18Listener()
+
+	// Session state
+	private var currentOutput = XTouchSessionState.OUTPUT_MAINLR
 
 	// XR18 state
 	private var busLinked = mutableMapOf<IOSCListener.EBusLink, Boolean>().also {
@@ -26,7 +31,7 @@ class AddonLinkBusLEDs(
 		}
 	}
 
-	// Events
+	// Router events
 	override fun processConnectionEvent(event: Event<IXctlConnectionListener>) {
 		event(connectionListener)
 	}
@@ -34,10 +39,42 @@ class AddonLinkBusLEDs(
 	override fun getNextXR18Event(event: Event<IXR18Events>) =
 		xr18Listener.processEvent(event)
 
-	// XR18 Events
+	// Session events
+	override fun selectionChanged(
+		output: Int,
+		channel: Int,
+		encoder: XTouchSessionState.EEncoder?,
+		dynamicEncoder: XTouchSessionState.EDynamicEncoder
+	) {
+		if (currentOutput != output) {
+			currentOutput = output
+		}
+	}
+
+	// XR18 events
 	override fun busLink(busLink: IOSCListener.EBusLink, on: Boolean) {
 		busLinked[busLink] = on
+		when (currentOutput) {
+			XTouchSessionState.OUTPUT_BUS1 -> setLED(EButton.AUTOMATION_WRITE, on)
+			XTouchSessionState.OUTPUT_BUS2 -> setLED(EButton.AUTOMATION_READ, on)
+			XTouchSessionState.OUTPUT_BUS3 -> setLED(EButton.AUTOMATION_TOUCH, on)
+			XTouchSessionState.OUTPUT_BUS4 -> setLED(EButton.AUTOMATION_TRIM, on)
+			XTouchSessionState.OUTPUT_BUS5 -> setLED(EButton.AUTOMATION_GROUP, on)
+			XTouchSessionState.OUTPUT_BUS6 -> setLED(EButton.AUTOMATION_LATCH, on)
+		}
 	}
+
+	private fun setLED(button: EButton, on: Boolean) =
+		sendToXTouch {
+			it.setButtonLEDs(
+				arrayOf(
+					ButtonLEDEvent(
+						button,
+						if (on) ELEDMode.ON else ELEDMode.OFF
+					)
+				)
+			)
+		}
 
 	inner class ConnectionListener : IXctlConnectionListener {
 		override fun connected() {
