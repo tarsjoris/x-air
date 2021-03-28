@@ -20,6 +20,10 @@ class XctlConnectionProxy(xr18Address: InetAddress) : XctlConnectionStub() {
 		return connectionWithXR18.getConnectionToXR18()
 	}
 
+	fun setXR18Address(xr18Address: InetAddress) {
+		connectionWithXR18.setXR18Address(xr18Address)
+	}
+
 	override fun run() {
 		startMonitorConnection()
 		Thread(connectionWithXR18::run).start()

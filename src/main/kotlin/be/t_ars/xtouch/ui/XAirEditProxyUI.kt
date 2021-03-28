@@ -17,18 +17,20 @@ import kotlin.system.exitProcess
 class XAirEditProxyUI(
 	private val settingsManager: ISettingsManager,
 	private val windowClosingListener: () -> Unit,
-	calibrationUpdater: ((Int, Int, Int, Int) -> Unit)?
+	calibrationUpdater: ((Int, Int, Int, Int) -> Unit)?,
+	searchAction: (() -> Unit)?
 ) : JFrame() {
 	private inner class WListener : WindowAdapter() {
 		override fun windowClosing(e: WindowEvent?) {
 			saveProperties()
-			windowClosingListener.invoke()
+			windowClosingListener()
 			exitProcess(0)
 		}
 	}
 
 	private val properties = settingsManager.loadProperties("ui")
 	private val statusLabel = JLabel("", SwingConstants.CENTER)
+	private val searchButton: JButton?
 
 	init {
 		isAlwaysOnTop = true
@@ -68,6 +70,23 @@ class XAirEditProxyUI(
 			})
 		}
 
+		if (searchAction != null) {
+			searchButton = JButton("Search")
+			searchButton.addActionListener {
+				searchAction()
+			}
+			add(searchButton, GridBagConstraints().apply {
+				fill = GridBagConstraints.BOTH
+				gridx = 0
+				gridy = 2
+				weightx = 1.toDouble()
+				weighty = 1.toDouble()
+				insets = Insets(INSET, INSET, INSET, INSET)
+			})
+		} else {
+			searchButton = null
+		}
+
 		addWindowListener(WListener())
 
 		loadProperties()
@@ -76,6 +95,7 @@ class XAirEditProxyUI(
 	fun setConnected(connected: Boolean) {
 		statusLabel.text = if (connected) "CONNECTED" else "DISCONNECTED"
 		statusLabel.background = if (connected) OK_COLOR else NOK_COLOR
+		searchButton?.isVisible = !connected
 	}
 
 	private fun loadProperties() {

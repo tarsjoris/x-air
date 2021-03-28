@@ -1,6 +1,6 @@
 package be.t_ars.xtouch
 
-import be.t_ars.xtouch.router.ProxyRouter
+import be.t_ars.xtouch.osc.searchXR18
 import be.t_ars.xtouch.session.XTouchSessionState
 import be.t_ars.xtouch.settings.SettingsManagerImpl
 import be.t_ars.xtouch.ui.XAirEditProxyUI
@@ -8,7 +8,6 @@ import be.t_ars.xtouch.util.getBoolean
 import be.t_ars.xtouch.xairedit.XAirEditController
 import be.t_ars.xtouch.xairedit.XAirEditInteractorImpl
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
-import be.t_ars.xtouch.xctl.XctlConnectionProxy
 import kotlinx.coroutines.GlobalScope
 import java.net.Inet4Address
 import kotlin.system.exitProcess
@@ -41,30 +40,26 @@ fun main() {
 	}
 
 	val xr18InetAddress = Inet4Address.getByName(xr18Address)
-	val connection = XctlConnectionProxy(xr18InetAddress)
+	val xAirEditProxyConnection = XAirEditProxyConnection(xr18InetAddress, sessionState, properties)
 
-	val router = ProxyRouter(
-		xr18InetAddress,
-		sessionState,
-		connection.getConnectionToXTouch(),
-		connection.getConnectionToXR18(),
-		properties
-	)
-	connection.addConnectionEventProcessor(router::routeConnectionEvent)
-	connection.addXTouchEventProcessor(router::routeEventFromXTouch)
-	connection.addXR18EventProcessor(router::routeEventFromXR18)
-	router.addXTouchListener(sessionState)
+	val searcher = {
+		val ipAddress = searchXR18()
+		if (ipAddress != null) {
+			xAirEditProxyConnection.setXR18Address(ipAddress)
+		}
+	}
 
 	if (properties.getBoolean("ui")) {
 		val ui = XAirEditProxyUI(
 			settingsManager,
-			connection::stop,
-			calibrationSetter
+			xAirEditProxyConnection::stop,
+			calibrationSetter,
+			searcher
 		)
-		router.addConnectionListener(ConnectionListener(ui::setConnected))
+		xAirEditProxyConnection.addConnectionListener(ConnectionListener(ui::setConnected))
 		ui.isVisible = true
 	}
 
-	connection.run()
+	xAirEditProxyConnection.start()
 	exitProcess(0)
 }

@@ -7,7 +7,7 @@ import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class ConnectionWithXR18Impl(
-	private val xr18Address: InetAddress,
+	private var xr18Address: InetAddress,
 	private val heartbeatListener: () -> Unit,
 	processEvent: EventProcessor<IXR18Events>
 ) {
@@ -19,6 +19,10 @@ internal class ConnectionWithXR18Impl(
 
 	fun getConnectionToXR18(): IConnectionToXR18 =
 		toXR18
+
+	fun setXR18Address(xr18Address: InetAddress) {
+		this.xr18Address = xr18Address
+	}
 
 	fun run() {
 		val buffer = ByteArray(256)

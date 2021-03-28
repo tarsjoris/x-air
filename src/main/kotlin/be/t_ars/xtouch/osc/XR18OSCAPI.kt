@@ -10,9 +10,9 @@ import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
 
-class XR18OSCAPI(private val host: InetAddress) {
+class XR18OSCAPI(private var host: InetAddress) {
 	companion object {
-		private const val PORT = 10024
+		const val PORT = 10024
 
 		const val CHANNEL_COUNT = 17
 		const val AUX_CHANNEL = 17
@@ -45,6 +45,10 @@ class XR18OSCAPI(private val host: InetAddress) {
 				e.printStackTrace()
 			}
 		}
+	}
+
+	fun setHost(host: InetAddress) {
+		this.host = host
 	}
 
 	fun stop() {

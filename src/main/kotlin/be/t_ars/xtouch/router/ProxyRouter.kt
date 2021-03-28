@@ -15,7 +15,7 @@ import java.net.InetAddress
 import java.util.*
 
 class ProxyRouter(
-	private val xr18Address: InetAddress,
+	private var xr18Address: InetAddress,
 	sessionState: XTouchSessionState,
 	private val connectionToXTouch: IConnectionToXTouch,
 	private val connectionToXR18: IConnectionToXR18,
@@ -83,6 +83,13 @@ class ProxyRouter(
 				addonBuilder[i - 1].nextXTouchProcessor = addonBuilder[i]::processEventFromXTouch
 				addonBuilder[i].nextXR18Processor = addonBuilder[i - 1]::processEventFromXR18
 			}
+		}
+	}
+
+	fun setXR18Address(xr18Address: InetAddress) {
+		this.xr18Address = xr18Address
+		if (xr18OSCAPI.isInitialized()) {
+			xr18OSCAPI.value.setHost(this.xr18Address)
 		}
 	}
 
