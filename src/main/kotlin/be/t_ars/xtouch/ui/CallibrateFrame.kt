@@ -17,9 +17,13 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants
 import kotlin.math.roundToInt
 
-class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Unit) : JFrame() {
+class CallibrateFrame(
+	private val calibrateOpque: Boolean,
+	private val callibrationUpdate: (Int, Int, Int, Int) -> Unit
+) : JFrame() {
 	private val statusLabel = JLabel("", SwingConstants.CENTER)
-	private val button = JButton()
+	private val cancelButton = JButton()
+	private val saveButton = JButton()
 	private val adjustPanel = JPanel()
 
 	private var state = EState.MIXER
@@ -30,7 +34,11 @@ class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Un
 	init {
 		isAlwaysOnTop = true
 		isUndecorated = true
-		background = Color(255, 255, 255, 100)
+		if (calibrateOpque) {
+			background = Color(255, 255, 255, 100)
+		} else {
+			background = Color(255, 255, 255, 0)
+		}
 
 		val panel = JPanel()
 		panel.background = BACKGROUND_COLOR
@@ -39,6 +47,7 @@ class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Un
 		panel.add(statusLabel, GridBagConstraints().apply {
 			fill = GridBagConstraints.BOTH
 			gridx = 0
+			gridwidth = 2
 			gridy = 0
 			weightx = 1.toDouble()
 			weighty = 1.toDouble()
@@ -91,24 +100,39 @@ class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Un
 		panel.add(adjustPanel, GridBagConstraints().apply {
 			fill = GridBagConstraints.NONE
 			gridx = 0
+			gridwidth = 2
 			gridy = 1
 			weightx = 1.toDouble()
 			weighty = 1.toDouble()
 		})
 
-		button.text = "Cancel"
-		button.addActionListener {
-			if (state == EState.DONE) {
-				val r = rect
-				if (r != null) {
-					callibrationUpdate(r.x, r.y, r.x + r.width, r.y + r.height)
-				}
+		cancelButton.text = "Cancel"
+		cancelButton.addActionListener {
+			this@CallibrateFrame.isVisible = false
+		}
+
+		panel.add(cancelButton, GridBagConstraints().apply {
+			fill = GridBagConstraints.NONE
+			gridx = 0
+			gridy = 2
+			weightx = 1.toDouble()
+			weighty = 1.toDouble()
+			insets = Insets(INSET, INSET, INSET, INSET)
+		})
+
+		saveButton.text = "Save"
+		saveButton.addActionListener {
+			val r = rect
+			if (r != null) {
+				callibrationUpdate(r.x, r.y, r.x + r.width, r.y + r.height)
 			}
 			this@CallibrateFrame.isVisible = false
 		}
-		panel.add(button, GridBagConstraints().apply {
+		saveButton.isVisible = false
+
+		panel.add(saveButton, GridBagConstraints().apply {
 			fill = GridBagConstraints.NONE
-			gridx = 0
+			gridx = 1
 			gridy = 2
 			weightx = 1.toDouble()
 			weighty = 1.toDouble()
@@ -176,7 +200,7 @@ class CallibrateFrame(private val callibrationUpdate: (Int, Int, Int, Int) -> Un
 					state = EState.DONE
 					statusLabel.text = "Finetune until all dots hit the correct buttons"
 					adjustPanel.isVisible = true
-					button.text = "OK"
+					saveButton.isVisible = true
 					this@CallibrateFrame.repaint()
 				}
 				else -> {

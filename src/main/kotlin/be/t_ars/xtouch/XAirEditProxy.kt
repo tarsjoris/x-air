@@ -11,7 +11,6 @@ import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import be.t_ars.xtouch.xctl.XctlConnectionProxy
 import kotlinx.coroutines.GlobalScope
 import java.net.Inet4Address
-import javax.swing.JFrame
 import kotlin.system.exitProcess
 
 private class ConnectionListener(private val connectedListener: (Boolean) -> Unit) :
@@ -24,8 +23,6 @@ private class ConnectionListener(private val connectedListener: (Boolean) -> Uni
 }
 
 fun main() {
-	JFrame.setDefaultLookAndFeelDecorated(true)
-
 	val settingsManager = SettingsManagerImpl()
 	val properties = settingsManager.loadProperties("xtouch")
 	val xr18Address = properties.getProperty("xr18.ipaddress", "192.168.0.3")

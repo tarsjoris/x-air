@@ -8,7 +8,6 @@ import java.awt.Insets
 import java.awt.Toolkit
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.util.*
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
@@ -28,6 +27,7 @@ class XAirEditProxyUI(
 		}
 	}
 
+	private val properties = settingsManager.loadProperties("ui")
 	private val statusLabel = JLabel("", SwingConstants.CENTER)
 
 	init {
@@ -54,7 +54,8 @@ class XAirEditProxyUI(
 			val calibrateButton = JButton()
 			calibrateButton.text = "Calibrate"
 			calibrateButton.addActionListener {
-				val callibrateFrame = CallibrateFrame(calibrationUpdater)
+				val calibrateOpque = properties.getProperty(PROP_CALIBRATE_OPAQUE, "true").toBoolean()
+				val callibrateFrame = CallibrateFrame(calibrateOpque, calibrationUpdater)
 				callibrateFrame.start()
 			}
 			add(calibrateButton, GridBagConstraints().apply {
@@ -78,21 +79,19 @@ class XAirEditProxyUI(
 	}
 
 	private fun loadProperties() {
-		val props = settingsManager.loadProperties("ui")
-		val x = props.getProperty(PROP_WINDOW_X, "200").toInt()
-		val y = props.getProperty(PROP_WINDOW_Y, "200").toInt()
-		val w = props.getProperty(PROP_WINDOW_W, "140").toInt()
-		val h = props.getProperty(PROP_WINDOW_H, "155").toInt()
+		val x = properties.getProperty(PROP_WINDOW_X, "200").toInt()
+		val y = properties.getProperty(PROP_WINDOW_Y, "200").toInt()
+		val w = properties.getProperty(PROP_WINDOW_W, "140").toInt()
+		val h = properties.getProperty(PROP_WINDOW_H, "155").toInt()
 		setBounds(x, y, w, h)
 	}
 
 	private fun saveProperties() {
-		val props = Properties()
-		props.setProperty(PROP_WINDOW_X, location.x.toString())
-		props.setProperty(PROP_WINDOW_Y, location.y.toString())
-		props.setProperty(PROP_WINDOW_W, size.width.toString())
-		props.setProperty(PROP_WINDOW_H, size.height.toString())
-		settingsManager.saveProperties("ui", props)
+		properties.setProperty(PROP_WINDOW_X, location.x.toString())
+		properties.setProperty(PROP_WINDOW_Y, location.y.toString())
+		properties.setProperty(PROP_WINDOW_W, size.width.toString())
+		properties.setProperty(PROP_WINDOW_H, size.height.toString())
+		settingsManager.saveProperties("ui", properties)
 	}
 
 	companion object {
@@ -100,6 +99,7 @@ class XAirEditProxyUI(
 		private const val PROP_WINDOW_Y = "window.y"
 		private const val PROP_WINDOW_W = "window.w"
 		private const val PROP_WINDOW_H = "window.h"
+		private const val PROP_CALIBRATE_OPAQUE = "calibrate.opaque"
 
 		private const val INSET = 10
 
