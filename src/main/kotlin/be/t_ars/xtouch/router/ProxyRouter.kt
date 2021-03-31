@@ -67,6 +67,11 @@ class ProxyRouter(
 			addonBuilder.add(addonChannelCue)
 		}
 
+		if (properties.getBoolean("router.sinedemo")) {
+			val addonSineDemo = AddonSineDemo()
+			addonBuilder.add(addonSineDemo)
+		}
+
 		addons = addonBuilder.toTypedArray()
 
 		if (addonBuilder.isEmpty()) {

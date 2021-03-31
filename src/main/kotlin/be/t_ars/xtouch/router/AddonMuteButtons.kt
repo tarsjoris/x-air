@@ -67,24 +67,24 @@ class AddonMuteButtons(private val xr18OSCAPI: XR18OSCAPI) : AbstractAddon(), IO
 
 	inner class XTouchListener : AbstractAddonXTouchListener() {
 		override fun midiTracksPressedDown() =
-			setBusMixOn(1)
+			toggleBusMixOn(1)
 
 		override fun inputsPressedDown() =
-			setBusMixOn(2)
+			toggleBusMixOn(2)
 
 		override fun audioTracksPressedDown() =
-			setBusMixOn(3)
+			toggleBusMixOn(3)
 
 		override fun audioInstPressedDown() =
-			setBusMixOn(4)
+			toggleBusMixOn(4)
 
 		override fun auxPressedDown() =
-			setBusMixOn(5)
+			toggleBusMixOn(5)
 
 		override fun busesPressedDown() =
-			setBusMixOn(6)
+			toggleBusMixOn(6)
 
-		private fun setBusMixOn(bus: Int) {
+		private fun toggleBusMixOn(bus: Int) {
 			GlobalScope.launch {
 				xr18OSCAPI.setBusMixOn(bus, !busMixOn[bus - 1])
 			}
