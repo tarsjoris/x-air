@@ -5,10 +5,13 @@ import be.t_ars.xtouch.session.XTouchSessionState
 import be.t_ars.xtouch.settings.SettingsManagerImpl
 import be.t_ars.xtouch.ui.XAirEditProxyUI
 import be.t_ars.xtouch.util.getBoolean
+import be.t_ars.xtouch.xairedit.IXAirEditInteractor
 import be.t_ars.xtouch.xairedit.XAirEditController
 import be.t_ars.xtouch.xairedit.XAirEditInteractorImpl
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.net.Inet4Address
 import kotlin.system.exitProcess
 
@@ -35,6 +38,10 @@ fun main() {
 		val controller = XAirEditController(GlobalScope, interactor)
 		sessionState.addListener(controller)
 		calibrationSetter = interactor::setCalibration
+
+		if (properties.getBoolean("xairedit.connect", "false")) {
+			connectXAirEdit(interactor);
+		}
 	} else {
 		calibrationSetter = null
 	}
@@ -62,4 +69,13 @@ fun main() {
 
 	xAirEditProxyConnection.start()
 	exitProcess(0)
+}
+
+private fun connectXAirEdit(interactor: IXAirEditInteractor) {
+	runBlocking {
+		delay(1000)
+		interactor.clickConnect()
+		delay(1000)
+		interactor.clickMixerPc()
+	}
 }

@@ -114,6 +114,12 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 	override fun closeDialog() =
 		keyPress(KeyEvent.VK_ESCAPE)
 
+	override suspend fun clickConnect() =
+		click(CONNECT_X, CONNECT_Y)
+
+	override suspend fun clickMixerPc() =
+		click(MIXERPC_X, MIXERPC_Y)
+
 	private suspend fun click(x: Int, y: Int) {
 		robot.mouseMove(
 			offsetX + (x.toFloat() * xFactor).roundToInt(),
@@ -184,6 +190,12 @@ class XAirEditInteractorImpl(private val settingsManager: ISettingsManager) :
 
 		const val MAIN_MUTE_X = 1529
 		const val MAIN_MUTE_Y = 920
+
+		const val CONNECT_X = 726
+		const val CONNECT_Y = 550
+
+		const val MIXERPC_X = 632
+		const val MIXERPC_Y = 550
 
 		private const val CHANNEL_COUNT = 16
 	}
