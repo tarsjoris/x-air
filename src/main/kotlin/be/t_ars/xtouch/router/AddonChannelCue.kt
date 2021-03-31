@@ -183,8 +183,8 @@ class AddonChannelCue(
 					7 -> selectBusOutput(IOSCListener.ESoloSource.BUS5)
 					8 -> selectBusOutput(IOSCListener.ESoloSource.BUS6)
 				}
+				nextEvent = null
 			}
-			nextEvent = null
 		}
 
 		private fun selectBusOutput(bus: IOSCListener.ESoloSource) {
