@@ -3,6 +3,8 @@
 A JVM (Kotlin) proxy-tool that sits between a Behringer X-Touch controller and a Behringer X-Air XR18 digital mixer.
 It monitors what buttons are pressed on the X-Touch, and it controls the X-Air-Edit app.
 
+[![YouTube video](https://img.youtube.com/vi/0uvDA2rAK6Y/0.jpg)](https://youtu.be/0uvDA2rAK6Y)
+
 ![App](docs/app.png)
 
 ## Purpose
