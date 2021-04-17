@@ -47,12 +47,14 @@ interface IOSCListener {
 		}
 	}
 
-	fun lrMixOn(on: Boolean) {}
-	fun busMixOn(bus: Int, on: Boolean) {}
-	fun channelName(channel: Int, name: String) {}
-	fun channelColor(channel: Int, color: Int) {}
-	fun busName(bus: Int, name: String) {}
-	fun busColor(bus: Int, color: Int) {}
-	fun soloSource(source: ESoloSource) {}
-	fun busLink(busLink: EBusLink, on: Boolean) {}
+	suspend fun lrMixOn(on: Boolean) {}
+	suspend fun busMixOn(bus: Int, on: Boolean) {}
+	suspend fun channelName(channel: Int, name: String) {}
+	suspend fun channelColor(channel: Int, color: Int) {}
+	suspend fun channelBusLevel(channel: Int, bus: Int, level: Float) {}
+	suspend fun busName(bus: Int, name: String) {}
+	suspend fun busColor(bus: Int, color: Int) {}
+	suspend fun busLevel(bus: Int, level: Float) {}
+	suspend fun soloSource(source: ESoloSource) {}
+	suspend fun busLink(busLink: EBusLink, on: Boolean) {}
 }

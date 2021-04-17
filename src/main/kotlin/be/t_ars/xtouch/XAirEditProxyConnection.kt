@@ -1,5 +1,6 @@
 package be.t_ars.xtouch
 
+import be.t_ars.xtouch.osc.XR18OSCAPI
 import be.t_ars.xtouch.router.ProxyRouter
 import be.t_ars.xtouch.session.XTouchSessionState
 import be.t_ars.xtouch.xctl.IXctlConnectionListener
@@ -7,7 +8,12 @@ import be.t_ars.xtouch.xctl.XctlConnectionProxy
 import java.net.InetAddress
 import java.util.*
 
-class XAirEditProxyConnection(xr18InetAddress: InetAddress, sessionState: XTouchSessionState, properties: Properties) {
+class XAirEditProxyConnection(
+	xr18InetAddress: InetAddress,
+	sessionState: XTouchSessionState,
+	val xr18OSCAPI: Lazy<XR18OSCAPI>,
+	properties: Properties)
+{
 	private val connection: XctlConnectionProxy
 	private val router: ProxyRouter
 
@@ -19,6 +25,7 @@ class XAirEditProxyConnection(xr18InetAddress: InetAddress, sessionState: XTouch
 			sessionState,
 			connection.getConnectionToXTouch(),
 			connection.getConnectionToXR18(),
+			xr18OSCAPI,
 			properties
 		)
 		connection.addConnectionEventProcessor(router::routeConnectionEvent)
@@ -32,7 +39,7 @@ class XAirEditProxyConnection(xr18InetAddress: InetAddress, sessionState: XTouch
 
 	fun setXR18Address(xr18Address: InetAddress) {
 		connection.setXR18Address(xr18Address)
-		router.setXR18Address(xr18Address)
+		router.xr18Address = xr18Address
 	}
 
 	fun start() =

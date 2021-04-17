@@ -21,9 +21,12 @@ class AddonBusScribbleStrip(
 	private val sessionState: XTouchSessionState
 ) : AbstractAddon(), IOSCListener {
 	private data class XR18ChannelConfig(
-		var name: String?,
-		var color: EScribbleColor?,
-		var secondLineInverted: Boolean?
+		@Volatile
+		var name: String? = null,
+		@Volatile
+		var color: EScribbleColor? = null,
+		@Volatile
+		var secondLineInverted: Boolean? = null
 	) {
 		fun updateColor(color: Int) {
 			this.color = when (color.rem(8)) {
@@ -52,10 +55,10 @@ class AddonBusScribbleStrip(
 
 	// XR18 state
 	private val xr18channels = Array(XR18OSCAPI.CHANNEL_COUNT) {
-		XR18ChannelConfig(null, null, null)
+		XR18ChannelConfig()
 	}
 	private val xr18buses = Array(XR18OSCAPI.BUS_COUNT) {
-		XR18ChannelConfig(null, null, null)
+		XR18ChannelConfig()
 	}
 
 	// XTouch state
@@ -79,19 +82,19 @@ class AddonBusScribbleStrip(
 		xr18Listener.processEvent(event)
 
 	// XR18 events
-	override fun channelName(channel: Int, name: String) {
+	override suspend fun channelName(channel: Int, name: String) {
 		xr18channels[channel - 1].name = name
 	}
 
-	override fun channelColor(channel: Int, color: Int) {
+	override suspend fun channelColor(channel: Int, color: Int) {
 		xr18channels[channel - 1].updateColor(color)
 	}
 
-	override fun busName(bus: Int, name: String) {
+	override suspend fun busName(bus: Int, name: String) {
 		xr18buses[bus - 1].name = name
 	}
 
-	override fun busColor(bus: Int, color: Int) {
+	override suspend fun busColor(bus: Int, color: Int) {
 		xr18buses[bus - 1].updateColor(color)
 	}
 

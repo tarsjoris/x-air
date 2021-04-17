@@ -28,7 +28,7 @@ class AddonMuteButtons(private val xr18OSCAPI: XR18OSCAPI) : AbstractAddon(), IO
 		xTouchListener.processEvent(event)
 
 	// XR18 events
-	override fun lrMixOn(on: Boolean) {
+	override suspend fun lrMixOn(on: Boolean) {
 		lrMixOn = on
 		sendToXTouch {
 			it.setButtonLED(
@@ -38,7 +38,7 @@ class AddonMuteButtons(private val xr18OSCAPI: XR18OSCAPI) : AbstractAddon(), IO
 		}
 	}
 
-	override fun busMixOn(bus: Int, on: Boolean) {
+	override suspend fun busMixOn(bus: Int, on: Boolean) {
 		busMixOn[bus - 1] = on
 		sendToXTouch {
 			it.setButtonLED(

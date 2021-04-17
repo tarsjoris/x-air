@@ -15,10 +15,11 @@ import java.net.InetAddress
 import java.util.*
 
 class ProxyRouter(
-	private var xr18Address: InetAddress,
+	var xr18Address: InetAddress,
 	sessionState: XTouchSessionState,
 	private val connectionToXTouch: IConnectionToXTouch,
 	private val connectionToXR18: IConnectionToXR18,
+	private val xr18OSCAPI: Lazy<XR18OSCAPI>,
 	properties: Properties
 ) {
 	private val connectionListeners = Listeners<IXctlConnectionListener>()
@@ -28,8 +29,6 @@ class ProxyRouter(
 	private val addons: Array<IAddon>
 	private val firstXTouchListener: EventProcessor<IXTouchEvents>
 	private val firstXR18Listener: EventProcessor<IXR18Events>
-
-	private val xr18OSCAPI: Lazy<XR18OSCAPI> = lazy(this::createXR18API)
 
 	init {
 		val addonBuilder = mutableListOf<AbstractAddon>()
@@ -91,13 +90,6 @@ class ProxyRouter(
 		}
 	}
 
-	fun setXR18Address(xr18Address: InetAddress) {
-		this.xr18Address = xr18Address
-		if (xr18OSCAPI.isInitialized()) {
-			xr18OSCAPI.value.setHost(this.xr18Address)
-		}
-	}
-
 	fun stop() {
 		if (xr18OSCAPI.isInitialized()) {
 			xr18OSCAPI.value.stop()
@@ -139,11 +131,5 @@ class ProxyRouter(
 		xr18Listeners.broadcast(event)
 		// forward event to device last to allow states to update
 		event(connectionToXTouch)
-	}
-
-	private fun createXR18API(): XR18OSCAPI {
-		val xr18API = XR18OSCAPI(xr18Address)
-		Thread(xr18API::run).start()
-		return xr18API
 	}
 }

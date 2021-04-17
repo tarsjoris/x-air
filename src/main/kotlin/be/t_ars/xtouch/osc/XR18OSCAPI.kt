@@ -1,6 +1,6 @@
 package be.t_ars.xtouch.osc
 
-import be.t_ars.xtouch.util.Listeners
+import be.t_ars.xtouch.util.SuspendingListeners
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,10 +22,14 @@ class XR18OSCAPI(private var host: InetAddress) {
 
 	private val socket = DatagramSocket()
 	private val running = AtomicBoolean(true)
-	private val listeners = Listeners<IOSCListener>()
+	private val listeners = SuspendingListeners<IOSCListener>()
 
 	fun addListener(listener: IOSCListener) {
 		listeners.add(listener)
+	}
+
+	fun removeListener(listener: IOSCListener) {
+		listeners.remove(listener)
 	}
 
 	fun run() {
@@ -106,6 +110,26 @@ class XR18OSCAPI(private var host: InetAddress) {
 						val color = message.getInt(0)
 						if (color != null) {
 							listeners.broadcast { it.channelColor(channel, color) }
+						}
+					}
+				}
+			}
+			"mix" -> {
+				when (parts[4]) {
+					"01",
+					"02",
+					"03",
+					"04",
+					"05",
+					"06" -> {
+						val bus = parts[4].toInt()
+						when (parts[5]) {
+							"level" -> {
+								val level = message.getFloat(0)
+								if (level != null) {
+									listeners.broadcast { it.channelBusLevel(channel, bus, level) }
+								}
+							}
 						}
 					}
 				}
@@ -212,27 +236,42 @@ class XR18OSCAPI(private var host: InetAddress) {
 
 	fun requestConfigs() {
 		for (i in 1..BUS_COUNT) {
-			requestBusConfig(i)
+			requestBusName(i)
+			requestBusColor(i)
 		}
 		for (i in 1..CHANNEL_COUNT) {
-			this.requestChannelConfig(i)
+			requestChannelName(i)
+			requestChannelColor(i)
 		}
 	}
 
-	private fun requestBusConfig(bus: Int) {
+	fun requestBusName(bus: Int) {
 		validateBus(bus)
-		requestConfig("/bus/$bus")
+		requestName("/bus/$bus")
 	}
 
-	private fun requestChannelConfig(channel: Int) {
+	fun requestBusColor(bus: Int) {
+		validateBus(bus)
+		requestColor("/bus/$bus")
+	}
+
+	fun requestChannelName(channel: Int) {
 		validateChannel(channel)
-		requestConfig(getChannelPrefix(channel))
+		val channelPrefix = getChannelPrefix(channel)
+		requestName(channelPrefix)
 	}
 
-	private fun requestConfig(prefix: String) {
-		send("$prefix/config/name")
-		send("$prefix/config/color")
+	fun requestChannelColor(channel: Int) {
+		validateChannel(channel)
+		val channelPrefix = getChannelPrefix(channel)
+		requestColor(channelPrefix)
 	}
+
+	private fun requestName(prefix: String) =
+		send("$prefix/config/name")
+
+	private fun requestColor(prefix: String) =
+		send("$prefix/config/color")
 
 	fun requestSoloSource() {
 		send("/config/solo/source")
@@ -244,6 +283,14 @@ class XR18OSCAPI(private var host: InetAddress) {
 
 	fun requestBusLink(busLink: IOSCListener.EBusLink) {
 		send("/config/buslink/${busLink.id}")
+	}
+
+	fun requestBusLevel(bus: Int) {
+		send("/bus/$bus/mix/fader")
+	}
+
+	fun requestChannelBusLevel(channel: Int, bus: Int) {
+		send(getChannelPrefix(channel) + "/mix/" + pad(bus) + "/level")
 	}
 
 	private fun getChannelPrefix(channel: Int) =

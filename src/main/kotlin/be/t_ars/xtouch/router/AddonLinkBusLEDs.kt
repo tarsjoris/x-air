@@ -52,7 +52,7 @@ class AddonLinkBusLEDs(
 	}
 
 	// XR18 events
-	override fun busLink(busLink: IOSCListener.EBusLink, on: Boolean) {
+	override suspend fun busLink(busLink: IOSCListener.EBusLink, on: Boolean) {
 		busLinked[busLink] = on
 		when (currentOutput) {
 			XTouchSessionState.OUTPUT_BUS1 -> setLED(EButton.AUTOMATION_WRITE, on)

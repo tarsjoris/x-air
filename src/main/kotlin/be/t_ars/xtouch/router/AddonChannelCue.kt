@@ -72,13 +72,13 @@ class AddonChannelCue(
 	}
 
 	// XR18 events
-	override fun soloSource(source: IOSCListener.ESoloSource) {
+	override suspend fun soloSource(source: IOSCListener.ESoloSource) {
 		soloSource = source
 		updateFlipButtonLED()
 		updateChannelRecLEDS()
 	}
 
-	override fun busLink(busLink: IOSCListener.EBusLink, on: Boolean) {
+	override suspend fun busLink(busLink: IOSCListener.EBusLink, on: Boolean) {
 		busLinked[busLink] = on
 	}
 

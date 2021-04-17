@@ -1,12 +1,14 @@
 package be.t_ars.xtouch.osc
 
+import java.nio.ByteBuffer
+
 private const val BUNDLE_START = "#bundle"
 private val BUNDLE_START_BYTES = serializeString(BUNDLE_START)
 private const val ZERO = 0x00.toByte()
 
 private fun serializeString(data: String) =
 	data.toByteArray(Charsets.UTF_8) +
-			ByteArray(1 + padCount(data.length + 1)) { _ ->
+			ByteArray(1 + padCount(data.length + 1)) {
 				ZERO
 			}
 
@@ -85,6 +87,11 @@ class OSCMessage(val address: String, val arguments: Array<out IOSCArg> = emptyA
 			if (it is OSCArgInt) it.data else null
 		}
 
+	fun getFloat(argumentIndex: Int): Float? =
+		getArg(argumentIndex)?.let {
+			if (it is OSCArgFloat) it.data else null
+		}
+
 	fun getString(argumentIndex: Int): String? =
 		getArg(argumentIndex)?.let {
 			if (it is OSCArgString) it.data else null
@@ -123,7 +130,7 @@ class OSCBundle(val timeTag: OSCTimeTag, val packets: Array<IOSCPacket>) : IOSCP
 }
 
 fun parsePacket(data: ByteArray, length: Int) =
-	parsePacket(Payload(data, 0, length))
+	parsePacket(Payload(ByteBuffer.wrap(data), 0, length))
 
 private fun parsePacket(data: Payload): IOSCPacket {
 	if (data.advanceWith(BUNDLE_START_BYTES)) {
@@ -143,7 +150,7 @@ private fun parsePacket(data: Payload): IOSCPacket {
 				throw IllegalArgumentException("Argument types should start with a comma")
 			}
 			val argTypes = argTypesPart.substring(1)
-			val arguments = Array<IOSCArg>(argTypes.length) { index ->
+			val arguments = Array(argTypes.length) { index ->
 				when (argTypes[index]) {
 					'T' -> OSCArgBoolean(true)
 					'F' -> OSCArgBoolean(false)
@@ -162,7 +169,7 @@ private fun parsePacket(data: Payload): IOSCPacket {
 	}
 }
 
-private class Payload(private val data: ByteArray, offset: Int, length: Int) {
+private class Payload(private val data: ByteBuffer, offset: Int, length: Int) {
 	private var index = offset
 	private val endIndexExclusive = offset + length
 
@@ -202,31 +209,26 @@ private class Payload(private val data: ByteArray, offset: Int, length: Int) {
 			++pos
 		}
 		val length = pos - index
-		val result = String(data, index, length)
+		val result = String(data.array(), index, length)
 		skip(length + 1 + padCount(length + 1))
 		return result
 	}
 
 	fun readInt32(): Int {
-		val start = index
+		val result = data.getInt(index)
 		skip(4)
-		var result = 0
-		for (i in start..start + 3) {
-			result = (result shl 8) + data[i]
-		}
 		return result
 	}
 
 	fun readLong64(): Long {
-		val start = index
+		val result = data.getLong(index)
 		skip(8)
-		var result = 0L
-		for (i in start..start + 3) {
-			result = result shl 8 + data[i]
-		}
 		return result
 	}
 
-	fun readFloat32() =
-		Float.fromBits(readInt32())
+	fun readFloat32(): Float {
+		val result = data.getFloat(index)
+		skip(4)
+		return result
+	}
 }
