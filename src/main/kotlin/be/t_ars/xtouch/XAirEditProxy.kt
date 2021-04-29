@@ -7,6 +7,7 @@ import be.t_ars.xtouch.settings.ISettingsManager
 import be.t_ars.xtouch.settings.SettingsManagerImpl
 import be.t_ars.xtouch.ui.XAirEditProxyUI
 import be.t_ars.xtouch.util.getBoolean
+import be.t_ars.xtouch.webrelay.RELAY_PORT
 import be.t_ars.xtouch.webrelay.startRelay
 import be.t_ars.xtouch.xairedit.IXAirEditInteractor
 import be.t_ars.xtouch.xairedit.XAirEditController
@@ -42,9 +43,8 @@ private fun createInteractor(
 	properties: Properties,
 	settingsManager: ISettingsManager,
 	sessionState: XTouchSessionState
-)
-		: ((Int, Int, Int, Int) -> Unit)? {
-	if (properties.getBoolean("xairedit.interact")) {
+) : ((Int, Int, Int, Int) -> Unit)? {
+	return if (properties.getBoolean("xairedit.interact")) {
 		val interactor = XAirEditInteractorImpl(settingsManager)
 		val controller = XAirEditController(GlobalScope, interactor)
 		sessionState.addListener(controller)
@@ -52,9 +52,9 @@ private fun createInteractor(
 		if (properties.getBoolean("xairedit.connect", "false")) {
 			connectXAirEdit(interactor)
 		}
-		return interactor::setCalibration
+		interactor::setCalibration
 	} else {
-		return null
+		null
 	}
 }
 
@@ -69,7 +69,8 @@ private fun createUI(
 	xAirEditProxyConnection: XAirEditProxyConnection,
 	xr18OSCAPI: Lazy<XR18OSCAPI>,
 	settingsManager: ISettingsManager,
-	calibrationSetter: ((Int, Int, Int, Int) -> Unit)?
+	calibrationSetter: ((Int, Int, Int, Int) -> Unit)?,
+	monitorMixLink: String?
 ) {
 	if (properties.getBoolean("ui")) {
 		val searcher = {
@@ -84,7 +85,8 @@ private fun createUI(
 			settingsManager,
 			xAirEditProxyConnection::stop,
 			calibrationSetter,
-			searcher
+			searcher,
+			monitorMixLink
 		)
 		xAirEditProxyConnection.addConnectionListener(ConnectionListener(ui::setConnected))
 		ui.isVisible = true
@@ -95,6 +97,7 @@ fun main() {
 	val settingsManager = SettingsManagerImpl()
 	val properties = settingsManager.loadProperties("xtouch")
 	val xr18Address = properties.getProperty("xr18.ipaddress", "192.168.0.2")
+	val proxyAddress = properties.getProperty("proxy.address", "192.168.0.4")
 	val xr18InetAddress = Inet4Address.getByName(xr18Address)
 	println("Use XAiR XR18 device at $xr18Address")
 
@@ -105,9 +108,11 @@ fun main() {
 	val xr18OSCAPI: Lazy<XR18OSCAPI> = lazy { createXR18API(xr18InetAddress) }
 	val xAirEditProxyConnection = XAirEditProxyConnection(xr18InetAddress, sessionState, xr18OSCAPI, properties)
 
-	createUI(properties, xAirEditProxyConnection, xr18OSCAPI, settingsManager, calibrationSetter)
+	val monitorMixLink = "http://$proxyAddress:$RELAY_PORT/monitor-mix/"
 
-	startRelay(xr18OSCAPI.value)
+	createUI(properties, xAirEditProxyConnection, xr18OSCAPI, settingsManager, calibrationSetter, monitorMixLink)
+
+	startRelay(proxyAddress, xr18OSCAPI.value)
 
 	xAirEditProxyConnection.start()
 	exitProcess(0)

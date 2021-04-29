@@ -28,6 +28,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/kotlin" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/monitor-mix" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -42,6 +43,38 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test-common:1.4.20" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-server-netty:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.3-native-mt" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.4.3-native-mt" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-server-host-common:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http2:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty.alpn:alpn-api:1.1.3.v20160715" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-kqueue:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-unix-common:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-epoll:4.1.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-websockets:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-http-cio-jvm:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-network-jvm:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-http-jvm:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-server-core:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-utils-jvm:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: io.ktor:ktor-io-jvm:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe:config:1.3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.4.32" level="project" />
+    <orderEntry type="library" name="Maven: com.google.zxing:core:3.4.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.zxing:javase:3.4.1" level="project" />
+    <orderEntry type="library" name="Maven: com.beust:jcommander:1.78" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jai-imageio:jai-imageio-core:1.4.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />

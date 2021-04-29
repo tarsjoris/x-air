@@ -8,6 +8,7 @@ import java.awt.Insets
 import java.awt.Toolkit
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
+import javax.swing.ImageIcon
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
@@ -18,7 +19,8 @@ class XAirEditProxyUI(
 	private val settingsManager: ISettingsManager,
 	private val windowClosingListener: () -> Unit,
 	calibrationUpdater: ((Int, Int, Int, Int) -> Unit)?,
-	searchAction: (() -> Unit)?
+	searchAction: (() -> Unit)?,
+	monitorMixLink: String?
 ) : JFrame() {
 	private inner class WListener : WindowAdapter() {
 		override fun windowClosing(e: WindowEvent?) {
@@ -85,6 +87,15 @@ class XAirEditProxyUI(
 			})
 		} else {
 			searchButton = null
+		}
+
+		if (monitorMixLink != null) {
+			val qrCode = createBarcode(monitorMixLink)
+			add(JLabel(ImageIcon(qrCode)), GridBagConstraints().apply {
+				gridx = 0
+				gridy = 3
+				insets = Insets(INSET, INSET, INSET, INSET)
+			})
 		}
 
 		addWindowListener(WListener())
