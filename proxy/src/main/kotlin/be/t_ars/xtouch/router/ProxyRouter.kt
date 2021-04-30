@@ -19,12 +19,10 @@ class ProxyRouter(
 	sessionState: XTouchSessionState,
 	private val connectionToXTouch: IConnectionToXTouch,
 	private val connectionToXR18: IConnectionToXR18,
-	private val xr18OSCAPI: Lazy<XR18OSCAPI>,
+	xr18OSCAPI: XR18OSCAPI,
 	properties: Properties
 ) {
-	private val connectionListeners = Listeners<IXctlConnectionListener>()
 	private val xTouchListeners = Listeners<IXTouchEvents>()
-	private val xr18Listeners = Listeners<IXR18Events>()
 
 	private val addons: Array<IAddon>
 	private val firstXTouchListener: EventProcessor<IXTouchEvents>
@@ -34,8 +32,8 @@ class ProxyRouter(
 		val addonBuilder = mutableListOf<AbstractAddon>()
 
 		if (properties.getBoolean("router.mutebuttons")) {
-			val addonMuteButtons = AddonMuteButtons(xr18OSCAPI.value)
-			xr18OSCAPI.value.addListener(addonMuteButtons)
+			val addonMuteButtons = AddonMuteButtons(xr18OSCAPI)
+			xr18OSCAPI.addListener(addonMuteButtons)
 			addonBuilder.add(addonMuteButtons)
 		}
 
@@ -45,23 +43,23 @@ class ProxyRouter(
 
 		if (properties.getBoolean("router.busscribblestrip")) {
 			val addonBusScribbleStrip = AddonBusScribbleStrip(
-				xr18OSCAPI.value,
+				xr18OSCAPI,
 				sessionState
 			)
-			xr18OSCAPI.value.addListener(addonBusScribbleStrip)
+			xr18OSCAPI.addListener(addonBusScribbleStrip)
 			addonBuilder.add(addonBusScribbleStrip)
 		}
 
 		if (properties.getBoolean("router.linkbusleds")) {
-			val addonLinkBusLEDs = AddonLinkBusLEDs(xr18OSCAPI.value)
-			xr18OSCAPI.value.addListener(addonLinkBusLEDs)
+			val addonLinkBusLEDs = AddonLinkBusLEDs(xr18OSCAPI)
+			xr18OSCAPI.addListener(addonLinkBusLEDs)
 			sessionState.addListener(addonLinkBusLEDs)
 			addonBuilder.add(addonLinkBusLEDs)
 		}
 
 		if (properties.getBoolean("router.channelcue")) {
-			val addonChannelCue = AddonChannelCue(xr18OSCAPI.value)
-			xr18OSCAPI.value.addListener(addonChannelCue)
+			val addonChannelCue = AddonChannelCue(xr18OSCAPI)
+			xr18OSCAPI.addListener(addonChannelCue)
 			sessionState.addListener(addonChannelCue)
 			addonBuilder.add(addonChannelCue)
 		}
@@ -90,27 +88,12 @@ class ProxyRouter(
 		}
 	}
 
-	fun stop() {
-		if (xr18OSCAPI.isInitialized()) {
-			xr18OSCAPI.value.stop()
-		}
-	}
-
-	fun addConnectionListener(listener: IXctlConnectionListener) {
-		connectionListeners.add(listener)
-	}
-
 	fun addXTouchListener(listener: IXTouchEvents) {
 		xTouchListeners.add(listener)
 	}
 
-	fun addXR18Listener(listener: IXR18Events) {
-		xr18Listeners.add(listener)
-	}
-
 	fun routeConnectionEvent(event: Event<IXctlConnectionListener>) {
 		addons.forEach { it.processConnectionEvent(event) }
-		connectionListeners.broadcast(event)
 	}
 
 	fun routeEventFromXTouch(event: Event<IXTouchEvents>) {
@@ -128,7 +111,6 @@ class ProxyRouter(
 	}
 
 	private fun sendEventToXTouch(event: Event<IXR18Events>) {
-		xr18Listeners.broadcast(event)
 		// forward event to device last to allow states to update
 		event(connectionToXTouch)
 	}

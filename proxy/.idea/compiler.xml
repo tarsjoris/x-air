@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="XTouch" />
+        <module name="proxy" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="XTouch" target="1.5" />
+      <module name="proxy" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -11,7 +11,7 @@ import java.util.*
 class XAirEditProxyConnection(
 	xr18InetAddress: InetAddress,
 	sessionState: XTouchSessionState,
-	val xr18OSCAPI: Lazy<XR18OSCAPI>,
+	xr18OSCAPI: XR18OSCAPI,
 	properties: Properties)
 {
 	private val connection: XctlConnectionProxy
@@ -47,6 +47,5 @@ class XAirEditProxyConnection(
 
 	fun stop() {
 		connection.stop()
-		router.stop()
 	}
 }

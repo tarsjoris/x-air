@@ -34,7 +34,7 @@ private fun Application.configureRouting(
 	install(WebSockets)
 	routing {
 		static("/monitor-mix/") {
-			staticRootFolder = File("monitor-mix\\build")
+			staticRootFolder = File("..\\monitor-mix\\build")
 			files(".")
 			default("index.html")
 		}

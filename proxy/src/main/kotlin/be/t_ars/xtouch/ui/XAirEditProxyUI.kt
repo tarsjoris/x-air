@@ -18,6 +18,7 @@ import kotlin.system.exitProcess
 class XAirEditProxyUI(
 	private val settingsManager: ISettingsManager,
 	private val windowClosingListener: () -> Unit,
+	xtouchProxyEnabled: Boolean,
 	calibrationUpdater: ((Int, Int, Int, Int) -> Unit)?,
 	searchAction: (() -> Unit)?,
 	monitorMixLink: String?
@@ -31,7 +32,7 @@ class XAirEditProxyUI(
 	}
 
 	private val properties = settingsManager.loadProperties("ui")
-	private val statusLabel = JLabel("", SwingConstants.CENTER)
+	private val xtouchProxyStatusLabel: JLabel?
 	private val searchButton: JButton?
 
 	init {
@@ -42,17 +43,21 @@ class XAirEditProxyUI(
 
 		layout = GridBagLayout()
 
-		statusLabel.isOpaque = true
-		setConnected(false)
-
-		add(statusLabel, GridBagConstraints().apply {
-			fill = GridBagConstraints.BOTH
-			gridx = 0
-			gridy = 0
-			weightx = 1.toDouble()
-			weighty = 1.toDouble()
-			insets = Insets(INSET, INSET, INSET, INSET)
-		})
+		if (xtouchProxyEnabled) {
+			xtouchProxyStatusLabel = JLabel("", SwingConstants.CENTER)
+			xtouchProxyStatusLabel.isOpaque = true
+			setConnected(false)
+			add(xtouchProxyStatusLabel, GridBagConstraints().apply {
+				fill = GridBagConstraints.BOTH
+				gridx = 0
+				gridy = 0
+				weightx = 1.toDouble()
+				weighty = 1.toDouble()
+				insets = Insets(INSET, INSET, INSET, INSET)
+			})
+		} else {
+			xtouchProxyStatusLabel = null
+		}
 
 		if (calibrationUpdater != null) {
 			val calibrateButton = JButton()
@@ -104,9 +109,10 @@ class XAirEditProxyUI(
 	}
 
 	fun setConnected(connected: Boolean) {
-		statusLabel.text = if (connected) "CONNECTED" else "DISCONNECTED"
-		statusLabel.background = if (connected) OK_COLOR else NOK_COLOR
-		searchButton?.isVisible = !connected
+		xtouchProxyStatusLabel?.apply {
+			text = if (connected) "CONNECTED" else "DISCONNECTED"
+			background = if (connected) OK_COLOR else NOK_COLOR
+		}
 	}
 
 	private fun loadProperties() {

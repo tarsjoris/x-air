@@ -158,6 +158,12 @@ class XR18OSCAPI(private var host: InetAddress) {
 						val on = message.getInt(0) == 1
 						listeners.broadcast { it.busMixOn(bus, on) }
 					}
+					"fader" -> {
+						val level = message.getFloat(0)
+						if (level != null) {
+							listeners.broadcast { it.busLevel(bus, level) }
+						}
+					}
 				}
 			}
 			"config" -> {
