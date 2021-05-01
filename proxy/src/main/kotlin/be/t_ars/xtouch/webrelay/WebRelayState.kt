@@ -126,10 +126,7 @@ class WebRelayState(private val xrR18OSCAPI: XR18OSCAPI) : IOSCListener {
 	}
 
 	override suspend fun channelName(channel: Int, name: String) {
-		channelConfigs[channel - 1].name = if (name.isEmpty())
-			channel.toString().padStart(2, '0')
-		else
-			name
+		channelConfigs[channel - 1].name = name
 	}
 
 	override suspend fun channelColor(channel: Int, color: Int) {
