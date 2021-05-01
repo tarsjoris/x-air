@@ -1,10 +1,35 @@
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
-import { Slider, Typography } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Slider, Typography, makeStyles, withStyles } from '@material-ui/core';
 import './index.css';
 import { IChannelConfig, IScribbleStripConfig, reducer, initialState } from './state';
 import { createConnection } from './connection';
 import SelectBusDialog from './SelectBusDialog';
+import { IScribbleStylesProps, scribbleColorProperties } from './scribblecolors';
+import { DefaultTheme } from 'styled-components';
+
+
+const useTopBarStyles = makeStyles<DefaultTheme, IScribbleStylesProps, string>({
+	header: {
+		top: 0,
+		left: 'auto',
+		right: 0,
+		position: 'sticky',
+		width: '100%',
+		display: 'flex',
+		zIndex: 1100,
+		boxSizing: 'border-box',
+		flexDirection: 'column',
+	},
+	headerTitle: {
+		minHeight: '64px',
+		paddingLeft: '24px',
+		paddingRight: '24px',
+		display: 'flex',
+		position: 'relative',
+		alignItems: 'center',
+	},
+	scribble: scribbleColorProperties,
+})
 
 
 interface ITopBarProps {
@@ -14,22 +39,23 @@ interface ITopBarProps {
 
 const TopBar = function (props: ITopBarProps) {
 	const { busConfigs, selectedBus } = props
-	const [dialogOpen, setDialogOpen] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false)
 	const busConfig = busConfigs[selectedBus - 1]
-	const color = busConfig?.color ?? "0"
+	const color = busConfig?.color ?? 0
+	const classes = useTopBarStyles({ color })
 
 	const handleOpenDialog = () => {
-		setDialogOpen(true);
-	};
+		setDialogOpen(true)
+	}
 
 	const handleCloseDialog = (busIndex: number) => {
-		setDialogOpen(false);
-		//setSelectedValue(value);
-	};
+		setDialogOpen(false)
+		//setSelectedValue(value)
+	}
 	return (
 		<>
-			<header className={`scribble${color}`} onClick={handleOpenDialog}>
-				<div className={'title'}>
+			<header className={`${classes.header} ${classes.scribble}`} onClick={handleOpenDialog}>
+				<div className={classes.headerTitle}>
 					<Typography variant="h6">
 						{busConfig?.name ?? "Monitor Mix"}
 					</Typography>
@@ -45,8 +71,21 @@ interface IScribleStripProps {
 	label: string
 }
 
+const useScribbleStripStyles = makeStyles<DefaultTheme, IScribbleStylesProps, string>({
+	scribble: {
+		width: '65pt',
+		height: '35pt',
+		padding: '1pt',
+		borderRadius: '2pt',
+		textAlign: 'center',
+		wordWrap: 'break-word',
+		...scribbleColorProperties,
+	}
+})
+
 const ScribbleStrip = function (props: IScribleStripProps) {
-	return <Typography className={`scribble scribble${props.color}`}>{props.label}</Typography >
+	const classes = useScribbleStripStyles({ color: props.color })
+	return <Typography className={classes.scribble}>{props.label}</Typography >
 }
 
 const Fader = withStyles({

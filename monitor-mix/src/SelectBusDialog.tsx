@@ -1,5 +1,27 @@
-import { Dialog, DialogTitle, List, ListItem, ListItemText } from "@material-ui/core";
+import { Dialog, DialogTitle, List, ListItem, ListItemText, makeStyles } from "@material-ui/core";
+import { DefaultTheme } from "styled-components";
+import { IScribbleStylesProps, scribbleColorProperties } from "./scribblecolors";
 import { IScribbleStripConfig } from './state';
+
+const useScribbleStripStyles = makeStyles<DefaultTheme, IScribbleStylesProps, string>({
+    scribble: scribbleColorProperties,
+})
+
+interface IBusItemProps {
+    key: number,
+    busConfig: IScribbleStripConfig,
+    onClick: () => void,
+}
+
+const BusItem = function (props: IBusItemProps) {
+    const { key, busConfig, onClick } = props
+    const classes = useScribbleStripStyles({ color: busConfig.color })
+    return (
+        <ListItem button onClick={onClick} key={key} className={classes.scribble}>
+            <ListItemText primary={busConfig.name} />
+        </ListItem>
+    )
+}
 
 export interface ISelectBusDialogProps {
     open: boolean;
@@ -24,9 +46,7 @@ const SelectBusDialog = function (props: ISelectBusDialogProps) {
             <DialogTitle id="simple-dialog-title">Choose output bus</DialogTitle>
             <List>
                 {busConfigs.map((busConfig, busIndex) => (
-                    <ListItem button onClick={() => handleListItemClick(busIndex)} key={busIndex} className={'scribble14'}>
-                        <ListItemText primary={busConfig.name} />
-                    </ListItem>
+                    <BusItem key={busIndex} busConfig={busConfig} onClick={() => handleListItemClick(busIndex)} />
                 ))}
             </List>
         </Dialog>
