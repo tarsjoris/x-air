@@ -3,3 +3,148 @@ body {
     background-color: #222;
     color: #fff;
 }
+
+header {
+    top: 0;
+    left: auto;
+    right: 0;
+    position: sticky;
+    width: 100%;
+    display: flex;
+    z-index: 1100;
+    box-sizing: border-box;
+    flex-direction: column;
+    border-width: 1pt;
+    border-style: solid;
+}
+
+header .title {
+    min-height: 64px;
+    padding-left: 24px;
+    padding-right: 24px;
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+.scribble {
+    width: 65pt;
+    height: 35pt;
+    padding: 1pt;
+    border-width: 1pt;
+    border-radius: 2pt;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+/* black */
+.scribble0 {
+    background-color: #000000;
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+/* red */
+.scribble1 {
+    background-color: #FF0000;
+    border-color: #FF0000;
+    color: #000000;
+}
+
+/* green */
+.scribble2 {
+    background-color: #00FF00;
+    border-color: #00FF00;
+    color: #000000;
+}
+
+/* yellow */
+.scribble3 {
+    background-color: #FFFF00;
+    border-color: #FFFF00;
+    color: #000000;
+}
+
+/* blue */
+.scribble4 {
+    background-color: #0000FF;
+    border-color: #0000FF;
+    color: #000000;
+}
+
+/* magenta */
+.scribble5 {
+    background-color: #FF00FF;
+    border-color: #FF00FF;
+    color: #000000;
+}
+
+/* cyan */
+.scribble6 {
+    background-color: #00FFFF;
+    border-color: #00FFFF;
+    color: #000000;
+}
+
+/* white */
+.scribble7 {
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    color: #000000;
+}
+
+/* black inv */
+.scribble8 {
+    background-color: #000000;
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+/* red inv */
+.scribble9 {
+    background-color: #000000;
+    border-color: #FF0000;
+    color: #FF0000;
+}
+
+/* green inv */
+.scribble10 {
+    background-color: #000000;
+    border-color: #00FF00;
+    color: #00FF00;
+}
+
+/* yellow inv */
+.scribble11 {
+    background-color: #000000;
+    border-color: #FFFF00;
+    color: #FFFF00;
+}
+
+/* blue inv */
+.scribble12 {
+    background-color: #000000;
+    border-color: #0000FF;
+    color: #0000FF;
+}
+
+/* magenta inv */
+.scribble13 {
+    background-color: #000000;
+    border-color: #FF00FF;
+    color: #FF00FF;
+}
+
+/* cyan inv */
+.scribble14 {
+    background-color: #000000;
+    border-color: #00FFFF;
+    color: #00FFFF;
+}
+
+/* white inv */
+.scribble15 {
+    background-color: #000000;
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+}

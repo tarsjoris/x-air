@@ -62,6 +62,11 @@ const processMessage = function (message: string, dispatch: (action: IAction) =>
     }
 }
 
+const processMessages = function (data: string, dispatch: (action: IAction) => void) {
+    data.split(";")
+        .forEach(message => processMessage(message, dispatch))
+}
+
 export const createConnection = function (dispatch: (action: IAction) => void) {
     const hostname = window.location.hostname
     const client = new ReconnectingWebSocket(`ws://${hostname}:8080/relay/monitor-mix`);
@@ -70,8 +75,7 @@ export const createConnection = function (dispatch: (action: IAction) => void) {
         client.send("select|1");
     };
     client.onmessage = (message: MessageEvent<string>) => {
-        console.log(message.data)
-        processMessage(message.data, dispatch);
+        processMessages(message.data, dispatch);
     }
     client.onclose = (message) => {
         console.log("Connection closed")

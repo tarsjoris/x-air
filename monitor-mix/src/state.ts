@@ -19,13 +19,13 @@ export const initialState: IState = {
     busConfigs: [...new Array(6)].map((_, index) => (
         {
             name: `Bus ${index + 1}`,
-            color: 1
+            color: 0
         })),
     busLevel: 0,
     channelConfigs: [...new Array(17)].map((_, index) => (
         {
             name: `Channel ${index + 1}`,
-            color: 1,
+            color: 0,
             level: 0
         }))
 }

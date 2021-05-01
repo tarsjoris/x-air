@@ -1,46 +1,42 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
-import { AppBar, IconButton, Slider, Toolbar, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import { Slider, Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import './index.css';
 import { IChannelConfig, IScribbleStripConfig, reducer, initialState } from './state';
 import { createConnection } from './connection';
+import SelectBusDialog from './SelectBusDialog';
 
-
-const useStyles = makeStyles((theme: Theme) =>
-	createStyles({
-		root: {
-			flexGrow: 1,
-			backgroundColor: "#444444",
-		},
-		menuButton: {
-			marginRight: theme.spacing(2),
-		},
-		title: {
-			flexGrow: 1,
-		},
-	}),
-);
 
 interface ITopBarProps {
-	busConfig?: IScribbleStripConfig
+	busConfigs: IScribbleStripConfig[],
+	selectedBus: number
 }
 
 const TopBar = function (props: ITopBarProps) {
-	const classes = useStyles();
+	const { busConfigs, selectedBus } = props
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const busConfig = busConfigs[selectedBus - 1]
+	const color = busConfig?.color ?? "0"
+
+	const handleOpenDialog = () => {
+		setDialogOpen(true);
+	};
+
+	const handleCloseDialog = (busIndex: number) => {
+		setDialogOpen(false);
+		//setSelectedValue(value);
+	};
 	return (
-		<div className={classes.root}>
-			<AppBar position="sticky">
-				<Toolbar>
-					<IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-						<MenuIcon />
-					</IconButton>
-					<Typography variant="h6" className={classes.title}>
-						{props.busConfig?.name ?? "Monitor Mix"}
+		<>
+			<header className={`scribble${color}`} onClick={handleOpenDialog}>
+				<div className={'title'}>
+					<Typography variant="h6">
+						{busConfig?.name ?? "Monitor Mix"}
 					</Typography>
-				</Toolbar>
-			</AppBar>
-		</div>
+				</div>
+			</header>
+			<SelectBusDialog open={dialogOpen} busConfigs={busConfigs} selectedBus={selectedBus} onClose={handleCloseDialog} />
+		</>
 	)
 }
 
@@ -50,7 +46,7 @@ interface IScribleStripProps {
 }
 
 const ScribbleStrip = function (props: IScribleStripProps) {
-	return <Typography >{props.label}</Typography >
+	return <Typography className={`scribble scribble${props.color}`}>{props.label}</Typography >
 }
 
 const Fader = withStyles({
@@ -73,7 +69,7 @@ const Fader = withStyles({
 	markLabel: {
 		color: 'rgb(132, 134, 136)',
 	}
-})(Slider);
+})(Slider)
 
 const marks = [
 	{ value: 10, label: '50' },
@@ -92,14 +88,15 @@ interface IChannelFaderProps {
 }
 
 const ChannelFader = function (props: IChannelFaderProps) {
-	const onChange = useCallback((_, value) => props.onChange(value), [props])
+	const { onChange, level } = props
+	const onChangeCallback = useCallback((_, value) => onChange(value), [onChange])
 	return (
 		<div style={{ marginLeft: 25, marginRight: 25 }}>
 			<Fader
 				min={0}
 				max={80}
-				value={props.level}
-				onChange={onChange}
+				value={level}
+				onChange={onChangeCallback}
 				marks={marks} />
 		</div>
 	)
@@ -111,13 +108,15 @@ interface IChannelProps {
 }
 
 const Channel = function (props: IChannelProps) {
+	const { channelConfig, onChange } = props
+	const { color, name, level } = channelConfig
 	return (
-		<div style={{ marginTop: 20, marginBottom: 20 }}>
-			<div style={{ float: 'left', width: 90 }}>
-				<ScribbleStrip color={props.channelConfig.color} label={props.channelConfig.name} />
+		<div>
+			<div style={{ float: 'left', paddingBottom: '15pt' }}>
+				<ScribbleStrip color={color} label={name} />
 			</div>
-			<div style={{ marginLeft: 90 }}>
-				<ChannelFader level={props.channelConfig.level} onChange={props.onChange} />
+			<div style={{ marginLeft: '75pt', paddingTop: '8pt', paddingBottom: '7pt' }}>
+				<ChannelFader level={level} onChange={onChange} />
 			</div>
 		</div>
 	)
@@ -130,10 +129,11 @@ interface IChannelFadersProps {
 
 
 const ChannelFaders = function (props: IChannelFadersProps) {
+	const { channelConfigs, setChannelLevel } = props
 	return (
 		<div style={{ margin: '1em' }}>
-			{props.channelConfigs.map((config, index) => (
-				<Channel key={index} channelConfig={config} onChange={value => props.setChannelLevel(index + 1, value)} />
+			{channelConfigs.map((config, index) => (
+				<Channel key={index} channelConfig={config} onChange={value => setChannelLevel(index + 1, value)} />
 			))}
 		</div>
 	)
@@ -149,10 +149,10 @@ const App = function () {
 		[dispatch])
 	return (
 		<>
-			<TopBar busConfig={state.busConfigs[state.selectedBus - 1]} />
+			<TopBar busConfigs={state.busConfigs} selectedBus={state.selectedBus} />
 			<ChannelFaders channelConfigs={state.channelConfigs} setChannelLevel={setChannelLevel} />
 		</>
 	)
 }
 
-export default App;
+export default App
