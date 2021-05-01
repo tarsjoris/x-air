@@ -65,7 +65,12 @@ export interface IChannelLevelAction {
     level: number
 }
 
-export type IAction = IBusNameAction | IBusColorAction | IBusLevelAction | IChannelNameAction | IChannelColorAction | IChannelLevelAction
+export interface ISelectBusAction {
+    command: "selectbus",
+    bus: number,
+}
+
+export type IAction = IBusNameAction | IBusColorAction | IBusLevelAction | IChannelNameAction | IChannelColorAction | IChannelLevelAction | ISelectBusAction
 
 export const reducer = function (state: IState, action: IAction): IState {
     switch (action.command) {
@@ -76,10 +81,10 @@ export const reducer = function (state: IState, action: IAction): IState {
                     ...state.busConfigs.slice(0, action.bus - 1),
                     {
                         ...state.busConfigs[action.bus - 1],
-                        name: action.name
+                        name: action.name,
                     },
-                    ...state.busConfigs.slice(action.bus)
-                ]
+                    ...state.busConfigs.slice(action.bus),
+                ],
             }
         }
         case "buscolor": {
@@ -89,16 +94,16 @@ export const reducer = function (state: IState, action: IAction): IState {
                     ...state.busConfigs.slice(0, action.bus - 1),
                     {
                         ...state.busConfigs[action.bus - 1],
-                        color: action.color
+                        color: action.color,
                     },
-                    ...state.busConfigs.slice(action.bus)
-                ]
+                    ...state.busConfigs.slice(action.bus),
+                ],
             }
         }
         case "buslevel": {
             return {
                 ...state,
-                busLevel: action.level
+                busLevel: action.level,
             }
         }
         case "channelname": {
@@ -108,10 +113,10 @@ export const reducer = function (state: IState, action: IAction): IState {
                     ...state.channelConfigs.slice(0, action.channel - 1),
                     {
                         ...state.channelConfigs[action.channel - 1],
-                        name: action.name
+                        name: action.name,
                     },
-                    ...state.channelConfigs.slice(action.channel)
-                ]
+                    ...state.channelConfigs.slice(action.channel),
+                ],
             }
         }
         case "channelcolor": {
@@ -121,10 +126,10 @@ export const reducer = function (state: IState, action: IAction): IState {
                     ...state.channelConfigs.slice(0, action.channel - 1),
                     {
                         ...state.channelConfigs[action.channel - 1],
-                        color: action.color
+                        color: action.color,
                     },
-                    ...state.channelConfigs.slice(action.channel)
-                ]
+                    ...state.channelConfigs.slice(action.channel),
+                ],
             }
         }
         case "channellevel": {
@@ -134,10 +139,16 @@ export const reducer = function (state: IState, action: IAction): IState {
                     ...state.channelConfigs.slice(0, action.channel - 1),
                     {
                         ...state.channelConfigs[action.channel - 1],
-                        level: action.level
+                        level: action.level,
                     },
-                    ...state.channelConfigs.slice(action.channel)
-                ]
+                    ...state.channelConfigs.slice(action.channel),
+                ],
+            }
+        }
+        case "selectbus": {
+            return {
+                ...state,
+                selectedBus: action.bus,
             }
         }
         default: {

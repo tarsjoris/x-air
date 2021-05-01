@@ -3,7 +3,6 @@ package be.t_ars.xtouch.webrelay
 import be.t_ars.xtouch.osc.XR18OSCAPI
 import io.ktor.application.Application
 import io.ktor.application.install
-import io.ktor.features.origin
 import io.ktor.http.cio.websocket.send
 import io.ktor.http.content.default
 import io.ktor.http.content.files
@@ -39,17 +38,18 @@ private fun Application.configureRouting(
 			default("index.html")
 		}
 		webSocket("/relay/monitor-mix") {
-			val connection = RelayMonitorMixConnection(state, ::send)
+			println("Webrelay connection established")
+			val connection = RelayMonitorMixConnection(state, ::send, xrR18OSCAPI)
 			xrR18OSCAPI.addListener(connection)
 			connection.init()
 			try {
 				for (frame in incoming) {
 					val receivedText = String(frame.data)
-					println("[${call.request.origin.host}] Received: $receivedText")
+					//println("[${call.request.origin.host}] Received: $receivedText")
 					connection.accept(receivedText)
 				}
 			} finally {
-				println("Connection closed")
+				println("WebRelay connection closed")
 				xrR18OSCAPI.removeListener(connection)
 			}
 		}

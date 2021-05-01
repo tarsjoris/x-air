@@ -1,3 +1,4 @@
+import { Dispatch } from 'react';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { IAction } from "./state"
 
@@ -67,18 +68,40 @@ const processMessages = function (data: string, dispatch: (action: IAction) => v
         .forEach(message => processMessage(message, dispatch))
 }
 
-export const createConnection = function (dispatch: (action: IAction) => void) {
-    const hostname = window.location.hostname
-    const client = new ReconnectingWebSocket(`ws://${hostname}:8080/relay/monitor-mix`);
-    client.onopen = () => {
-        console.log('WebSocket Client Connected');
-        client.send("select|1");
-    };
-    client.onmessage = (message: MessageEvent<string>) => {
-        processMessages(message.data, dispatch);
+export class Connection {
+    client: ReconnectingWebSocket
+    dispatch: Dispatch<IAction> | null = null
+
+    constructor() {
+        const hostname = window.location.hostname
+        this.client = new ReconnectingWebSocket(`ws://${hostname}:8080/relay/monitor-mix`);
+        this.client.onopen = () => {
+            console.log('WebSocket Client Connected');
+        }
+        this.client.onmessage = (message: MessageEvent<string>) => {
+            if (this.dispatch != null) {
+                processMessages(message.data, this.dispatch);
+            }
+        }
+        this.client.onclose = (message) => {
+            console.log("Connection closed")
+        }
     }
-    client.onclose = (message) => {
-        console.log("Connection closed")
+
+    setDispatch = (dispatch: Dispatch<IAction>) => {
+        this.dispatch = dispatch
+        this.client.send("select|1");
     }
-    return client.close
+
+    clearDispatch = () => {
+        this.dispatch = null
+    }
+
+    selectBus = (bus: number) => {
+        this.client.send(`select|${bus}`)
+    }
+
+    setChannelLevel = (channel: number, level: number) => {
+        this.client.send(`channel|${channel}|${level}`)
+    }
 }

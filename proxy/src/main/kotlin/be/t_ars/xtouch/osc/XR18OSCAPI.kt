@@ -39,7 +39,7 @@ class XR18OSCAPI(private var host: InetAddress) {
 		val udpPacket = DatagramPacket(buffer, buffer.size)
 		while (running.get()) {
 			socket.receive(udpPacket)
-			printPacket(udpPacket.data)
+			printPacket("IN", udpPacket.data)
 			try {
 				val packet = parsePacket(udpPacket.data, udpPacket.length)
 				processPacket(packet)
@@ -299,6 +299,10 @@ class XR18OSCAPI(private var host: InetAddress) {
 		send(getChannelPrefix(channel) + "/mix/" + pad(bus) + "/level")
 	}
 
+	fun setChannelBusLevel(channel: Int, bus: Int, level: Float) {
+		send(getChannelPrefix(channel) + "/mix/" + pad(bus) + "/level", OSCArgFloat(level))
+	}
+
 	private fun getChannelPrefix(channel: Int) =
 		when (channel) {
 			AUX_CHANNEL -> "/rtn/aux"
@@ -310,7 +314,7 @@ class XR18OSCAPI(private var host: InetAddress) {
 
 	private fun send(packet: IOSCPacket) {
 		val payload = packet.serialize()
-		printPacket(payload)
+		printPacket("OUT->$host", payload)
 		socket.send(DatagramPacket(payload, payload.size, host, PORT))
 	}
 
@@ -323,10 +327,10 @@ class XR18OSCAPI(private var host: InetAddress) {
 	private fun pad(number: Int) =
 		number.toString().padStart(2, '0')
 
-	private fun printPacket(data: ByteArray) {
+	private fun printPacket(prefix: String, data: ByteArray) {
 		if (DEBUG) {
-			println(String(data))
-			println(data.joinToString(separator = ",", transform = { it.toString() }))
+			println("[$prefix] ${String(data)}")
+			//println(data.joinToString(separator = ",", transform = { it.toString() }))
 		}
 	}
 }
