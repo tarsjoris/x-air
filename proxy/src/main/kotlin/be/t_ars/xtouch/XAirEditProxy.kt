@@ -116,7 +116,7 @@ fun main() {
 
 	val monitorMixLink: String?
 	if (properties.getBoolean("webrelay.enabled")) {
-		monitorMixLink = "http://$proxyAddress:$RELAY_PORT/monitor-mix/"
+		monitorMixLink = "http://$proxyAddress:$RELAY_PORT/monitor-mix/index.html"
 		startRelay(proxyAddress, xr18OSCAPI)
 	} else {
 		monitorMixLink = null

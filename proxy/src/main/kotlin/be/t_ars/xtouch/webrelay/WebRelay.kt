@@ -4,16 +4,13 @@ import be.t_ars.xtouch.osc.XR18OSCAPI
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.http.cio.websocket.send
-import io.ktor.http.content.default
-import io.ktor.http.content.files
+import io.ktor.http.content.resources
 import io.ktor.http.content.static
-import io.ktor.http.content.staticRootFolder
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
-import java.io.File
 
 const val RELAY_PORT: Int = 8080
 
@@ -33,9 +30,7 @@ private fun Application.configureRouting(
 	install(WebSockets)
 	routing {
 		static("/monitor-mix/") {
-			staticRootFolder = File("..\\monitor-mix\\build")
-			files(".")
-			default("index.html")
+			resources("monitor-mix")
 		}
 		webSocket("/relay/monitor-mix") {
 			println("Webrelay connection established")
