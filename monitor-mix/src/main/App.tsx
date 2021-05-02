@@ -27,18 +27,20 @@ const connection = new Connection()
 
 const App = function () {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const selectedBus = state.selectedBus
 	useEffect(() => {
-		connection.setDispatch(dispatch)
+		connection.init(dispatch, selectedBus)
 		return connection.clearDispatch
-	}, [dispatch])
+	}, [dispatch, selectedBus])
 
 	const selectBus = useCallback((bus: number) => {
+		window.localStorage.setItem("bus", bus.toString())
 		connection.selectBus(bus)
 		dispatch({ command: "selectbus", bus })
 	}, [dispatch])
 	return (
 		<>
-			<TopBar busConfigs={state.busConfigs} selectedBus={state.selectedBus} selectBus={selectBus} />
+			<TopBar busConfigs={state.busConfigs} selectedBus={selectedBus} selectBus={selectBus} />
 			<ChannelFaders channelConfigs={state.channelConfigs} setChannelLevel={connection.setChannelLevel} />
 		</>
 	)

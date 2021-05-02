@@ -71,16 +71,18 @@ const processMessages = function (data: string, dispatch: (action: IAction) => v
 export class Connection {
     client: ReconnectingWebSocket
     dispatch: Dispatch<IAction> | null = null
+    selectedBus: number = 1
 
     constructor() {
         const hostname = window.location.hostname
         this.client = new ReconnectingWebSocket(`ws://${hostname}:8080/relay/monitor-mix`);
         this.client.onopen = () => {
-            console.log('WebSocket Client Connected');
+            console.log('WebSocket Client Connected')
+            this.requestBusParams()
         }
         this.client.onmessage = (message: MessageEvent<string>) => {
             if (this.dispatch != null) {
-                processMessages(message.data, this.dispatch);
+                processMessages(message.data, this.dispatch)
             }
         }
         this.client.onclose = (message) => {
@@ -88,20 +90,25 @@ export class Connection {
         }
     }
 
-    setDispatch = (dispatch: Dispatch<IAction>) => {
+    init = (dispatch: Dispatch<IAction>, selectedBus: number) => {
         this.dispatch = dispatch
-        this.client.send("select|1");
+        this.selectBus(selectedBus)
     }
 
     clearDispatch = () => {
         this.dispatch = null
     }
 
-    selectBus = (bus: number) => {
-        this.client.send(`select|${bus}`)
+    selectBus = (selectedBus: number) => {
+        this.selectedBus = selectedBus
+        this.requestBusParams()
     }
 
     setChannelLevel = (channel: number, level: number) => {
         this.client.send(`channel|${channel}|${level}`)
+    }
+
+    private requestBusParams = () => {
+        this.client.send(`select|${this.selectedBus}`)
     }
 }

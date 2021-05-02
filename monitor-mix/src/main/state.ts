@@ -15,7 +15,7 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    selectedBus: 1,
+    selectedBus: parseInt(window.localStorage.getItem("bus") ?? "1"),
     busConfigs: [...new Array(6)].map((_, index) => (
         {
             name: `Bus ${index + 1}`,
