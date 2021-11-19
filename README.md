@@ -66,6 +66,7 @@ They can be disabled by setting their configuration option to false in **~/xtouc
 * `router.busscribblestrip`
     * When selecting an effects send or bus send, the channel names are still displayed.
     * When pressing down the channel knob, the **tap** is displayed like normal (`IN`, `PREEQ`, `POSTEQ`, `PRE`, `POST`, `GRP`)
+    * When controlling the bus sends of a channel, the bus names are displayed.
 * `router.linkbusleds`
     * Both bus leds light up when a linked bus is selected.
 * `router.channelcue`

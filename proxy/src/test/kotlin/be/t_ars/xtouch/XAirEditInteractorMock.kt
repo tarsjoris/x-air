@@ -48,9 +48,6 @@ class XAirEditInteractorMock : IXAirEditInteractor {
 		currentEffectsSettingsDialog = null
 	}
 
-	override suspend fun clickConnect() {}
-	override suspend fun clickMixerPc() {}
-
 	companion object {
 		const val CHANNEL_COUNT = 16
 		const val CHANNEL_AUX = CHANNEL_COUNT + 1

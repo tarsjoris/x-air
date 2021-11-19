@@ -17,7 +17,7 @@ class XR18OSCAPI(private var host: InetAddress) {
 		const val CHANNEL_COUNT = 17
 		const val AUX_CHANNEL = 17
 		const val BUS_COUNT = 6
-		private const val DEBUG = true
+		private const val DEBUG = false
 	}
 
 	private val socket = DatagramSocket()
