@@ -76,8 +76,5 @@ They can be disabled by setting their configuration option to false in **~/xtouc
 * `xairedit.interact`
     * Clicks in the X-Air-Edit app to keep it in sync with the XTouch Controller.
     Disable if you just want to use the addons.
-* `xairedit.conect`
-    * Disabled by default.
-    Will click the "Connect" and "Mixer -> PC" buttons during startup, to connect the X-Air-Edit app with the XR18.
 * `ui`
     * Disable to run this app on headless systems.

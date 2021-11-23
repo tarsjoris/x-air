@@ -24,7 +24,4 @@ interface IXAirEditInteractor {
 	suspend fun clickTab(tab: ETab)
 	fun openEffectSettings(effect: Int)
 	fun closeDialog()
-
-	suspend fun clickConnect()
-	suspend fun clickMixerPc()
 }
