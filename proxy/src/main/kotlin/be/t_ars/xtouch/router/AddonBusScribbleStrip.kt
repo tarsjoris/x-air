@@ -78,6 +78,9 @@ class AddonBusScribbleStrip(
 	private val xr18buses = Array(XR18OSCAPI.BUS_COUNT) {
 		XR18BusConfig()
 	}
+	private val xr18fxSends = Array(XR18OSCAPI.FXSEND_COUNT) {
+		XR18BusConfig()
+	}
 
 	// XTouch state
 	private val xtouchChannels = Array<ScribbleStripEvent?>(XctlUtil.CHANNEL_COUNT) {
@@ -116,11 +119,22 @@ class AddonBusScribbleStrip(
 		xr18buses[bus - 1].updateColor(color)
 	}
 
+	override suspend fun fxSendName(fxSend: Int, name: String) {
+		xr18fxSends[fxSend - 1].name = name.ifBlank { null }
+	}
+
+	override suspend fun fxSendColor(fxSend: Int, color: Int) {
+		xr18fxSends[fxSend - 1].updateColor(color)
+	}
+
 	private fun isInOverrideChannelMode() =
 		sessionState.currentOutput != XTouchSessionState.OUTPUT_MAINLR
 
 	private fun isInOverrideBusMode() =
 		sessionState.currentEncoder == XTouchSessionState.EEncoder.BUS
+
+	private fun isInOverrideFXSendMode() =
+		sessionState.currentEncoder == XTouchSessionState.EEncoder.FX
 
 	private fun getOverrideConfigCurrentXR18Channel(channel: Int) =
 		if (channelKnobPressed != channel) {
@@ -148,6 +162,16 @@ class AddonBusScribbleStrip(
 	private fun getOverridenBusConfigEvent(channel: Int) =
 		getOverrideConfigBusChannel(channel)
 			?.toXTouchEvent(channel)
+
+	private fun getOverrideConfigFXSendChannel(fxSend: Int) =
+		when (fxSend) {
+			in 5..8 -> xr18fxSends[fxSend - 5]
+			else -> null
+		}
+
+	private fun getOverridenFXSendConfigEvent(fxSend: Int) =
+		getOverrideConfigFXSendChannel(fxSend)
+			?.toXTouchEvent(fxSend)
 
 	inner class ConnectionListener : IXctlConnectionListener {
 		override fun connected() {
@@ -186,6 +210,12 @@ class AddonBusScribbleStrip(
 				val newEvents = scribbleStripEvents.map { event ->
 					xtouchChannels[event.channel - 1] = event
 					getOverridenBusConfigEvent(event.channel) ?: event
+				}
+				nextEvent = { it.setScribbleTrips(newEvents.toTypedArray()) }
+			} else if (isInOverrideFXSendMode()) {
+				val newEvents = scribbleStripEvents.map { event ->
+					xtouchChannels[event.channel - 1] = event
+					getOverridenFXSendConfigEvent(event.channel) ?: event
 				}
 				nextEvent = { it.setScribbleTrips(newEvents.toTypedArray()) }
 			}

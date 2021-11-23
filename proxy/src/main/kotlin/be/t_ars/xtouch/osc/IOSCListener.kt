@@ -48,13 +48,21 @@ interface IOSCListener {
 	}
 
 	suspend fun lrMixOn(on: Boolean) {}
-	suspend fun busMixOn(bus: Int, on: Boolean) {}
 	suspend fun channelName(channel: Int, name: String) {}
 	suspend fun channelColor(channel: Int, color: Int) {}
 	suspend fun channelBusLevel(channel: Int, bus: Int, level: Float) {}
+	suspend fun busMixOn(bus: Int, on: Boolean) {}
+	suspend fun busLevel(bus: Int, level: Float) {}
 	suspend fun busName(bus: Int, name: String) {}
 	suspend fun busColor(bus: Int, color: Int) {}
-	suspend fun busLevel(bus: Int, level: Float) {}
+	suspend fun returnMixOn(returnChannel: Int, on: Boolean) {}
+	suspend fun returnLevel(returnChannel: Int, level: Float) {}
+	suspend fun returnName(returnChannel: Int, name: String) {}
+	suspend fun returnColor(returnChannel: Int, color: Int) {}
+	suspend fun fxSendMixOn(fxSend: Int, on: Boolean) {}
+	suspend fun fxSendLevel(fxSend: Int, level: Float) {}
+	suspend fun fxSendName(fxSend: Int, name: String) {}
+	suspend fun fxSendColor(fxSend: Int, color: Int) {}
 	suspend fun soloSource(source: ESoloSource) {}
 	suspend fun busLink(busLink: EBusLink, on: Boolean) {}
 }

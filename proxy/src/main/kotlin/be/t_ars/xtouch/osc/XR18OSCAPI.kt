@@ -17,6 +17,8 @@ class XR18OSCAPI(private var host: InetAddress) {
 		const val CHANNEL_COUNT = 17
 		const val AUX_CHANNEL = 17
 		const val BUS_COUNT = 6
+		const val RETURN_COUNT = 4
+		const val FXSEND_COUNT = 4
 		private const val DEBUG = false
 	}
 
@@ -81,6 +83,11 @@ class XR18OSCAPI(private var host: InetAddress) {
 					"rtn" -> {
 						when (parts[2]) {
 							"aux" -> processChannelMessage(AUX_CHANNEL, parts, message)
+							else -> {
+								val returnChannel = parts[2][0] - '0'
+								if (returnChannel in 1..RETURN_COUNT)
+									processReturnMessage(returnChannel, parts, message)
+							}
 						}
 					}
 					"lr" -> processLRMessage(parts, message)
@@ -88,6 +95,12 @@ class XR18OSCAPI(private var host: InetAddress) {
 						val bus = parts[2][0] - '0'
 						if (bus in 1..BUS_COUNT) {
 							processBusMessage(bus, parts, message)
+						}
+					}
+					"fxsend" -> {
+						val fxSend = parts[2][0] - '0'
+						if (fxSend in 1..FXSEND_COUNT) {
+							processFXSendMessage(fxSend, parts, message)
 						}
 					}
 					"config" -> processConfigMessage(parts, message)
@@ -130,6 +143,76 @@ class XR18OSCAPI(private var host: InetAddress) {
 									listeners.broadcast { it.channelBusLevel(channel, bus, level) }
 								}
 							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private fun processReturnMessage(returnChannel: Int, parts: List<String>, message: OSCMessage) {
+		when (parts[3]) {
+			"mix" -> {
+				when (parts[4]) {
+					"on" -> {
+						val on = message.getInt(0) == 1
+						listeners.broadcast { it.returnMixOn(returnChannel, on) }
+					}
+					"fader" -> {
+						val level = message.getFloat(0)
+						if (level != null) {
+							listeners.broadcast { it.returnLevel(returnChannel, level) }
+						}
+					}
+				}
+			}
+			"config" -> {
+				when (parts[4]) {
+					"name" -> {
+						val name = message.getString(0)
+						if (name != null) {
+							listeners.broadcast { it.returnName(returnChannel, name) }
+						}
+					}
+					"color" -> {
+						val color = message.getInt(0)
+						if (color != null) {
+							listeners.broadcast { it.returnColor(returnChannel, color) }
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private fun processFXSendMessage(fxSend: Int, parts: List<String>, message: OSCMessage) {
+		when (parts[3]) {
+			"mix" -> {
+				when (parts[4]) {
+					"on" -> {
+						val on = message.getInt(0) == 1
+						listeners.broadcast { it.fxSendMixOn(fxSend, on) }
+					}
+					"fader" -> {
+						val level = message.getFloat(0)
+						if (level != null) {
+							listeners.broadcast { it.fxSendLevel(fxSend, level) }
+						}
+					}
+				}
+			}
+			"config" -> {
+				when (parts[4]) {
+					"name" -> {
+						val name = message.getString(0)
+						if (name != null) {
+							listeners.broadcast { it.fxSendName(fxSend, name) }
+						}
+					}
+					"color" -> {
+						val color = message.getInt(0)
+						if (color != null) {
+							listeners.broadcast { it.fxSendColor(fxSend, color) }
 						}
 					}
 				}
@@ -241,24 +324,18 @@ class XR18OSCAPI(private var host: InetAddress) {
 		send("/lr/mix/on", OSCArgInt(if (on) 1 else 0))
 
 	fun requestConfigs() {
-		for (i in 1..BUS_COUNT) {
-			requestBusName(i)
-			requestBusColor(i)
-		}
 		for (i in 1..CHANNEL_COUNT) {
 			requestChannelName(i)
 			requestChannelColor(i)
 		}
-	}
-
-	fun requestBusName(bus: Int) {
-		validateBus(bus)
-		requestName("/bus/$bus")
-	}
-
-	fun requestBusColor(bus: Int) {
-		validateBus(bus)
-		requestColor("/bus/$bus")
+		for (i in 1..BUS_COUNT) {
+			requestBusName(i)
+			requestBusColor(i)
+		}
+		for (i in 1..FXSEND_COUNT) {
+			requestFXSendName(i)
+			requestFXSendColor(i)
+		}
 	}
 
 	fun requestChannelName(channel: Int) {
@@ -271,6 +348,36 @@ class XR18OSCAPI(private var host: InetAddress) {
 		validateChannel(channel)
 		val channelPrefix = getChannelPrefix(channel)
 		requestColor(channelPrefix)
+	}
+
+	fun requestBusName(bus: Int) {
+		validateBus(bus)
+		requestName("/bus/$bus")
+	}
+
+	fun requestBusColor(bus: Int) {
+		validateBus(bus)
+		requestColor("/bus/$bus")
+	}
+
+	fun requestReturnName(returnChannel: Int) {
+		validateReturn(returnChannel)
+		requestName("/rtn/$returnChannel")
+	}
+
+	fun requestReturnColor(returnChannel: Int) {
+		validateReturn(returnChannel)
+		requestColor("/bus/$returnChannel")
+	}
+
+	fun requestFXSendName(fxSend: Int) {
+		validateFXSend(fxSend)
+		requestName("/fxsend/$fxSend")
+	}
+
+	fun requestFXSendColor(fxSend: Int) {
+		validateFXSend(fxSend)
+		requestColor("/fxsend/$fxSend")
 	}
 
 	private fun requestName(prefix: String) =
@@ -323,6 +430,12 @@ class XR18OSCAPI(private var host: InetAddress) {
 
 	private fun validateBus(bus: Int) =
 		assert(bus in 1..BUS_COUNT)
+
+	private fun validateReturn(returnChannel: Int) =
+		assert(returnChannel in 1..RETURN_COUNT)
+
+	private fun validateFXSend(fxSend: Int) =
+		assert(fxSend in 1..FXSEND_COUNT)
 
 	private fun pad(number: Int) =
 		number.toString().padStart(2, '0')
