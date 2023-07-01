@@ -1,7 +1,7 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
-name: Maven Package
+name: Build and publish
 
 on: workflow_dispatch
 
@@ -14,19 +14,34 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Use Node.js 12
+      uses: actions/setup-node@v3
+      with:
+        node-version: '12.x'
+    - name: Node install
+      run: npm i
+      working-directory: monitor-mix
+    - name: Node build
+      run: npm run build
+      working-directory: monitor-mix
+    - name: Copy files
+      run: |
+        mkdir proxy/src/main/resources/monitor-mix
+        cp -r monitor-mix/build/* proxy/src/main/resources/monitor-mix
     - name: Set up JDK 1.8
       uses: actions/setup-java@v3
       with:
         java-version: '8.0'
         distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
-
+        server-id: github
+        settings-path: ${{ github.workspace }}
     - name: Build with Maven
-      run: mvn -B package --file proxy/pom.xml
-
+      run: mvn -B package
+      working-directory: proxy
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml --file proxy/pom.xml
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      working-directory: proxy
       env:
         GITHUB_TOKEN: ${{ github.token }}
